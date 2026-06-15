@@ -1,0 +1,9 @@
+# Backend Logic
+This folder is strictly for pure PHP processing scripts. 
+
+**What goes here:**
+* Database queries (INSERT, UPDATE, DELETE)
+* Form submission handlers (e.g., processing the checkout or login)
+* The inventory auto-deduction script
+
+**Rule:** Try to keep HTML out of these files. These files process data behind the scenes and then redirect the user back to the visual pages.
