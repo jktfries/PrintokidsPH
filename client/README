@@ -1,0 +1,9 @@
+# Client Portal
+This folder contains all the public and customer-facing pages.
+
+**What goes here:**
+* `shop.php` (Product catalog)
+* `product_details.php` (Where users type customization notes)
+* `event_booking.php` (The "Pick and Press" interactive booth form)
+
+this is just a guide. if there are additional files that are necessary to be put here, go lang :)
