@@ -1,0 +1,9 @@
+# Admin Backend
+This folder contains all the secure, administrative pages for Printokids PH.
+
+**What goes here**
+* `dashboard.php` (Sales reports and metrics)
+* `inventory.php` (CRUD for raw materials)
+* `orders.php` (Order fulfillment and employee tracking)
+
+**Rule:** Do not put customer-facing pages in this folder
