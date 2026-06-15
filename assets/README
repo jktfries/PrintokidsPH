@@ -1,0 +1,7 @@
+# Static Assets
+This folder holds all the styling and all of our media files. 
+
+**What goes here:**
+* `/css` (The compiled Tailwind stylesheet)
+* `/js` (Custom JavaScript for the shopping cart or UI)
+* `/images` (Logos and standard product photos)
