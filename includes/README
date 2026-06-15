@@ -1,0 +1,8 @@
+# Reusable Components
+Store files here that are used across multiple pages so we don't have to repeat code.
+
+**What goes here:**
+* `header.php` and `footer.php` (Your Tailwind navigation bars)
+* `config.example.php` (The database connection template)
+
+ this is just some examples that will serve as our guide :)
