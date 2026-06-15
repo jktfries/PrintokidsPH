@@ -1,0 +1,20 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Tailwind & Node Dependencies
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Database & Security Configuration
+# NEVER commit your actual database passwords!
+config.php
+.env
+
+# User Uploads (For the Printokids Customization assets)
+# We don't want test image uploads bloating the repository
+/uploads/*
+!/uploads/.gitkeep
+/assets/user_designs/*
+!/assets/user_designs/.gitkeep
