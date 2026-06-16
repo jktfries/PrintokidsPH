@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    <title>Burger Bastion</title>
+  </head>
+  <body>
+<!--Carousel-->
+
+
+      <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active" data-bs-interval="10000">
+            <img src="images/Burger-5.jpg" class="d-block w-100" alt="1">
+            <div class="carousel-caption">
+              <h3>All-Natural</h3>
+              <p>Our burgers use organic ingredients from trusted farms; Our Farms!</p>
+            </div>
+         </div>
+          <div class="carousel-item" data-bs-interval="2000">
+            <img src="images/carousel2.jpg" class="d-block w-100" alt="2">
+            <div class="carousel-caption">
+              <h3>Our Efficient Delivery Service</h3>
+              <p>Guaranteed that our burgers will arrived within 15 minutes.</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon btn-dark btn-opacity-50" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+          <span class="carousel-control-next-icon btn-dark btn-opacity-50" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+<!--header-->
+    <header>
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark bg-gradient">
+        <a class="text-danger navbar-brand" href="">
+          <img src="images/LOGO.png" alt="" width="70" height="70"> Burger Bastion
+        </a>
+        <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarcollapse">
+          <span class="navbar-toggler-icon"></span>
+        </button> -->
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarcollapse" aria-controls="navbarcollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+         <div class="collapse navbar-collapse" id="navbarcollapse">
+           <ul class="navbar-nav me-auto">
+             <li class="nav-item">
+               <a class="nav-link">Home</a>
+             </li>
+             <li class="nav-item">
+               <a class="nav-link">Location</a>
+             </li>
+           </ul>
+          <form class="form-inline my-2 my-md-1">
+            <input placeholder="search here">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+         </div>
+      </nav>
+    </header>
+<!--Menu Area-->
+<div class="container-fluid  news ">
+    <div class="container text-center py-3 ">
+        <div class="row">
+
+          <div class="row row-cols-1 row-cols-md-4 g-10 ">
+            <div class="col">
+            <div class="card text-light bg-dark" >
+              <div class="card-body text-center">
+                <img src="images/LOGO.png" class="card-img-top" alt="selection">
+                <h5 class="card-title">MENU</h5>
+                <p class="card-text">Browse our selection of PRINTOKIDS PH PRODUCTS!</p>
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#menu">
+                  Browse Food &raquo;
+                </button>
+              </div>
+            </div>
+            </div>
+
+            <div class="col">
+              <div class="card">
+                <img src="images/TheEscalator.jpg" class="card-img-top" alt="Crilled Gheese ( ͡° ͜ʖ ͡°)">
+                <div class="card-body text-center ">
+                  <h5 class="card-title">FOOD OF THE DAY:</h5>
+                  <h5 class="card-title">The Escalator</h5>
+                  <p class="card-text">The taste escalates the longer it stays in your mouth.</p>
+                  <button type="submit" class="btn btn-primary">Add to Cart</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="card">
+                <img src="images/Summer Sandwiches.jpg" class="card-img-top" alt="Crilled Gheese ( ͡° ͜ʖ ͡°)">
+                <div class="card-body text-center ">
+                  <h5 class="card-title">Summer Sandwiches</h5>
+                  <p class="card-text">A bunch of sandwiches with different flavour! They are also paired with french fries.</p>
+                  <button type="submit" class="btn btn-outline-success"> Summer Sale! Buy Now! Add to Cart</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col" id="Moa">
+              <div class="card">
+                <img src="images/Moa the second.jpg" class="card-img-top" alt="krilled geese">
+                <div class="card-body text-center ">
+                  <h5 class="card-title">Moa Burger</h5>
+                  <p class="card-text">This is a ginormous burger with wide patties. Do not attempt to bite.</p>
+                  <button type="submit" class="btn btn-outline-success"> Limited time! Buy Now! Add to Cart</button>
+                </div>
+              </div>
+            </div>
+
+          
+       </div>
+    </div>
+  </div>
+
+  <!--Reviews area-->
+
+  <div class=" container-fluid card-columns row row-cols-1 row-cols-md-2 g-4 py-3  mx-2">
+
+    <div class="card bg-danger bg-gradient text-white text-center p-3">
+      <blockquote class="blockquote mb-0">
+        <p>"This is by far the best restuarant I have been to. The food here is awesome! The staff were nice. 10/10 would visit again, no complaints."</p>
+        <footer class="blockquote-footer">
+          <small>
+            Guy Goodman
+          </small>
+        </footer>
+      </blockquote>
+    </div>
+
+    <div class="card bg-danger bg-gradient text-white text-center p-3">
+      <blockquote class="blockquote mb-0">
+        <p>"Food here is plain out bad. You using ORGANIC FOOD?! They say those have goverment brain control chemicals! My sources are LEGIT!"</p>
+        <footer class="blockquote-footer">
+          <small>
+            Ima Crayzee
+          </small>
+        </footer>
+      </blockquote>
+    </div>
+
+  </div>
+
+<!--Promises
+-->
+<div class=" container-fluid card-columns row row-cols-1 row-cols-md-4 g-10 py-3  mx-2 card-group">
+
+    <div class="card bg-dark text-white">
+      <img src="images/FloatingSandwich.jpg" class="card-img-top" alt="krilled geese">
+      <div class="card-body text-center ">
+        <h5 class="card-title">Food Made With Love</h5>
+        <p class="card-text">We make food with care. We don't rush cooking, we spend our time.</p>
+      </div>
+    </div>
+
+    <div class="card bg-dark text-white">
+      <img src="images/istockphoto.com floating burger.jpg" class="card-img-top" alt="krilled geese">
+      <div class="card-body text-center ">
+        <h5 class="card-title">Delicious Food</h5>
+        <p class="card-text">Burger Bastion's food is so delicious, you'll want to eat here.</p>
+      </div>
+    </div>
+
+    <div class="card bg-dark text-white">
+      <img src="images/ChickenChurgr.jpg" class="card-img-top" alt="krilled geese">
+      <div class="card-body text-center ">
+        <h5 class="card-title">Give us Your Feedback</h5>
+        <p class="card-text">We will take your feedback about us and our food.</p>
+      </div>
+    </div>
+
+    <div class="card bg-dark text-white">
+      <img src="images/ChoppySandwich.jpg" class="card-img-top" alt="krilled geese">
+      <div class="card-body text-center ">
+        <h5 class="card-title">Good Prices</h5>
+        <p class="card-text">Our food is tasty and cheap! Buy one now!</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Old Gifs -->
+
+  <!-- <div class="container-fluid bg-dark news">
+    <div class="container text-center py-5">
+        <div class="row">
+   <div class="col-md-4">
+    <img class="rounded-circle" src="images/spinning-sandwich.gif" alt="challenge">
+    <h2>Fancy a Challange?</h2>
+    <p>How many sandviches can you eat? </p>
+    <p><a class="btn btn-secondary" href="" role="button">Enter here &raquo;</a></p>
+  </div>
+        </div>
+    </div>
+  </div> 
+
+  <div class="container-fluid bg-dark news">
+    <div class="container text-center py-5">
+        <div class="row">
+          <div class="col-md-4">
+            <img class="rounded-circle" src="images/open.gif" alt="sign">
+            <h2>Established 2010</h2>
+            <p>Stealing food from dimensions since 2010.</p>
+            <p><a class="btn btn-secondary" href="" role="button">View Details &raquo;</a></p>
+          </div>
+        </div>
+    </div>
+  </div>  -->
+
+<!--News letter-->
+    <div class="container-fluid bg-dark news">
+      <div class="row text-center">
+         <div class="col-md-7 text-light fst-italic fw-bolder">
+           <p>Sign up to our newsletter for exclusive deals!</p>
+         </div>
+         <div class="col-md-5">
+          <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modal">
+            Sign up here!
+          </button>
+         </div>
+      </div>
+    </div>
+
+    <footer class="container">
+      <strong><p>&copy; 2021 Burger Bastion &middot;</strong>
+        <a href="">Home</a> &middot;
+        <a href="">Location</a>
+      </p>
+  </footer>
+    <!-- Newsletter Modal -->
+
+    <div class="modal fade" id="modal">
+      <div class="modal-dialog">
+        <div class="modal-content bg-dark bg-gradient">
+          <div class="modal-header text-white">
+             <h5 class="modal-title">Sign up for exclusive offers!</h5>
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- <form>
+               <div class="form-group">
+                   <label for="nameInput text-white">Your Name</label>
+                   <imput type="text" class="form-control" id="nameInput" aria-placeholder="Your Name Here"></imput>
+               </div>
+            </form> -->
+            
+            <div class="mb-3 form-group">
+              <label for="exampleInputEmail1" class="form-label text-white">Your Name</label>
+              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Your name here">
+            </div>
+
+            <div class="mb-3 form-group">
+              <label for="exampleInputEmail1" class="form-label text-white">Email address</label>
+              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter your email">
+              <div id="emailHelp" class="form-text text-white">We'll never share your email with anyone else.</div>
+            </div>
+
+            <div class="mb-3 form-group">
+              <label for="address" class="form-label text-white">Location</label>
+              <!-- <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter your home address"> -->
+              <textarea class="form-control" id="address" rows="3" placeholder="Enter your home address"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input" id="emailCheck" value="option1">
+              <label class="form-check-label text-white" for="emailCheck">Contact by Email</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input" id="postCheck" value="option1">
+              <label class="form-check-label text-white" for="postCheck">Contact by Post</label>
+            </div>
+             <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <!-- Menu Modal -->
+
+      <div class="modal fade bd-example-modal-lg" id="menu" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+          <div class="modal-content bg-dark  bg-gradient">
+
+            <div class="modal-header">
+              <h5 class="modal-title text-white">Our Food Selection</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+<!--BURGER SELECTION-->
+              <div class="container-fluid  news text-white">
+                <div class="container text-center py-3 ">
+                    <div class="row">
+                      <p class="fs-1">BURGER SELECTION</p>
+                    </div>
+                  </div>
+                </div>
+<!--BURGER CONTENT-->
+              <div class="row row-cols-1 row-cols-md-4 g-4 ">
+                <div class="col">
+                  <div class="card">
+                    <img src="images/PyramidBurgers.jpg" class="card-img-top" alt="pumpie">
+                    <div class="card-body text-center">
+                      <h5 class="card-title">Meaty Bastion Combo</h5>
+                      <p class="card-text">5 delicious meaty burgers for the family!</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col">
+                  <div class="card">
+                    <img src="images/cheeseburgerbarbeque.jpg" class="card-img-top" alt="( ͡° ͜ʖ ͡°)">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Barbecue Cheesy</h5>
+                      <p class="card-text">A Cheesy burger mixed with the best barbeque sauce!</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="card">
+                    <img src="images/MeatFortress.jpg" class="card-img-top" alt="Minecake">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Meat Fortress Combo</h5>
+                      <p class="card-text">3 Sandwiches with a whole lot of bacon and cheese.</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="card">
+                    <img src="images/Master Beef.jpg" class="card-img-top" alt="krilled geese">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Master Beef</h5>
+                      <p class="card-text">"Master Beef, mind telling me why you're not getting eaten?"</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="card">
+                    <img src="images/BurgerBundle.jpg" class="card-img-top" alt="krilled geese">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Fort Tasty Combo</h5>
+                      <p class="card-text">Everyone is welcomed in this tasty fort. Get greeted by a whole load of burgers!</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+                
+                <div class="col">
+                  <div class="card">
+                    <img src="images/BaconBeast.jpg" class="card-img-top" alt="krilled geese">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Bacon Beast</h5>
+                      <p class="card-text">This beast is filled with the juiciest bacon! Give it a try and you'll really love it.</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+                
+                <div class="col">
+                  <div class="card">
+                    <img src="images/The Double Decker.jpg" class="card-img-top" alt="krilled geese">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">The Dub</h5>
+                      <p class="card-text">Its basically 2 hamburgers on top of eachother! Don't attempt to take a vertical bite.</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+                
+                <div class="col">
+                  <div class="card">
+                    <img src="images/Multi Beef Combo.png" class="card-img-top" alt="krilled geese">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Multi-Beef Combo</h5>
+                      <p class="card-text">A pack of 9 burgers. Perfect for a group of friends! Share, don't take it all.</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+
+                <div class="col">
+                  <div class="card">
+                    <img src="images/Cheese burger Pic.png" class="card-img-top" alt="krilled geese">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Cheese Burger</h5>
+                      <p class="card-text">This is a very tasty cheese burger with an extra cheesy patty.</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col">
+                  <div class="card">
+                    <img src="images/MeterSandwich.png" class="card-img-top" alt="krilled geese">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Hamwich</h5>
+                      <p class="card-text">This is a meter long sandwich! It's filled with the best ham! Very long!</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+                  
+                <div class="col">
+                  <div class="card">
+                    <img src="images/ChicknBurgerr.png" class="card-img-top" alt="krilled geese">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Chicken Burger Deluxe</h5>
+                      <p class="card-text">A very deluxe, very cripy, very juicy, chicken burger with mayonnaise!</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col">
+                  <div class="card">
+                    <img src="images/GrilledCheeseSlabs.jpg" class="card-img-top" alt="Crilled Gheese ( ͡° ͜ʖ ͡°)">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Grilled Cheese</h5>
+                      <p class="card-text">It's not any ordinary grilled cheese, it's made of a thousand types of cheeses.</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="card">
+                    <img src="images/TheEscalator.jpg" class="card-img-top" alt="Crilled Gheese ( ͡° ͜ʖ ͡°)">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">The Escalator</h5>
+                      <p class="card-text">A burger with a lot of mayonnaise. The taste escalates the longer it stays in your mouth</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="card">
+                    <img src="images/BeefBlock.png" class="card-img-top" alt="Crilled Gheese ( ͡° ͜ʖ ͡°)">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">The Beef Block</h5>
+                      <p class="card-text">An edible slab made for the worthy. It's made of a hundred kilograms of beef, and it's finely grilled.</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="card">
+                    <img src="images/Mushroom Burger.jpg" class="card-img-top" alt="Mushroom">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Mushroo</h5>
+                      <p class="card-text">A burger for all the fungus lovers out there! Made with mostly with shiitake mushrooms.</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="card">
+                    <img src="images/meat metro.jpg" class="card-img-top" alt="Meat Metro">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Meat Metro</h5>
+                      <p class="card-text">A meter long sandwich filled to the brim with meatballs and tomato barbeque sauce. "Sauce sold seperately"</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+          
+
+              <div class="col"> 
+                <div class="card">
+                  <img src="images/TripleBurrito.jpeg" class="card=img-top" alt="More Food">
+                  <div class="card-body text-center  ">
+                    <h5 class="card-title">Despacitos</h5>
+                    <p class="card-text">Three very juicy burritos filled with the tastiest sauces, and the best cheeses. </p>
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                  </div>
+                </div>
+              </div>
+
+              
+              <div class="col"> 
+                <div class="card">
+                  <img src="images/SpicyBurger.png" class="card=img-top" alt="More Food">
+                  <div class="card-body text-center  ">
+                    <h5 class="card-title">Burning Beef</h5>
+                    <p class="card-text">It's the spiciest burger in the bastion! It has flaming sauce, Can you handle the heat? </p>
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col"> 
+                <div class="card">
+                  <img src="images/BeefBus.jpg" class="card=img-top" alt="More Food">
+                  <div class="card-body text-center  ">
+                    <h5 class="card-title">Beef Bus</h5>
+                    <p class="card-text">The Beef Bus is a big sandwich, that's best paired with the Meat Metro! </p>
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col"> 
+                <div class="card">
+                  <img src="images/Potatus.jpg" class="card=img-top" alt="More Food">
+                  <div class="card-body text-center  ">
+                    <h5 class="card-title">Potato Papa</h5>
+                    <p class="card-text">A burger that's filled with mashed potatoes. Theres also gravy in the buns </p>
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                  </div>
+                </div>
+              </div>
+
+
+            </div> 
+
+<!--SNACK SELECTION-->
+                <div class="container-fluid  news text-white">
+                <div class="container text-center py-3 ">
+                    <div class="row">
+                      <p class="fs-1">SNACK SELECTION</p>
+                    </div>
+                  </div>
+                </div>
+<!--SNACK CONTENT-->
+<div class="row row-cols-1 row-cols-md-4 g-4 ">
+  <div class="col">
+    <div class="card">
+      <img src="images/Nachosus.jpg" class="card-img-top" alt="pumpie">
+      <div class="card-body text-center">
+        <h5 class="card-title">Bill Snackers</h5>
+        <p class="card-text">You can have this if we have a deal.</p>
+        <button type="submit" class="btn btn-primary">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col">
+    <div class="card">
+      <img src="images/FrenchieBoi.jpg" class="card-img-top" alt="( ͡° ͜ʖ ͡°)">
+      <div class="card-body text-center ">
+        <h5 class="card-title">Frenchies</h5>
+        <p class="card-text">Our favorite potato pillars. This order comes with gravy.</p>
+        <button type="submit" class="btn btn-primary">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card">
+      <img src="images/HotDoggos.jpg" class="card-img-top" alt="( ͡° ͜ʖ ͡°)">
+      <div class="card-body text-center ">
+        <h5 class="card-title">Doggo Combo</h5>
+        <p class="card-text">Have 3 delicious hotdogs! These are big, don't choke.</p>
+        <button type="submit" class="btn btn-primary">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col">
+    <div class="card">
+      <img src="images/stuffed garlic bread.jfif" class="card-img-top" alt="( ͡° ͜ʖ ͡°)">
+      <div class="card-body text-center ">
+        <h5 class="card-title">Garlic Bread</h5>
+        <p class="card-text">A group of small garlic bread bundled with italian sauces.</p>
+        <button type="submit" class="btn btn-primary">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  </div>
+<!--DRINK SELECTION-->
+  <div class="container-fluid  news text-white">
+    <div class="container text-center py-3 ">
+        <div class="row">
+          <p class="fs-1">DRINKS SELECTION</p>
+        </div>
+      </div>
+    </div>
+<!--DRINKS CONTENT-->
+<div class="row row-cols-1 row-cols-md-3 g-4 ">
+<div class="col">
+  <div class="card">
+    <img src="images/Iced tea.jpg" class="card-img-top" alt="( ͡° ͜ʖ ͡°)">
+    <div class="card-body text-center ">
+      <h5 class="card-title">Iced Tea</h5>
+      <p class="card-text">Quench your thirst with our refreshing Iced Tea!</p>
+      <button type="submit" class="btn btn-primary">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<div class="col">
+  <div class="card">
+    <img src="images/Orange Juice.jfif" class="card-img-top" alt="( ͡° ͜ʖ ͡°)">
+    <div class="card-body text-center ">
+      <h5 class="card-title">Fruit Juice</h5>
+      <p class="card-text">Our refreshing original recipes! Choose from many flavours.</p>
+      <button type="submit" class="btn btn-primary">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="col">
+  <div class="card">
+    <img src="images/Water bottle.jpg" class="card-img-top" alt="( ͡° ͜ʖ ͡°)">
+    <div class="card-body text-center ">
+      <h5 class="card-title">Water</h5>
+      <p class="card-text">We also provide normal drinking water. Can be bought cold or warm.</p>
+      <button type="submit" class="btn btn-primary">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+</div>
+          </div>
+        </div>
+      </div>
+
+            <!-- Menu Modal -->
+
+      <div class="modal fade bd-example-modal-lg" id="snackmenu" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+          <div class="modal-content bg-dark  bg-gradient">
+
+            <div class="modal-header">
+              <h5 class="modal-title text-white">Our Food Selection</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+            
+              <div class="row row-cols-1 row-cols-md-4 g-4 ">
+                <div class="col">
+                  <div class="card">
+                    <img src="images/PyramidBurgers.jpg" class="card-img-top" alt="pumpie">
+                    <div class="card-body text-center">
+                      <h5 class="card-title">Meaty Bastion Combo</h5>
+                      <p class="card-text">5 delicious meaty burgers for the family!</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>               
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu Modal -->
+
+      <div class="modal fade bd-example-modal-lg" id="submenu" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+          <div class="modal-content bg-dark  bg-gradient">
+
+            <div class="modal-header">
+              <h5 class="modal-title text-white">Our Food Selection</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+            
+              <div class="row row-cols-1 row-cols-md-4 g-4 ">
+                <div class="col">
+                  <div class="card">
+                    <img src="images/PyramidBurgers.jpg" class="card-img-top" alt="pumpie">
+                    <div class="card-body text-center">
+                      <h5 class="card-title">Meaty Bastion Combo</h5>
+                      <p class="card-text">5 delicious meaty burgers for the family!</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col">
+                  <div class="card">
+                    <img src="images/cheeseburgerbarbeque.jpg" class="card-img-top" alt="( ͡° ͜ʖ ͡°)">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Barbecue Cheesy</h5>
+                      <p class="card-text">A Cheesy burger mixed with the best barbeque sauce!</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="card">
+                    <img src="images/MeatFortress.jpg" class="card-img-top" alt="Minecake">
+                    <div class="card-body text-center ">
+                      <h5 class="card-title">Meat Fortress Combo</h5>
+                      <p class="card-text">3 Sandwiches with a whole lot of bacon and cheese.</p>
+                      <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>               
+          </div>
+        </div>
+      </div>
+<!--feet-->
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+
+  </body>
+  
+</html>
