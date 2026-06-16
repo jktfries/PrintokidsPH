@@ -1,0 +1,24 @@
+.col-md-4 > img {
+    width: 140px;
+    height:140px;
+}
+
+.header, a {
+    padding: 1vw;
+}
+
+.header, form {
+    padding: 1vw;
+}
+
+.header, li {
+    padding: 1vw;
+}
+
+.news, p button {
+   padding: 0.5vw; 
+}
+
+a {
+    text-decoration: none;
+}
