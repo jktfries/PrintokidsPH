@@ -1,0 +1,74 @@
+/* Custom typography to match the wireframe */
+.admin-main-title {
+    font-family: "Georgia", "Times New Roman", serif;
+    font-style: italic;
+    font-size: 2rem;
+    padding-left: 1rem;
+}
+
+.tracking-wide {
+    letter-spacing: 0.05em;
+}
+
+/* Navbar adjustments */
+.admin-header .navbar {
+    border-top: 3px solid #ccc;
+    border-bottom: 3px solid #e0e0e0;
+}
+
+.admin-header .nav-link {
+    font-size: 0.9rem;
+    text-transform: capitalize;
+    margin-left: 1rem;
+}
+
+.admin-header .nav-link.active {
+    color: #000 !important;
+    border-bottom: 2px solid #555 !important;
+}
+
+/* Table Container (Simulating the grey wireframe block with a scrollbar) */
+.table-container {
+    height: 450px;
+    overflow-y: auto;
+    background-color: #dcdcdc !important; /* Grey background matching wireframe */
+    border-radius: 4px;
+    position: relative;
+}
+
+/* Table Styling */
+.table-container table {
+    width: 100%;
+}
+
+.table-container th {
+    position: sticky;
+    top: 0;
+    background-color: #dcdcdc !important; /* Matches outer grey box */
+    z-index: 1;
+    border-bottom: 2px solid #aaa;
+}
+
+/* Wireframe specific grey-scale striping */
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #cfcfcf !important;
+}
+.table-striped > tbody > tr:nth-of-type(even) {
+    background-color: #d6d6d6 !important;
+}
+
+/* Custom scrollbar to match the thick bar in the wireframe */
+.table-container::-webkit-scrollbar {
+    width: 12px;
+}
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+    border-radius: 4px;
+}
+.table-container::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 4px;
+}
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
