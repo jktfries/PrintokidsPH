@@ -1,0 +1,74 @@
+/* trying to match laayout in wireframe */
+.admin-main-title {
+    font-family: "Georgia", "Times New Roman", serif;
+    font-style: italic;
+    font-size: 2rem;
+    padding-left: 1rem;
+}
+
+.tracking-wide {
+    letter-spacing: 0.05em;
+}
+
+.admin-header .navbar {
+    background-image: linear-gradient(10deg, #FFF9C4, #eab66d); /* Sourced from client_menu_styles.css */
+    border-bottom: 3px solid #d4a362;
+}
+
+.admin-header .navbar-brand span.fw-bolder {
+    color: #000;
+}
+
+.admin-header .admin-subtitle {
+    color: #333;
+}
+
+.admin-header .nav-link {
+    font-size: 0.9rem;
+    text-transform: capitalize;
+    margin-left: 1rem;
+    color: #333 !important;
+}
+
+.admin-header .nav-link.active {
+    color: #000 !important;
+    border-bottom: 2px solid #000 !important;
+    font-weight: 800;
+}
+
+/* for the tables */
+.table-container {
+    height: 450px;
+    overflow-y: auto;
+    background-color: #f8f9fa !important; 
+    border-radius: 4px;
+    position: relative;
+}
+
+.table-container table {
+    width: 100%;
+}
+
+.table-container th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa !important;
+    z-index: 1;
+    border-bottom: 2px solid #eab66d; /* Brand accent color applied to table header border */
+}
+
+/* scrollbar for tables */
+.table-container::-webkit-scrollbar {
+    width: 12px;
+}
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+    border-radius: 4px;
+}
+.table-container::-webkit-scrollbar-thumb {
+    background: #eab66d; /* Replaced default grey with the brand's accent color */
+    border-radius: 4px;
+}
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #d4a362; 
+}
