@@ -1,4 +1,4 @@
-/* Custom typography to match the wireframe */
+/* Custom typography to match the wireframe layout */
 .admin-main-title {
     font-family: "Georgia", "Times New Roman", serif;
     font-style: italic;
@@ -10,33 +10,42 @@
     letter-spacing: 0.05em;
 }
 
-/* Navbar adjustments */
+/* Navbar adjustments utilizing PrintoKids brand gradient */
 .admin-header .navbar {
-    border-top: 3px solid #ccc;
-    border-bottom: 3px solid #e0e0e0;
+    background-image: linear-gradient(10deg, #FFF9C4, #eab66d); /* Sourced from client_menu_styles.css */
+    border-bottom: 3px solid #d4a362;
+}
+
+.admin-header .navbar-brand span.fw-bolder {
+    color: #000;
+}
+
+.admin-header .admin-subtitle {
+    color: #333;
 }
 
 .admin-header .nav-link {
     font-size: 0.9rem;
     text-transform: capitalize;
     margin-left: 1rem;
+    color: #333 !important; /* Adjusted for better contrast on the gold gradient */
 }
 
 .admin-header .nav-link.active {
     color: #000 !important;
-    border-bottom: 2px solid #555 !important;
+    border-bottom: 2px solid #000 !important;
+    font-weight: 800;
 }
 
-/* Table Container (Simulating the grey wireframe block with a scrollbar) */
+/* Table Container (Simulating the structural wireframe block but tailored to fit the brand) */
 .table-container {
     height: 450px;
     overflow-y: auto;
-    background-color: #dcdcdc !important; /* Grey background matching wireframe */
+    background-color: #f8f9fa !important; 
     border-radius: 4px;
     position: relative;
 }
 
-/* Table Styling */
 .table-container table {
     width: 100%;
 }
@@ -44,17 +53,9 @@
 .table-container th {
     position: sticky;
     top: 0;
-    background-color: #dcdcdc !important; /* Matches outer grey box */
+    background-color: #f8f9fa !important;
     z-index: 1;
-    border-bottom: 2px solid #aaa;
-}
-
-/* Wireframe specific grey-scale striping */
-.table-striped > tbody > tr:nth-of-type(odd) {
-    background-color: #cfcfcf !important;
-}
-.table-striped > tbody > tr:nth-of-type(even) {
-    background-color: #d6d6d6 !important;
+    border-bottom: 2px solid #eab66d; /* Brand accent color applied to table header border */
 }
 
 /* Custom scrollbar to match the thick bar in the wireframe */
@@ -66,9 +67,9 @@
     border-radius: 4px;
 }
 .table-container::-webkit-scrollbar-thumb {
-    background: #888; 
+    background: #eab66d; /* Replaced default grey with the brand's accent color */
     border-radius: 4px;
 }
 .table-container::-webkit-scrollbar-thumb:hover {
-    background: #555; 
+    background: #d4a362; 
 }
