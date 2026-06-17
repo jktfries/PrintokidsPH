@@ -17,7 +17,7 @@ The central hub for our codebase for the development of the website.
 ---
 
 ## Stack
-* **Frontend:** HTML5, Tailwind CSS, JavaScript
+* **Frontend:** HTML5, Bootstrap 4, Tailwind CSS, JavaScript
 * **Backend:** PHP
 * **Database:** MySQL (Relational Database)
 * **Design/Prototyping:** Wireframes & ERD provided in the `/docs` folder.
