@@ -12,6 +12,13 @@ package-lock.json
 config.php
 .env
 
+# MySQL Database Files
+*.ibd
+*.frm
+*.MYD
+*.MYI
+/xampp/mysql/data/
+
 # User Uploads (For the Printokids Customization assets)
 # We don't want test image uploads bloating the repository
 /uploads/*
