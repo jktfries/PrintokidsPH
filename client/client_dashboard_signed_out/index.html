@@ -193,6 +193,55 @@
   <!--MODALS-->
   <!-- These appear on top of the main page. can be called on will. Will not pop up naturally-->
 
+  <!-- Newsletter Modal -->
+
+    <div class="modal fade" id="newsletterModal">
+      <div class="modal-dialog">
+        <div class="modal-content bg-dark bg-gradient">
+          <div class="modal-header text-white">
+             <h5 class="modal-title">Sign up for exclusive offers!</h5>
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- <form>
+               <div class="form-group">
+                   <label for="nameInput text-white">Your Name</label>
+                   <imput type="text" class="form-control" id="nameInput" aria-placeholder="Your Name Here"></imput>
+               </div>
+            </form> -->
+            
+            <div class="mb-3 form-group">
+              <label for="exampleInputEmail1" class="form-label text-white">Your Name</label>
+              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Your name here">
+            </div>
+
+            <div class="mb-3 form-group">
+              <label for="exampleInputEmail1" class="form-label text-white">Email address</label>
+              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter your email">
+              <div id="emailHelp" class="form-text text-white">We'll never share your email with anyone else.</div>
+            </div>
+
+            <div class="mb-3 form-group">
+              <label for="address" class="form-label text-white">Location</label>
+              <!-- <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter your home address"> -->
+              <textarea class="form-control" id="address" rows="3" placeholder="Enter your home address"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input" id="emailCheck" value="option1">
+              <label class="form-check-label text-white" for="emailCheck">Contact by Email</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input" id="postCheck" value="option1">
+              <label class="form-check-label text-white" for="postCheck">Contact by Post</label>
+            </div>
+             <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   <!--SIGN IN MODAL-->
       <div class="modal fade" id="signInModal" tabindex="-1" aria-labelledby="signInModalLabel" aria-hidden="true">
         <div class="modal-dialog">
