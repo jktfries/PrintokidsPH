@@ -41,9 +41,9 @@
          <div class="collapse navbar-collapse" id="navbarcollapse">
            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
               <li class="nav-item">
-               <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal">
-                 Home
-               </button>
+               <button type="button" class="btn btn-outline-dark" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                   Home
+                </button>
              <li class="nav-item">
                 <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#signInModal">
                    My Account
@@ -51,13 +51,13 @@
               </li>
              <li class="nav-item">
               <!--<a class="nav-link">Event Services</a>-->
-               <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal">
-                 Event Services
+               <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#eventServicesModal">
+                Event Services
                </button>
             
               <li class="nav-item">
-               <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal">
-                 Contact Us
+               <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#contactUsModal">
+                Contact Us
                </button>
              </li>
            </ul>
@@ -317,6 +317,160 @@
           </div>
         </div>
       </div>
+      
+  <!-- CONTACT US MODAL -->
+    <div class="modal fade" id="contactUsModal" tabindex="-1" aria-labelledby="contactUsModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content bg-dark bg-gradient text-white">
+          <div class="modal-header">
+            <h5 class="modal-title" id="contactUsModalLabel">Get In Touch With Us</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center">
+            <!-- Phone Number -->
+            <div class="mb-4">
+              <h6 class="text-warning">Phone / Mobile</h6>
+              <p class="fs-6">+63 927 610 9655</p>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-4">
+              <h6 class="text-warning">Email Address</h6>
+              <p class="fs-6">printokidsph@gmail.com</p>
+            </div>
+
+            <!-- Instagram -->
+            <div class="mb-3">
+              <h6 class="text-warning">Instagram</h6>
+              <p class="fs-6">
+                <a href="https://www.instagram.com/printokidsph/" target="_blank" class="text-info text-decoration-none">
+                  @printokidsph
+                </a>
+              </p>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- EVENT SERVICES MODAL -->
+  <div class="modal fade" id="eventServicesModal" tabindex="-1" aria-labelledby="eventServicesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark bg-gradient text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eventServicesModalLabel">Event Services</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center py-4">
+          <p class="mb-4">Select what you need:</p>
+          <div class="d-grid gap-3 col-8 mx-auto">
+            <button type="button" class="btn btn-outline-light w-100" data-bs-toggle="modal" data-bs-target="#boothInfoModal" data-bs-dismiss="modal">
+              Booth Information
+            </button>
+            <button type="button" class="btn btn-outline-light w-100" data-bs-toggle="modal" data-bs-target="#bookingInquiryModal" data-bs-dismiss="modal">
+              Booking Inquiry
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- BOOTH INFORMATION MODAL -->
+  <div class="modal fade" id="boothInfoModal" tabindex="-1" aria-labelledby="boothInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark bg-gradient text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="boothInfoModalLabel">Booth Information</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Our interactive booths are perfect for birthdays, weddings, fairs, and corporate gatherings. We offer:</p>
+          <ul>
+            <li>Customized printed souvenirs</li>
+            <li>Personalized souvenirs</li>
+            <li>Creative & Memorable giveaways</li>
+            <li>Quality materials for our souvenirs</li>
+          </ul>
+          <p class="mt-3">For full details, you can message us to check our rates. Direct to Contact Us, Thank You!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#eventServicesModal">Back</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- BOOKING INQUIRY MODAL -->
+  <div class="modal fade" id="bookingInquiryModal" tabindex="-1" aria-labelledby="bookingInquiryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark bg-gradient text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookingInquiryModalLabel">Booking Inquiry</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-3">Fill in your details and we will get back to you shortly:</p>
+
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-control" placeholder="Enter your full name" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Contact Number</label>
+            <input type="tel" class="form-control" placeholder="e.g. +63 917 123 4567" required>
+          </div>
+
+          
+          <div class="mb-3">
+            <label class="form-label">Event Date</label>
+            <input type="date" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Event Location / Venue</label>
+            <input type="text" class="form-control" placeholder="Enter complete address of venue name" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Additional Details / Requirements</label>
+            <textarea class="form-control" rows="3" placeholder="Tell us more about your event"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#eventServicesModal">Back</button>
+          <button type="button" class="btn btn-success">Send Inquiry</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Home Modal -->
+  <div class="modal fade" id="homeModal" tabindex="-1" aria-labelledby="homeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content bg-dark bg-gradient text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="homeModalLabel">Go to Home</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p>Return to the top of the page?</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" data-bs-dismiss="modal">Yes, Go Home</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 <!-- Menu Modal -->
