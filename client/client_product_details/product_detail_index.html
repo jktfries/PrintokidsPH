@@ -55,9 +55,125 @@
   &laquo; Back to Shop
 </a>
 
+<!--
+
+Images, and the product name, and the product price must all be replaced with actual data.
+Data pulled from the database.
+-->
+
+<div class="container mt-4">
+    <div class="row g-4">
+
+      <!-- LEFT: PRODUCT PHOTO CAROUSEL -->
+      <!--<div class="col-md-5">
+        <div class="product-photo-box">
+          PRODUCT PHOTO
+        </div>
+      </div>
+
+      -->
+
+      <div class="col-md-5">
+        <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active product-photo-box">
+              <img>
+
+              1
+            </div>
+            <div class="carousel-item product-photo-box">
+              <img>
+
+              2
+            </div>
+            <div class="carousel-item product-photo-box">
+              <img>
+
+              3
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon btn-dark btn-opacity-50" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+            <span class="carousel-control-next-icon btn-dark btn-opacity-50" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+      <!-- RIGHT: PRODUCT INFO -->
+      <div class="col-md-7">
+
+        <h2 class="fw-bold">PRODUCT NAME</h2>
+        <h4 class="text-success">₱ BASE PRICE</h4>
+
+        <p class="mt-3">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+          Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+
+        <!-- Customization Preferences -->
+        <div class="mt-4">
+          <label class="fw-bold">Customization Preferences:</label>
+          <textarea class="form-control" rows="3" placeholder="Enter your customization details here..."></textarea>
+        </div>
+
+        <!-- Image Upload Feature -->
+        <div class="mt-4">
+          <label class="fw-bold">Custom Image (optional):</label>
+          <div class="d-flex align-items-center gap-3 mt-2">
+            <small class="text-muted">Supported formats: .jpg, .png</small>
+            <div class="upload-box">
+              <img id="previewImage" src="" alt="" style="max-width: 100%; max-height: 100%; display: none;">
+            </div>
+          </div>
+          <input type="file" id="imageUpload" class="form-control mt-2" accept=".jpg,.png">
+        </div>
+
+        <!--Javascript code which updates the "previewImage" img in "upload-box" to show the uploaded picture.-->
+
+        <script>
+            const fileInput = document.getElementById('imageUpload');
+            const preview = document.getElementById('previewImage');
+
+            fileInput.addEventListener('change', function() {
+              const file = this.files[0];
+
+              if (file) {
+                const reader = new FileReader();
+
+                reader.addEventListener("load", function() {
+                  preview.setAttribute("src", this.result);
+                  preview.style.display = "block";
+                });
+
+                reader.readAsDataURL(file);
+              } else {
+                preview.src = "";
+                preview.style.display = "none";
+              }
+            });
+          </script>
 
 
-  <!-- all these featured products to be replaced-->
+        <!-- Quantity -->
+        <div class="mt-4">
+          <label class="fw-bold">Order Quantity:</label>
+          <input type="number" class="form-control w-25" min="1" max="10" value="1">
+          <p><i>
+            *Maximum quantity that can be ordered is 10 pieces max. If you want more, 
+            please mention in the customization preferences box the amount you want.
+            Your order shall be manually assessed by our inventory department.
+          </i></p>
+        </div>
+
+        <!-- Add to Cart -->
+        <button class="btn btn-primary btn-lg mt-4">ADD TO CART</button>
+
+      </div>
+    </div>
+  </div>
 
   </div>
 
