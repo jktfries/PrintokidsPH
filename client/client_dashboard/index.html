@@ -59,7 +59,13 @@
                <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal">
                  Contact Us
                </button>
-             </li>
+              </li>
+              <li class="nav-item">
+               <button type="button" class="btn btn-outline-success position-relative" id="cartBtn">
+                 🛒 Cart
+                 <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+               </button>
+              </li>
            </ul>
          </div>
       </nav>
@@ -117,54 +123,8 @@
 
 <h1 class="title">Featured Products</h1>
 
-  <div class=" container-fluid card-columns row row-cols-1 row-cols-md-4 g-4 py-3  mx-2">
-
-    <div class="col">
-      <div class="card">
-        <img src="printokids_images/Product_TEMP.png" class="card-img-top" alt="pumpie">
-        <div class="card-body text-center">
-            <h5 class="card-title">THIS IS TEMPORARY</h5>
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ultrices vulputate lorem non pretium.</p>
-            <button type="submit" class="btn btn-primary">Add to Cart</button>
-        </div>
-      </div>
-     </div>
-
-    <div class="col">
-      <div class="card">
-        <img src="printokids_images/Product_TEMP.png" class="card-img-top" alt="pumpie">
-        <div class="card-body text-center">
-            <h5 class="card-title">THIS IS TEMPORARY</h5>
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ultrices vulputate lorem non pretium.</p>
-            <button type="submit" class="btn btn-primary">Add to Cart</button>
-        </div>
-      </div>
-     </div>
-
-    <div class="col">
-      <div class="card">
-        <img src="printokids_images/Product_TEMP.png" class="card-img-top" alt="pumpie">
-        <div class="card-body text-center">
-            <h5 class="card-title">THIS IS TEMPORARY</h5>
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ultrices vulputate lorem non pretium.</p>
-            <button type="submit" class="btn btn-primary">Add to Cart</button>
-        </div>
-      </div>
-     </div>
-
-    <div class="col">
-      <div class="card">
-        <img src="printokids_images/Product_TEMP.png" class="card-img-top" alt="pumpie">
-        <div class="card-body text-center">
-            <h5 class="card-title">THIS IS TEMPORARY</h5>
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ultrices vulputate lorem non pretium.</p>
-            <button type="submit" class="btn btn-primary">Add to Cart</button>
-        </div>
-      </div>
-     </div>
-
-  <!-- all these featured products to be replaced-->
-
+  <div class="container-fluid row row-cols-1 row-cols-md-4 g-4 py-3 mx-2" id="products-container">
+    <!-- Products will be loaded dynamically here -->
   </div>
 
 
@@ -317,6 +277,15 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+    
+    <!-- Product Management -->
+    <script src="products.js"></script>
+    
+    <!-- Shopping Cart -->
+    <script src="cart.js"></script>
+    
+    <!-- Authentication Handler -->
+    <script src="auth.js"></script>
 
   </body>
   

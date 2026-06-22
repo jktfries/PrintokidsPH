@@ -30,11 +30,13 @@ if ($method === 'GET' && !isset($_GET['id'])) {
 // GET single order
 else if ($method === 'GET' && isset($_GET['id'])) {
     $id = intval($_GET['id']);
-    $query = "SELECT eo.id, eo.customer_id, c.first_name, c.last_name, eo.event_location, eo.status 
+    $stmt = $conn->prepare("SELECT eo.id, eo.customer_id, c.first_name, c.last_name, eo.event_location, eo.status 
               FROM event_orders eo 
               JOIN customers c ON eo.customer_id = c.id 
-              WHERE eo.id = $id";
-    $result = $conn->query($query);
+              WHERE eo.id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
     
     if ($result && $result->num_rows > 0) {
         $order = $result->fetch_assoc();
@@ -43,6 +45,7 @@ else if ($method === 'GET' && isset($_GET['id'])) {
         http_response_code(404);
         echo json_encode(['error' => 'Order not found']);
     }
+    $stmt->close();
 }
 
 // POST - Create new order
@@ -50,8 +53,8 @@ else if ($method === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     
     $customer_id = intval($data['customer_id'] ?? 0);
-    $event_location = $conn->real_escape_string($data['event_location'] ?? '');
-    $status = $conn->real_escape_string($data['status'] ?? 'Pending');
+    $event_location = $data['event_location'] ?? '';
+    $status = $data['status'] ?? 'Pending';
     
     if ($customer_id === 0 || empty($event_location)) {
         http_response_code(400);
@@ -59,21 +62,23 @@ else if ($method === 'POST') {
         exit;
     }
     
-    $query = "INSERT INTO event_orders (customer_id, event_location, status) VALUES ($customer_id, '$event_location', '$status')";
+    $stmt = $conn->prepare("INSERT INTO event_orders (customer_id, event_location, status) VALUES (?, ?, ?)");
+    $stmt->bind_param("iss", $customer_id, $event_location, $status);
     
-    if ($conn->query($query)) {
-        echo json_encode(['id' => $conn->insert_id, 'success' => true]);
+    if ($stmt->execute()) {
+        echo json_encode(['id' => $stmt->insert_id, 'success' => true]);
     } else {
         http_response_code(500);
-        echo json_encode(['error' => 'Insert failed: ' . $conn->error]);
+        echo json_encode(['error' => 'Insert failed: ' . $stmt->error]);
     }
+    $stmt->close();
 }
 
 // PUT - Update order status
 else if ($method === 'PUT') {
     $data = json_decode(file_get_contents('php://input'), true);
     $id = intval($data['id'] ?? 0);
-    $status = $conn->real_escape_string($data['status'] ?? '');
+    $status = $data['status'] ?? '';
     
     if ($id === 0 || empty($status)) {
         http_response_code(400);
@@ -81,14 +86,16 @@ else if ($method === 'PUT') {
         exit;
     }
     
-    $query = "UPDATE event_orders SET status = '$status' WHERE id = $id";
+    $stmt = $conn->prepare("UPDATE event_orders SET status = ? WHERE id = ?");
+    $stmt->bind_param("si", $status, $id);
     
-    if ($conn->query($query)) {
+    if ($stmt->execute()) {
         echo json_encode(['success' => true]);
     } else {
         http_response_code(500);
-        echo json_encode(['error' => 'Update failed: ' . $conn->error]);
+        echo json_encode(['error' => 'Update failed: ' . $stmt->error]);
     }
+    $stmt->close();
 }
 
 // DELETE - Remove order
@@ -102,14 +109,16 @@ else if ($method === 'DELETE') {
         exit;
     }
     
-    $query = "DELETE FROM event_orders WHERE id = $id";
+    $stmt = $conn->prepare("DELETE FROM event_orders WHERE id = ?");
+    $stmt->bind_param("i", $id);
     
-    if ($conn->query($query)) {
+    if ($stmt->execute()) {
         echo json_encode(['success' => true]);
     } else {
         http_response_code(500);
-        echo json_encode(['error' => 'Delete failed: ' . $conn->error]);
+        echo json_encode(['error' => 'Delete failed: ' . $stmt->error]);
     }
+    $stmt->close();
 }
 
 else {

@@ -27,8 +27,10 @@ if ($method === 'GET' && !isset($_GET['id'])) {
 // GET single product
 else if ($method === 'GET' && isset($_GET['id'])) {
     $id = intval($_GET['id']);
-    $query = "SELECT id, name, base_cost, category FROM products WHERE id = $id";
-    $result = $conn->query($query);
+    $stmt = $conn->prepare("SELECT id, name, base_cost, category FROM products WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
     
     if ($result && $result->num_rows > 0) {
         $product = $result->fetch_assoc();
@@ -37,14 +39,15 @@ else if ($method === 'GET' && isset($_GET['id'])) {
         http_response_code(404);
         echo json_encode(['error' => 'Product not found']);
     }
+    $stmt->close();
 }
 
 // POST - Create new product
 else if ($method === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     
-    $name = $conn->real_escape_string($data['name'] ?? '');
-    $category = $conn->real_escape_string($data['category'] ?? 'General');
+    $name = $data['name'] ?? '';
+    $category = $data['category'] ?? 'General';
     $base_cost = floatval($data['base_cost'] ?? 0);
     
     if (empty($name) || $base_cost <= 0) {
@@ -53,14 +56,16 @@ else if ($method === 'POST') {
         exit;
     }
     
-    $query = "INSERT INTO products (name, category, base_cost) VALUES ('$name', '$category', $base_cost)";
+    $stmt = $conn->prepare("INSERT INTO products (name, category, base_cost) VALUES (?, ?, ?)");
+    $stmt->bind_param("ssd", $name, $category, $base_cost);
     
-    if ($conn->query($query)) {
-        echo json_encode(['id' => $conn->insert_id, 'success' => true]);
+    if ($stmt->execute()) {
+        echo json_encode(['id' => $stmt->insert_id, 'success' => true]);
     } else {
         http_response_code(500);
-        echo json_encode(['error' => 'Insert failed: ' . $conn->error]);
+        echo json_encode(['error' => 'Insert failed: ' . $stmt->error]);
     }
+    $stmt->close();
 }
 
 // PUT - Update product
@@ -74,15 +79,14 @@ else if ($method === 'PUT') {
         exit;
     }
     
-    $name = $conn->real_escape_string($data['name'] ?? '');
-    $category = $conn->real_escape_string($data['category'] ?? '');
+    $name = $data['name'] ?? '';
+    $category = $data['category'] ?? '';
     $base_cost = floatval($data['base_cost'] ?? 0);
     
-    $query = "UPDATE products SET ";
     $updates = [];
-    if (!empty($name)) $updates[] = "name = '$name'";
-    if (!empty($category)) $updates[] = "category = '$category'";
-    if ($base_cost > 0) $updates[] = "base_cost = $base_cost";
+    if (!empty($name)) $updates[] = ['field' => 'name', 'value' => $name, 'type' => 's'];
+    if (!empty($category)) $updates[] = ['field' => 'category', 'value' => $category, 'type' => 's'];
+    if ($base_cost > 0) $updates[] = ['field' => 'base_cost', 'value' => $base_cost, 'type' => 'd'];
     
     if (empty($updates)) {
         http_response_code(400);
@@ -90,14 +94,21 @@ else if ($method === 'PUT') {
         exit;
     }
     
-    $query .= implode(', ', $updates) . " WHERE id = $id";
+    $set_clause = implode(', ', array_map(fn($u) => $u['field'] . ' = ?', $updates));
+    $query = "UPDATE products SET " . $set_clause . " WHERE id = ?";
     
-    if ($conn->query($query)) {
+    $stmt = $conn->prepare($query);
+    $types = implode('', array_map(fn($u) => $u['type'], $updates)) . 'i';
+    $values = array_merge(array_map(fn($u) => $u['value'], $updates), [$id]);
+    $stmt->bind_param($types, ...$values);
+    
+    if ($stmt->execute()) {
         echo json_encode(['success' => true]);
     } else {
         http_response_code(500);
-        echo json_encode(['error' => 'Update failed: ' . $conn->error]);
+        echo json_encode(['error' => 'Update failed: ' . $stmt->error]);
     }
+    $stmt->close();
 }
 
 // DELETE - Remove product
@@ -111,14 +122,16 @@ else if ($method === 'DELETE') {
         exit;
     }
     
-    $query = "DELETE FROM products WHERE id = $id";
+    $stmt = $conn->prepare("DELETE FROM products WHERE id = ?");
+    $stmt->bind_param("i", $id);
     
-    if ($conn->query($query)) {
+    if ($stmt->execute()) {
         echo json_encode(['success' => true]);
     } else {
         http_response_code(500);
-        echo json_encode(['error' => 'Delete failed: ' . $conn->error]);
+        echo json_encode(['error' => 'Delete failed: ' . $stmt->error]);
     }
+    $stmt->close();
 }
 
 else {
