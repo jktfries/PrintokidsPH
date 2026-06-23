@@ -1,10 +1,12 @@
 -- Run this migration once against printokidsph_db to add auth support.
 -- Safe to re-run: uses IF NOT EXISTS checks via column existence.
 
+
 -- Add event_name and event_date to event_orders (schema gap from ERD)
 ALTER TABLE `event_orders`
     ADD COLUMN IF NOT EXISTS `event_name` VARCHAR(255) NULL AFTER `customer_id`,
     ADD COLUMN IF NOT EXISTS `event_date` DATE NULL AFTER `event_name`;
+
 
 -- Add password column to customers (customer login)
 ALTER TABLE `customers`
