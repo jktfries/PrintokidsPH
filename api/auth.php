@@ -6,7 +6,7 @@ $pdo    = getPDO();
 $action = $_GET['action'] ?? (json_decode(file_get_contents('php://input'), true)['action'] ?? '');
 $method = $_SERVER['REQUEST_METHOD'];
 
-// ── GET /api/auth.php?action=check ───────────────────────────────────────────
+// ── GET /api/auth.php?action=check-- ───────────────────────────────────────────
 if ($method === 'GET' && $action === 'check') {
     if (isset($_SESSION['customer_id'])) {
         echo json_encode([
