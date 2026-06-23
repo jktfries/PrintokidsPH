@@ -2,7 +2,7 @@
 // ---------------------------------------------------------------------------
 // Copy this file to config.php and fill in your actual credentials.
 // config.php is gitignored — never commit real credentials.
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'printokidsph_db');
 define('DB_USER', 'YOUR_DB_USERNAME');
