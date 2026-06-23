@@ -5,6 +5,7 @@ require_once '../includes/config.php';
 $pdo    = getPDO();
 $method = $_SERVER['REQUEST_METHOD'];
 
+
 if ($method === 'GET' && !isset($_GET['id'])) {
     $stmt = $pdo->query(
         'SELECT eo.id, eo.customer_id, c.first_name, c.last_name,
