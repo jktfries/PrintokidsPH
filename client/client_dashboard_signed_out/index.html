@@ -123,54 +123,8 @@
 
 <h1 class="title">Featured Products</h1>
 
-  <div class=" container-fluid card-columns row row-cols-1 row-cols-md-4 g-4 py-3  mx-2">
-
-    <div class="col">
-      <div class="card">
-        <img src="../printokids_images/Product_TEMP.png" class="card-img-top" alt="pumpie">
-        <div class="card-body text-center">
-            <h5 class="card-title">THIS IS TEMPORARY</h5>
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ultrices vulputate lorem non pretium.</p>
-            <button type="submit" class="btn btn-primary">Add to Cart</button>
-        </div>
-      </div>
-     </div>
-
-    <div class="col">
-      <div class="card">
-        <img src="../printokids_images/Product_TEMP.png" class="card-img-top" alt="pumpie">
-        <div class="card-body text-center">
-            <h5 class="card-title">THIS IS TEMPORARY</h5>
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ultrices vulputate lorem non pretium.</p>
-            <button type="submit" class="btn btn-primary">Add to Cart</button>
-        </div>
-      </div>
-     </div>
-
-    <div class="col">
-      <div class="card">
-        <img src="../printokids_images/Product_TEMP.png" class="card-img-top" alt="pumpie">
-        <div class="card-body text-center">
-            <h5 class="card-title">THIS IS TEMPORARY</h5>
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ultrices vulputate lorem non pretium.</p>
-            <button type="submit" class="btn btn-primary">Add to Cart</button>
-        </div>
-      </div>
-     </div>
-
-    <div class="col">
-      <div class="card">
-        <img src="../printokids_images/Product_TEMP.png" class="card-img-top" alt="pumpie">
-        <div class="card-body text-center">
-            <h5 class="card-title">THIS IS TEMPORARY</h5>
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ultrices vulputate lorem non pretium.</p>
-            <button type="submit" class="btn btn-primary">Add to Cart</button>
-        </div>
-      </div>
-     </div>
-
-  <!-- all these featured products to be replaced-->
-
+  <div id="featuredProductsGrid" class="container-fluid card-columns row row-cols-1 row-cols-md-4 g-4 py-3 mx-2">
+    <div class="col text-center text-muted py-4">Loading products…</div>
   </div>
 
 
@@ -430,34 +384,26 @@
           <p class="mb-3">Fill in your details and we will get back to you shortly:</p>
 
           <div class="mb-3">
-            <label class="form-label">Full Name</label>
-            <input type="text" class="form-control" placeholder="Enter your full name" required>
+            <label class="form-label">Event Name</label>
+            <input type="text" class="form-control" id="bkEventName" placeholder="e.g. Sofia's 7th Birthday" required>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">Contact Number</label>
-            <input type="tel" class="form-control" placeholder="e.g. +63 917 123 4567" required>
-          </div>
-
-          
           <div class="mb-3">
             <label class="form-label">Event Date</label>
-            <input type="date" class="form-control" required>
+            <input type="date" class="form-control" id="bkEventDate" required>
           </div>
 
           <div class="mb-3">
             <label class="form-label">Event Location / Venue</label>
-            <input type="text" class="form-control" placeholder="Enter complete address of venue name" required>
+            <input type="text" class="form-control" id="bkEventLocation" placeholder="Enter complete address or venue name" required>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">Additional Details / Requirements</label>
-            <textarea class="form-control" rows="3" placeholder="Tell us more about your event"></textarea>
-          </div>
+          <div id="bkError" class="alert alert-danger py-2 mt-2" style="display:none;"></div>
+          <div id="bkSuccess" class="alert alert-success py-2 mt-2" style="display:none;"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#eventServicesModal">Back</button>
-          <button type="button" class="btn btn-success">Send Inquiry</button>
+          <button type="button" class="btn btn-success" id="bkSubmitBtn" onclick="doBookingInquiry()">Send Inquiry</button>
         </div>
       </div>
     </div>
@@ -573,21 +519,8 @@
                 </div>
 
     <!--PRODUCT CONTENT-->
-              <div class="row row-cols-1 row-cols-md-4 g-4 ">
-
-                <div class="col">
-                  <div class="card">
-                    <img src="../printokids_images/Product_TEMP.png" class="card-img-top" alt="pumpie">
-                    <div class="card-body text-center">
-                      <h5 class="card-title">THIS IS TEMPORARY</h5>
-                      <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ultrices vulputate lorem non pretium.</p>
-                      <button type="submit" class="btn btn-primary">Add to Cart</button>
-                    </div>
-                  </div>
-                </div>
-
-                <!--database generated content here-->
-              
+              <div id="catalogGrid" class="row row-cols-1 row-cols-md-4 g-4">
+                <div class="col text-center text-white py-4">Loading catalog…</div>
               </div>
       </div>
     </div>
@@ -742,6 +675,128 @@
                 body: JSON.stringify({ action: 'logout' })
             })
             .finally(() => updateNav({ logged_in: false }));
+        }
+
+        // ── Product card builder ────────────────────────────────────────────────
+        function buildProductCard(p, dark = false) {
+            const img = p.primary_image
+                ? `<img src="${p.primary_image}" class="card-img-top" alt="${p.name}" style="height:180px;object-fit:cover;">`
+                : `<div class="bg-secondary d-flex align-items-center justify-content-center" style="height:180px;"><span class="text-white small">No image</span></div>`;
+            const price = `₱${parseFloat(p.base_cost).toLocaleString('en-PH', {minimumFractionDigits:2})}`;
+            const cardClass = dark ? 'bg-dark text-white' : '';
+            return `
+            <div class="col">
+              <div class="card h-100 ${cardClass}">
+                ${img}
+                <div class="card-body text-center">
+                  <h5 class="card-title">${p.name}</h5>
+                  <p class="card-text small text-muted">${p.category}</p>
+                  <p class="fw-bold">${price}</p>
+                  <button class="btn btn-primary btn-sm">Add to Cart</button>
+                </div>
+              </div>
+            </div>`;
+        }
+
+        // ── Load featured products (homepage grid) ──────────────────────────────
+        fetch(`${API}/products.php`)
+            .then(r => r.json())
+            .then(products => {
+                const grid = document.getElementById('featuredProductsGrid');
+                if (!products.length) {
+                    grid.innerHTML = '<div class="col text-center text-muted py-4">No products yet.</div>';
+                    return;
+                }
+                grid.innerHTML = products.slice(0, 8).map(p => buildProductCard(p)).join('');
+            })
+            .catch(() => {
+                document.getElementById('featuredProductsGrid').innerHTML =
+                    '<div class="col text-center text-muted py-4">Could not load products.</div>';
+            });
+
+        // ── Load catalog modal grid ─────────────────────────────────────────────
+        document.getElementById('menu').addEventListener('show.bs.modal', () => {
+            const grid = document.getElementById('catalogGrid');
+            if (grid.dataset.loaded) return;
+            fetch(`${API}/products.php`)
+                .then(r => r.json())
+                .then(products => {
+                    grid.dataset.loaded = '1';
+                    if (!products.length) {
+                        grid.innerHTML = '<div class="col text-center text-white py-4">No products yet.</div>';
+                        return;
+                    }
+                    grid.innerHTML = products.map(p => buildProductCard(p, true)).join('');
+                })
+                .catch(() => {
+                    grid.innerHTML = '<div class="col text-center text-white py-4">Could not load catalog.</div>';
+                });
+        });
+
+        // ── Booking Inquiry submit ──────────────────────────────────────────────
+        function doBookingInquiry() {
+            const eventName = document.getElementById('bkEventName').value.trim();
+            const eventDate = document.getElementById('bkEventDate').value;
+            const eventLoc  = document.getElementById('bkEventLocation').value.trim();
+            const errEl     = document.getElementById('bkError');
+            const okEl      = document.getElementById('bkSuccess');
+            const btn       = document.getElementById('bkSubmitBtn');
+
+            errEl.style.display = 'none';
+            okEl.style.display  = 'none';
+
+            if (!eventLoc) {
+                errEl.textContent = 'Event location is required.';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            // Must be logged in to submit a booking
+            fetch(`${API}/auth.php?action=check`)
+                .then(r => r.json())
+                .then(session => {
+                    if (!session.logged_in || session.user_type !== 'customer') {
+                        errEl.textContent = 'Please sign in to submit a booking inquiry.';
+                        errEl.style.display = 'block';
+                        return;
+                    }
+
+                    btn.disabled = true;
+                    btn.textContent = 'Sending…';
+
+                    return fetch(`${API}/orders.php`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            customer_id:    session.id,
+                            event_name:     eventName,
+                            event_date:     eventDate || null,
+                            event_location: eventLoc,
+                            status:         'Pending'
+                        })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            okEl.textContent = 'Inquiry sent! We will contact you soon.';
+                            okEl.style.display = 'block';
+                            document.getElementById('bkEventName').value = '';
+                            document.getElementById('bkEventDate').value = '';
+                            document.getElementById('bkEventLocation').value = '';
+                        } else {
+                            errEl.textContent = data.error || 'Could not submit inquiry.';
+                            errEl.style.display = 'block';
+                        }
+                    });
+                })
+                .catch(() => {
+                    errEl.textContent = 'Network error. Please try again.';
+                    errEl.style.display = 'block';
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Send Inquiry';
+                });
         }
     </script>
 
