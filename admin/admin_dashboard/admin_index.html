@@ -50,6 +50,10 @@
                             <button class="nav-link border-0 bg-transparent tab-trigger" id="users-tab" data-bs-target="#users" type="button" role="tab">Users</button>
                         </li>
                     </ul>
+                    <div class="d-flex align-items-center ms-3 gap-2">
+                        <span class="text-secondary small" id="adminUserName"></span>
+                        <button class="btn btn-sm btn-outline-danger" onclick="adminLogout()">Logout</button>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -371,6 +375,33 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
     <script src="admin_dashboard.js"></script>
+
+    <!-- Auth guard: redirect to login if not authenticated as admin -->
+    <script>
+        fetch('../../api/auth.php?action=check')
+            .then(r => r.json())
+            .then(data => {
+                if (!data.logged_in || data.user_type !== 'admin') {
+                    window.location.href = '../admin_login/index.html';
+                } else {
+                    const nameEl = document.getElementById('adminUserName');
+                    if (nameEl) nameEl.textContent = data.first_name + ' ' + data.last_name;
+                }
+            })
+            .catch(() => {
+                window.location.href = '../admin_login/index.html';
+            });
+
+        function adminLogout() {
+            fetch('../../api/auth.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'logout' })
+            }).finally(() => {
+                window.location.href = '../admin_login/index.html';
+            });
+        }
+    </script>
 
     <!-- logic and scripts -->
     <script>

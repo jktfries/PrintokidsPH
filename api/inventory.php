@@ -1,130 +1,92 @@
 <?php
 header('Content-Type: application/json');
-include '../includes/config.php';
+require_once '../includes/config.php';
 
-if ($conn->connect_error) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Database connection failed: ' . $conn->connect_error]);
-    exit;
-}
-
+$pdo    = getPDO();
 $method = $_SERVER['REQUEST_METHOD'];
 
-// GET all products (inventory)
 if ($method === 'GET' && !isset($_GET['id'])) {
-    $query = "SELECT id, name, base_cost, category FROM products LIMIT 100";
-    $result = $conn->query($query);
-    
-    if ($result) {
-        $products = $result->fetch_all(MYSQLI_ASSOC);
-        echo json_encode($products);
-    } else {
-        http_response_code(500);
-        echo json_encode(['error' => 'Query failed: ' . $conn->error]);
-    }
-}
+    $stmt = $pdo->query(
+        'SELECT id, name, base_cost, category FROM products ORDER BY name LIMIT 100'
+    );
+    echo json_encode($stmt->fetchAll());
 
-// GET single product
-else if ($method === 'GET' && isset($_GET['id'])) {
-    $id = intval($_GET['id']);
-    $query = "SELECT id, name, base_cost, category FROM products WHERE id = $id";
-    $result = $conn->query($query);
-    
-    if ($result && $result->num_rows > 0) {
-        $product = $result->fetch_assoc();
+} elseif ($method === 'GET' && isset($_GET['id'])) {
+    $stmt = $pdo->prepare(
+        'SELECT id, name, base_cost, category FROM products WHERE id = ?'
+    );
+    $stmt->execute([(int) $_GET['id']]);
+    $product = $stmt->fetch();
+    if ($product) {
         echo json_encode($product);
     } else {
         http_response_code(404);
         echo json_encode(['error' => 'Product not found']);
     }
-}
 
-// POST - Create new product
-else if ($method === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    
-    $name = $conn->real_escape_string($data['name'] ?? '');
-    $category = $conn->real_escape_string($data['category'] ?? 'General');
-    $base_cost = floatval($data['base_cost'] ?? 0);
-    
-    if (empty($name) || $base_cost <= 0) {
+} elseif ($method === 'POST') {
+    $data     = json_decode(file_get_contents('php://input'), true) ?? [];
+    $name     = trim($data['name'] ?? '');
+    $category = trim($data['category'] ?? 'General');
+    $base_cost = (float) ($data['base_cost'] ?? 0);
+
+    if ($name === '' || $base_cost <= 0) {
         http_response_code(400);
-        echo json_encode(['error' => 'Invalid product data']);
+        echo json_encode(['error' => 'Name and a positive base_cost are required']);
         exit;
     }
-    
-    $query = "INSERT INTO products (name, category, base_cost) VALUES ('$name', '$category', $base_cost)";
-    
-    if ($conn->query($query)) {
-        echo json_encode(['id' => $conn->insert_id, 'success' => true]);
-    } else {
-        http_response_code(500);
-        echo json_encode(['error' => 'Insert failed: ' . $conn->error]);
-    }
-}
 
-// PUT - Update product
-else if ($method === 'PUT') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $id = intval($data['id'] ?? 0);
-    
+    $stmt = $pdo->prepare(
+        'INSERT INTO products (name, category, base_cost) VALUES (?, ?, ?)'
+    );
+    $stmt->execute([$name, $category, $base_cost]);
+    echo json_encode(['id' => (int) $pdo->lastInsertId(), 'success' => true]);
+
+} elseif ($method === 'PUT') {
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    $id   = (int) ($data['id'] ?? 0);
+
     if ($id === 0) {
         http_response_code(400);
         echo json_encode(['error' => 'Product ID required']);
         exit;
     }
-    
-    $name = $conn->real_escape_string($data['name'] ?? '');
-    $category = $conn->real_escape_string($data['category'] ?? '');
-    $base_cost = floatval($data['base_cost'] ?? 0);
-    
-    $query = "UPDATE products SET ";
-    $updates = [];
-    if (!empty($name)) $updates[] = "name = '$name'";
-    if (!empty($category)) $updates[] = "category = '$category'";
-    if ($base_cost > 0) $updates[] = "base_cost = $base_cost";
-    
-    if (empty($updates)) {
+
+    $fields = [];
+    $params = [];
+    if (!empty($data['name']))     { $fields[] = 'name = ?';      $params[] = trim($data['name']); }
+    if (!empty($data['category'])) { $fields[] = 'category = ?';  $params[] = trim($data['category']); }
+    if (isset($data['base_cost']) && (float) $data['base_cost'] > 0) {
+        $fields[] = 'base_cost = ?';
+        $params[] = (float) $data['base_cost'];
+    }
+
+    if (empty($fields)) {
         http_response_code(400);
         echo json_encode(['error' => 'No fields to update']);
         exit;
     }
-    
-    $query .= implode(', ', $updates) . " WHERE id = $id";
-    
-    if ($conn->query($query)) {
-        echo json_encode(['success' => true]);
-    } else {
-        http_response_code(500);
-        echo json_encode(['error' => 'Update failed: ' . $conn->error]);
-    }
-}
 
-// DELETE - Remove product
-else if ($method === 'DELETE') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $id = intval($data['id'] ?? 0);
-    
+    $params[] = $id;
+    $stmt = $pdo->prepare('UPDATE products SET ' . implode(', ', $fields) . ' WHERE id = ?');
+    $stmt->execute($params);
+    echo json_encode(['success' => true]);
+
+} elseif ($method === 'DELETE') {
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    $id   = (int) ($data['id'] ?? 0);
+
     if ($id === 0) {
         http_response_code(400);
         echo json_encode(['error' => 'Product ID required']);
         exit;
     }
-    
-    $query = "DELETE FROM products WHERE id = $id";
-    
-    if ($conn->query($query)) {
-        echo json_encode(['success' => true]);
-    } else {
-        http_response_code(500);
-        echo json_encode(['error' => 'Delete failed: ' . $conn->error]);
-    }
-}
 
-else {
+    $stmt = $pdo->prepare('DELETE FROM products WHERE id = ?');
+    $stmt->execute([$id]);
+    echo json_encode(['success' => true]);
+
+} else {
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed']);
 }
-
-$conn->close();
-?>
