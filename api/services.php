@@ -8,6 +8,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET' && !isset($_GET['id'])) {
     $stmt = $pdo->query('SELECT id, service_name, description FROM services ORDER BY id');
     $services = $stmt->fetchAll();
+    
 
     // Attach assets to each service
     $assetStmt = $pdo->prepare(
