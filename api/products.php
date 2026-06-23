@@ -31,10 +31,12 @@ if ($method === 'GET' && !isset($_GET['id'])) {
         );
     }
     echo json_encode($stmt->fetchAll());
+    
 
 // GET single product with attributes and all images
 } elseif ($method === 'GET' && isset($_GET['id'])) {
     $id = (int) $_GET['id'];
+    
 
     $stmt = $pdo->prepare(
         'SELECT id, name, category, base_cost FROM products WHERE id = ?'
