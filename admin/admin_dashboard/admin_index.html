@@ -31,11 +31,11 @@
                 <div class="collapse navbar-collapse" id="adminNavbar">
                     <!-- nav tabs and such -->
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-bold" id="dashboardTabs" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Dashboard</a>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link border-0 bg-transparent tab-trigger" id="dashboard-tab" data-bs-target="#dashboard" type="button" role="tab">Dashboard</button>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Products</a>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link border-0 bg-transparent tab-trigger" id="products-tab" data-bs-target="#products" type="button" role="tab">Products</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active border-0 bg-transparent tab-trigger" id="inventory-tab" data-bs-target="#inventory" type="button" role="tab">Inventory</button>
@@ -43,11 +43,11 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link border-0 bg-transparent tab-trigger" id="orders-tab" data-bs-target="#orders" type="button" role="tab">Orders</button>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Event Bookings</a>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link border-0 bg-transparent tab-trigger" id="events-tab" data-bs-target="#event-bookings" type="button" role="tab">Event Bookings</button>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Users</a>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link border-0 bg-transparent tab-trigger" id="users-tab" data-bs-target="#users" type="button" role="tab">Users</button>
                         </li>
                     </ul>
                 </div>
@@ -57,6 +57,103 @@
 
     <!-- Main Dashboard Content -->
     <main class="container-fluid px-4 mt-4 tab-content" id="dashboardTabsContent">
+
+        <!-- Dashboard Tab -->
+        <div class="tab-pane fade" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+            <h4 class="fw-bold text-dark text-uppercase tracking-wide mb-3">Overview Metrics & Sales</h4>
+            
+            <!-- Overview Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 bg-white">
+                        <div class="card-body">
+                            <h6 class="text-secondary fw-bold">Total Revenue</h6>
+                            <p class="fs-3 fw-bolder mb-0 text-success">₱45,250.00</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 bg-white">
+                        <div class="card-body">
+                            <h6 class="text-secondary fw-bold">Active Orders</h6>
+                            <p class="fs-3 fw-bolder mb-0">12</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 bg-white">
+                        <div class="card-body">
+                            <h6 class="text-secondary fw-bold">Pending Bookings</h6>
+                            <p class="fs-3 fw-bolder mb-0">4</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 bg-white">
+                        <div class="card-body">
+                            <h6 class="text-secondary fw-bold">Total Clients</h6>
+                            <p class="fs-3 fw-bolder mb-0">158</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Report Table -->
+            <div class="table-container bg-white border border-2 border-light">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="bg-light text-dark">
+                        <tr>
+                            <th scope="col" class="py-3 px-4">Date</th>
+                            <th scope="col" class="py-3 px-4">Report ID</th>
+                            <th scope="col" class="py-3 px-4">Category Breakdown</th>
+                            <th scope="col" class="py-3 px-4">Gross Sales</th>
+                            <th scope="col" class="py-3 px-4 text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-3">June 2026</td>
+                            <td>REP-0626</td>
+                            <td>Custom Prints (60%), Events (40%)</td>
+                            <td>₱32,000.00</td>
+                            <td class="px-4 text-end"><a href="#" class="text-dark fw-bold text-decoration-none">[DOWNLOAD]</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Products Tab -->
+        <div class="tab-pane fade" id="products" role="tabpanel" aria-labelledby="products-tab">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold text-dark text-uppercase tracking-wide">Product Catalog</h4>
+                <button class="btn btn-success px-4 shadow-sm" onclick="openProductModal('add')">Add Product</button>
+            </div>
+
+            <div class="table-container bg-white border border-2 border-light">
+                <table class="table table-striped table-hover mb-0" id="productsTable">
+                    <thead class="bg-light text-dark">
+                        <tr>
+                            <th scope="col" class="py-3 px-4">SKU</th>
+                            <th scope="col" class="py-3 px-4">Product Name</th>
+                            <th scope="col" class="py-3 px-4">Base Price</th>
+                            <th scope="col" class="py-3 px-4">Status</th>
+                            <th scope="col" class="py-3 px-4 text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-3">PRD-MUG-01</td><td>[Placeholder] Magic Mug</td><td>₱150.00</td><td>Active</td>
+                            <td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="openProductModal('edit', this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="openArchiveModal(this)">[ARCHIVE]</a></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">PRD-TSH-02</td><td>[Placeholder] Graphic Tee (Kids)</td><td>₱250.00</td><td>Active</td>
+                            <td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="openProductModal('edit', this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="openArchiveModal(this)">[ARCHIVE]</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
         <!-- inv control dashboard   -->
         <div class="tab-pane fade show active" id="inventory" role="tabpanel" aria-labelledby="inventory-tab">
@@ -127,10 +224,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="order-row" data-status="Pending"><td class="px-4 py-3">ORD-001</td><td>John Doe</td><td>₱1,500.00</td><td>Jane Smith</td><td>Pending</td><td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a></td></tr>
-                        <tr class="order-row" data-status="In Production"><td class="px-4 py-3">ORD-002</td><td>Mary Sue</td><td>₱3,200.00</td><td>Mark Lee</td><td>In Production</td><td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a></td></tr>
-                        <tr class="order-row" data-status="Completed"><td class="px-4 py-3">ORD-003</td><td>Alice Lim</td><td>₱800.00</td><td>Jane Smith</td><td>Completed</td><td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a></td></tr>
-                        <tr class="order-row" data-status="Pending"><td class="px-4 py-3">ORD-004</td><td>Peter Santos</td><td>₱4,500.00</td><td>Mark Lee</td><td>Pending</td><td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a></td></tr>
+                        <tr class="order-row" data-status="Pending"><td class="px-4 py-3">ORD-001</td><td>Vernadith Senin</td><td>₱1,500.00</td><td>Jada Smith</td><td>Pending</td><td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a></td></tr>
+                        <tr class="order-row" data-status="In Production"><td class="px-4 py-3">ORD-002</td><td>Fiona Enriquez</td><td>₱3,200.00</td><td>Mark Anthony</td><td>In Production</td><td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a></td></tr>
+                        <tr class="order-row" data-status="Completed"><td class="px-4 py-3">ORD-003</td><td>Josel Caballero</td><td>₱800.00</td><td>Jada Smith</td><td>Completed</td><td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a></td></tr>
+                        <tr class="order-row" data-status="Pending"><td class="px-4 py-3">ORD-004</td><td>Peter Pan</td><td>₱4,500.00</td><td>Mark Anthony</td><td>Pending</td><td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -145,7 +242,132 @@
             </div>
         </div>
 
+        <!-- Event Bookings Tab -->
+        <div class="tab-pane fade" id="event-bookings" role="tabpanel" aria-labelledby="events-tab">
+            <h4 class="fw-bold text-dark text-uppercase tracking-wide mb-3">Client Inquiries & Booth Status</h4>
+            
+            <div class="table-container bg-white border border-2 border-light">
+                <table class="table table-striped table-hover mb-0" id="eventsTable">
+                    <thead class="bg-light text-dark">
+                        <tr>
+                            <th scope="col" class="py-3 px-4">Client Name</th>
+                            <th scope="col" class="py-3 px-4">Event Date</th>
+                            <th scope="col" class="py-3 px-4">Inquiry Details</th>
+                            <th scope="col" class="py-3 px-4">Booth Status</th>
+                            <th scope="col" class="py-3 px-4 text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-3">Reyes Family</td><td>July 15, 2026</td><td>7th Birthday Photo Booth</td><td class="fw-bold text-warning">Pending Review</td>
+                            <td class="px-4 text-end">
+                                <button class="btn btn-sm btn-outline-success me-1" onclick="updateBooth(this, 'Approved')">Approve</button>
+                                <button class="btn btn-sm btn-outline-dark" onclick="updateBooth(this, 'Completed')">Complete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Users Tab -->
+        <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
+            <h4 class="fw-bold text-dark text-uppercase tracking-wide mb-3">Access & Performance Tracking</h4>
+            
+            <div class="row">
+                <!-- Client Profiles -->
+                <div class="col-md-6">
+                    <h5 class="fw-bold text-secondary mb-3">Existing Client Profiles</h5>
+                    <div class="table-container bg-white border border-2 border-light" style="height: 350px;">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead class="bg-light text-dark">
+                                <tr><th class="py-3 px-4">Name</th><th class="py-3 px-4">Email</th><th class="py-3 px-4">Lifetime Orders</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="px-4 py-3">Joshua Naive</td><td>JoshNai@email.com</td><td>8</td></tr>
+                                <tr><td class="px-4 py-3">Franco Castillo</td><td>FrancCas@email.com</td><td>3</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Employee Tracking -->
+                <div class="col-md-6">
+                    <h5 class="fw-bold text-secondary mb-3">Employee Performance</h5>
+                    <div class="table-container bg-white border border-2 border-light" style="height: 350px;">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead class="bg-light text-dark">
+                                <tr><th class="py-3 px-4">Employee</th><th class="py-3 px-4">System Role</th><th class="py-3 px-4">Tasks Fulfilled</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="px-4 py-3">Jose Carmen</td><td>Inventory Admin</td><td>142</td></tr>
+                                <tr><td class="px-4 py-3">Bruyce Lee</td><td>Production Staff</td><td>89</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
+
+    <!-- Modal Elements for Products Management Section -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold text-dark" id="productModalLabel">Product Form</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="productActionType">
+                    <div class="mb-3">
+                        <label for="prodSKU" class="form-label fw-bold text-secondary">SKU Code</label>
+                        <input type="text" class="form-control" id="prodSKU" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prodName" class="form-label fw-bold text-secondary">Product Name</label>
+                        <input type="text" class="form-control" id="prodName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prodPrice" class="form-label fw-bold text-secondary">Base Pricing</label>
+                        <input type="text" class="form-control" id="prodPrice" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prodStatus" class="form-label fw-bold text-secondary">Catalog Status</label>
+                        <select class="form-select" id="prodStatus">
+                            <option value="Active">Active</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Archived">Archived</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-outline-dark px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success px-4" onclick="saveProductModal()">Save Product</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal Elements for Product Archiving -->
+    <div class="modal fade" id="archiveModal" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold" id="archiveModalLabel">Confirm Product Action</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4 text-center">
+                    <p class="mb-0 fs-5 text-dark">Are you sure you want to archive this product entry?<br><small class="text-muted">It will be updated to 'Archived' status within the records.</small></p>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-outline-dark px-3" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="confirmArchiveProduct()">Confirm Archive</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
     <script src="admin_dashboard.js"></script>
@@ -291,6 +513,113 @@
                     row.style.display = 'none';
                 }
             });
+        }
+
+        //--- products modal interactive states logic ---//
+        let targetProductRow = null;
+        let productModalInstance = null;
+        let archiveModalInstance = null;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            productModalInstance = new bootstrap.Modal(document.getElementById('productModal'));
+            archiveModalInstance = new bootstrap.Modal(document.getElementById('archiveModal'));
+        });
+
+        function openProductModal(action, element = null) {
+            document.getElementById('productActionType').value = action;
+            
+            if (action === 'add') {
+                document.getElementById('productModalLabel').innerText = "Add New Placeholder Product";
+                document.getElementById('prodSKU').value = "PRD-SKU-" + Math.floor(100 + Math.random() * 900);
+                document.getElementById('prodName').value = "[Placeholder] New Custom Product Item";
+                document.getElementById('prodPrice').value = "₱0.00";
+                document.getElementById('prodStatus').value = "Draft";
+                targetProductRow = null;
+            } else if (action === 'edit' && element) {
+                document.getElementById('productModalLabel').innerText = "Modify Product Record Details";
+                targetProductRow = element.closest('tr');
+                
+                document.getElementById('prodSKU').value = targetProductRow.cells[0].innerText;
+                document.getElementById('prodName').value = targetProductRow.cells[1].innerText;
+                document.getElementById('prodPrice').value = targetProductRow.cells[2].innerText;
+                document.getElementById('prodStatus').value = targetProductRow.cells[3].innerText;
+            }
+            productProductModalShow();
+        }
+
+        function productProductModalShow() {
+            if (productModalInstance) productModalInstance.show();
+        }
+
+        function saveProductModal() {
+            const sku = document.getElementById('prodSKU').value;
+            const name = document.getElementById('prodName').value;
+            const price = document.getElementById('prodPrice').value;
+            const status = document.getElementById('prodStatus').value;
+            const action = document.getElementById('productActionType').value;
+
+            if (action === 'add') {
+                const tableBody = document.getElementById('productsTable').getElementsByTagName('tbody')[0];
+                const newRow = tableBody.insertRow();
+                
+                newRow.style.backgroundColor = '#FFF9C4'; 
+                setTimeout(() => newRow.style.backgroundColor = '', 1500);
+
+                newRow.innerHTML = `
+                    <td class="px-4 py-3">${sku}</td>
+                    <td>${name}</td>
+                    <td>${price}</td>
+                    <td>${status}</td>
+                    <td class="px-4 text-end">
+                        <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="openProductModal('edit', this)">[EDIT]</a> 
+                        <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="openArchiveModal(this)">[ARCHIVE]</a>
+                    </td>
+                `;
+                const container = document.querySelector('#products .table-container');
+                container.scrollTop = container.scrollHeight;
+            } else if (action === 'edit' && targetProductRow) {
+                targetProductRow.cells[0].innerText = sku;
+                targetProductRow.cells[1].innerText = name;
+                targetProductRow.cells[2].innerText = price;
+                targetProductRow.cells[3].innerText = status;
+                
+                // Visual confirmation animation row highlight
+                targetProductRow.style.backgroundColor = '#E8F5E9';
+                const cachedRow = targetProductRow;
+                setTimeout(() => cachedRow.style.backgroundColor = '', 1500);
+            }
+            
+            if (productModalInstance) productModalInstance.hide();
+        }
+
+        function openArchiveModal(element) {
+            targetProductRow = element.closest('tr');
+            if (archiveModalInstance) archiveModalInstance.show();
+        }
+
+        document.confirmArchiveProduct = function() {
+            confirmArchiveProduct();
+        };
+
+        function confirmArchiveProduct() {
+            if (targetProductRow) {
+                targetProductRow.cells[3].innerText = "Archived";
+                targetProductRow.cells[3].className = "fw-bold text-danger";
+                targetProductRow.style.opacity = "0.5";
+            }
+            if (archiveModalInstance) archiveModalInstance.hide();
+        }
+
+        //--- event bookings logic ---//
+        function updateBooth(element, status) {
+            const row = element.closest('tr');
+            const statusCell = row.cells[3];
+            
+            statusCell.innerText = status;
+            
+            statusCell.className = 'fw-bold'; // reset attributes
+            if(status === 'Approved') statusCell.classList.add('text-success');
+            if(status === 'Completed') statusCell.classList.add('text-secondary');
         }
     </script>
 </body>
