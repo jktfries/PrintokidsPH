@@ -73,34 +73,50 @@ Data pulled from the database.
 
       -->
 
+<!--Carousel-->
       <div class="col-md-5">
-        <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
-          <div class="carousel-inner">
-            <div class="carousel-item active product-photo-box">
-              <img>
 
-              1
-            </div>
-            <div class="carousel-item product-photo-box">
-              <img>
-
-              2
-            </div>
-            <div class="carousel-item product-photo-box">
-              <img>
-
-              3
-            </div>
-          </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon btn-dark btn-opacity-50" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
-            <span class="carousel-control-next-icon btn-dark btn-opacity-50" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
+      <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner" id="carousel-inner">
+          <!-- Takes in logic from javascript logic below -->
         </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon btn-dark btn-opacity-50" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+          <span class="carousel-control-next-icon btn-dark btn-opacity-50" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+
+      <!-- append images dymaically-->
+
+      <script>
+        const productImages = [
+            "test.jpg",
+            "test.jpg",
+            "test.jpg"
+          ];
+
+          // please replace productImages with proper input from the database
+
+          const carouselInner = document.getElementById("carousel-inner");
+
+          productImages.forEach((src, index) => {
+            const item = document.createElement("div");
+            item.classList.add("carousel-item");
+            if (index === 0) item.classList.add("active");
+
+            item.innerHTML = `
+              <img src="${src}" class="d-block w-100 product-photo-box" alt="product image ${index + 1}">
+            `;
+
+            carouselInner.appendChild(item);
+          });
+
+      </script>
+
       </div>
       <!-- RIGHT: PRODUCT INFO -->
       <div class="col-md-7">
