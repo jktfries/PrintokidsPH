@@ -459,7 +459,7 @@
             });
         }
 
-        // ── Event Bookings tab ──────────────────────────────────────────────────
+        // ── Event Bookings tab ────────────────────────────────────────────
         function loadEventBookings() {
             fetch(`${API}/orders.php`)
                 .then(r => r.json())
@@ -565,7 +565,7 @@
             });
         });
 
-        //--- inventory logic ---//
+        //--- inventory logic v2 ---//
         
         function addStock() {
             const tableBody = document.getElementById('inventoryTable').getElementsByTagName('tbody')[0];
