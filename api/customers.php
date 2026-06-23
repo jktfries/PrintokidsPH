@@ -1,139 +1,118 @@
 <?php
 header('Content-Type: application/json');
-include '../includes/config.php';
+require_once '../includes/config.php';
 
-if ($conn->connect_error) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Database connection failed: ' . $conn->connect_error]);
-    exit;
-}
-
+$pdo    = getPDO();
 $method = $_SERVER['REQUEST_METHOD'];
 
-// GET all customers
 if ($method === 'GET' && !isset($_GET['id'])) {
-    $query = "SELECT id, first_name, last_name, email, phone FROM customers LIMIT 100";
-    $result = $conn->query($query);
-    
-    if ($result) {
-        $customers = $result->fetch_all(MYSQLI_ASSOC);
-        echo json_encode($customers);
-    } else {
-        http_response_code(500);
-        echo json_encode(['error' => 'Query failed: ' . $conn->error]);
-    }
-}
+    $stmt = $pdo->query(
+        'SELECT id, first_name, last_name, email, phone FROM customers ORDER BY last_name LIMIT 100'
+    );
+    echo json_encode($stmt->fetchAll());
 
-// GET single customer with addresses
-else if ($method === 'GET' && isset($_GET['id'])) {
-    $id = intval($_GET['id']);
-    $query = "SELECT id, first_name, last_name, email, phone FROM customers WHERE id = $id";
-    $result = $conn->query($query);
-    
-    if ($result && $result->num_rows > 0) {
-        $customer = $result->fetch_assoc();
-        
-        // Get customer addresses
-        $addr_query = "SELECT * FROM customer_addresses WHERE customer_id = $id";
-        $addr_result = $conn->query($addr_query);
-        $customer['addresses'] = $addr_result->fetch_all(MYSQLI_ASSOC);
-        
-        echo json_encode($customer);
-    } else {
+} elseif ($method === 'GET' && isset($_GET['id'])) {
+    $id   = (int) $_GET['id'];
+    $stmt = $pdo->prepare(
+        'SELECT id, first_name, last_name, email, phone FROM customers WHERE id = ?'
+    );
+    $stmt->execute([$id]);
+    $customer = $stmt->fetch();
+
+    if (!$customer) {
         http_response_code(404);
         echo json_encode(['error' => 'Customer not found']);
-    }
-}
-
-// POST - Create new customer
-else if ($method === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    
-    $first_name = $conn->real_escape_string($data['first_name'] ?? '');
-    $last_name = $conn->real_escape_string($data['last_name'] ?? '');
-    $email = $conn->real_escape_string($data['email'] ?? '');
-    $phone = $conn->real_escape_string($data['phone'] ?? '');
-    
-    if (empty($first_name) || empty($last_name) || empty($email)) {
-        http_response_code(400);
-        echo json_encode(['error' => 'First name, last name, and email are required']);
         exit;
     }
-    
-    $query = "INSERT INTO customers (first_name, last_name, email, phone) VALUES ('$first_name', '$last_name', '$email', '$phone')";
-    
-    if ($conn->query($query)) {
-        echo json_encode(['id' => $conn->insert_id, 'success' => true]);
-    } else {
-        http_response_code(500);
-        echo json_encode(['error' => 'Insert failed: ' . $conn->error]);
-    }
-}
 
-// PUT - Update customer
-else if ($method === 'PUT') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $id = intval($data['id'] ?? 0);
-    
+    $addrStmt = $pdo->prepare(
+        'SELECT id, address_label, street_address, city, province, postal_code, is_default
+         FROM customer_addresses WHERE customer_id = ? ORDER BY is_default DESC'
+    );
+    $addrStmt->execute([$id]);
+    $customer['addresses'] = $addrStmt->fetchAll();
+
+    echo json_encode($customer);
+
+} elseif ($method === 'POST') {
+    $data       = json_decode(file_get_contents('php://input'), true) ?? [];
+    $first_name = trim($data['first_name'] ?? '');
+    $last_name  = trim($data['last_name'] ?? '');
+    $email      = trim($data['email'] ?? '');
+    $phone      = trim($data['phone'] ?? '');
+
+    if ($first_name === '' || $last_name === '' || $email === '') {
+        http_response_code(400);
+        echo json_encode(['error' => 'first_name, last_name, and email are required']);
+        exit;
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid email address']);
+        exit;
+    }
+
+    $stmt = $pdo->prepare(
+        'INSERT INTO customers (first_name, last_name, email, phone) VALUES (?, ?, ?, ?)'
+    );
+    $stmt->execute([$first_name, $last_name, $email, $phone]);
+    echo json_encode(['id' => (int) $pdo->lastInsertId(), 'success' => true]);
+
+} elseif ($method === 'PUT') {
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    $id   = (int) ($data['id'] ?? 0);
+
     if ($id === 0) {
         http_response_code(400);
         echo json_encode(['error' => 'Customer ID required']);
         exit;
     }
-    
-    $first_name = $conn->real_escape_string($data['first_name'] ?? '');
-    $last_name = $conn->real_escape_string($data['last_name'] ?? '');
-    $email = $conn->real_escape_string($data['email'] ?? '');
-    $phone = $conn->real_escape_string($data['phone'] ?? '');
-    
-    $query = "UPDATE customers SET ";
-    $updates = [];
-    if (!empty($first_name)) $updates[] = "first_name = '$first_name'";
-    if (!empty($last_name)) $updates[] = "last_name = '$last_name'";
-    if (!empty($email)) $updates[] = "email = '$email'";
-    if (!empty($phone)) $updates[] = "phone = '$phone'";
-    
-    if (empty($updates)) {
+
+    $fields = [];
+    $params = [];
+    foreach (['first_name', 'last_name', 'phone'] as $col) {
+        if (!empty($data[$col])) {
+            $fields[] = "$col = ?";
+            $params[] = trim($data[$col]);
+        }
+    }
+    if (!empty($data['email'])) {
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid email address']);
+            exit;
+        }
+        $fields[] = 'email = ?';
+        $params[] = trim($data['email']);
+    }
+
+    if (empty($fields)) {
         http_response_code(400);
         echo json_encode(['error' => 'No fields to update']);
         exit;
     }
-    
-    $query .= implode(', ', $updates) . " WHERE id = $id";
-    
-    if ($conn->query($query)) {
-        echo json_encode(['success' => true]);
-    } else {
-        http_response_code(500);
-        echo json_encode(['error' => 'Update failed: ' . $conn->error]);
-    }
-}
 
-// DELETE - Remove customer
-else if ($method === 'DELETE') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $id = intval($data['id'] ?? 0);
-    
+    $params[] = $id;
+    $stmt = $pdo->prepare('UPDATE customers SET ' . implode(', ', $fields) . ' WHERE id = ?');
+    $stmt->execute($params);
+    echo json_encode(['success' => true]);
+
+} elseif ($method === 'DELETE') {
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    $id   = (int) ($data['id'] ?? 0);
+
     if ($id === 0) {
         http_response_code(400);
         echo json_encode(['error' => 'Customer ID required']);
         exit;
     }
-    
-    $query = "DELETE FROM customers WHERE id = $id";
-    
-    if ($conn->query($query)) {
-        echo json_encode(['success' => true]);
-    } else {
-        http_response_code(500);
-        echo json_encode(['error' => 'Delete failed: ' . $conn->error]);
-    }
-}
 
-else {
+    $stmt = $pdo->prepare('DELETE FROM customers WHERE id = ?');
+    $stmt->execute([$id]);
+    echo json_encode(['success' => true]);
+
+} else {
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed']);
 }
-
-$conn->close();
-?>

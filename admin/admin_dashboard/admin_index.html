@@ -50,6 +50,10 @@
                             <button class="nav-link border-0 bg-transparent tab-trigger" id="users-tab" data-bs-target="#users" type="button" role="tab">Users</button>
                         </li>
                     </ul>
+                    <div class="d-flex align-items-center ms-3 gap-2">
+                        <span class="text-secondary small" id="adminUserName"></span>
+                        <button class="btn btn-sm btn-outline-danger" onclick="adminLogout()">Logout</button>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -371,6 +375,175 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
     <script src="admin_dashboard.js"></script>
+
+    <!-- Auth guard + API wiring -->
+    <script>
+        const API = '../../api';
+
+        // ── Auth guard ──────────────────────────────────────────────────────────
+        fetch(`${API}/auth.php?action=check`)
+            .then(r => r.json())
+            .then(data => {
+                if (!data.logged_in || data.user_type !== 'admin') {
+                    window.location.href = '../admin_login/index.html';
+                } else {
+                    const nameEl = document.getElementById('adminUserName');
+                    if (nameEl) nameEl.textContent = data.first_name + ' ' + data.last_name;
+                    loadDashboard();
+                    loadOrders();
+                    loadEventBookings();
+                    loadProducts();
+                    loadUsers();
+                }
+            })
+            .catch(() => { window.location.href = '../admin_login/index.html'; });
+
+        function adminLogout() {
+            fetch(`${API}/auth.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'logout' })
+            }).finally(() => { window.location.href = '../admin_login/index.html'; });
+        }
+
+        // ── Dashboard metrics ───────────────────────────────────────────────────
+        function loadDashboard() {
+            fetch(`${API}/dashboard.php`)
+                .then(r => r.json())
+                .then(d => {
+                    const cells = document.querySelectorAll('#dashboard .fs-3');
+                    if (cells[0]) cells[0].textContent = '₱' + parseFloat(d.total_revenue).toLocaleString('en-PH', {minimumFractionDigits:2});
+                    if (cells[1]) cells[1].textContent = d.active_orders;
+                    if (cells[2]) cells[2].textContent = d.pending_bookings;
+                    if (cells[3]) cells[3].textContent = d.total_clients;
+                })
+                .catch(() => {});
+        }
+
+        // ── Orders tab ──────────────────────────────────────────────────────────
+        function loadOrders() {
+            fetch(`${API}/orders.php`)
+                .then(r => r.json())
+                .then(orders => {
+                    const tbody = document.querySelector('#ordersTable tbody');
+                    if (!orders.length) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-3 text-muted">No orders found.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = orders.map(o => `
+                        <tr class="order-row" data-status="${o.status}" data-id="${o.id}">
+                            <td class="px-4 py-3">ORD-${String(o.id).padStart(3,'0')}</td>
+                            <td>${o.first_name} ${o.last_name}</td>
+                            <td>${o.event_location}</td>
+                            <td>—</td>
+                            <td>${o.status}</td>
+                            <td class="px-4 text-end">
+                                <select class="form-select form-select-sm d-inline-block w-auto" onchange="updateOrderStatus(${o.id}, this.value)">
+                                    ${['Pending','Confirmed','In Production','Completed','Cancelled'].map(s =>
+                                        `<option${s===o.status?' selected':''}>${s}</option>`
+                                    ).join('')}
+                                </select>
+                            </td>
+                        </tr>`).join('');
+                })
+                .catch(() => {});
+        }
+
+        function updateOrderStatus(id, status) {
+            fetch(`${API}/orders.php`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, status })
+            }).then(r => r.json()).then(d => {
+                if (d.success) loadOrders();
+            });
+        }
+
+        // ── Event Bookings tab ──────────────────────────────────────────────────
+        function loadEventBookings() {
+            fetch(`${API}/orders.php`)
+                .then(r => r.json())
+                .then(orders => {
+                    const tbody = document.querySelector('#eventsTable tbody');
+                    if (!orders.length) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3 text-muted">No bookings found.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = orders.map(o => {
+                        const statusClass = o.status === 'Pending' ? 'text-warning'
+                            : o.status === 'Confirmed' ? 'text-success'
+                            : o.status === 'Completed' ? 'text-secondary' : '';
+                        return `
+                        <tr>
+                            <td class="px-4 py-3">${o.first_name} ${o.last_name}</td>
+                            <td>${o.event_date || '—'}</td>
+                            <td>${o.event_name || o.event_location}</td>
+                            <td class="fw-bold ${statusClass}">${o.status}</td>
+                            <td class="px-4 text-end">
+                                <button class="btn btn-sm btn-outline-success me-1" onclick="updateOrderStatus(${o.id},'Confirmed')">Confirm</button>
+                                <button class="btn btn-sm btn-outline-dark" onclick="updateOrderStatus(${o.id},'Completed')">Complete</button>
+                            </td>
+                        </tr>`;
+                    }).join('');
+                })
+                .catch(() => {});
+        }
+
+        // ── Products tab ────────────────────────────────────────────────────────
+        function loadProducts() {
+            fetch(`${API}/products.php`)
+                .then(r => r.json())
+                .then(products => {
+                    const tbody = document.querySelector('#productsTable tbody');
+                    if (!products.length) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3 text-muted">No products found.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = products.map(p => `
+                        <tr data-id="${p.id}">
+                            <td class="px-4 py-3">PRD-${String(p.id).padStart(3,'0')}</td>
+                            <td>${p.name}</td>
+                            <td>₱${parseFloat(p.base_cost).toLocaleString('en-PH',{minimumFractionDigits:2})}</td>
+                            <td>${p.category}</td>
+                            <td class="px-4 text-end">
+                                <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="openProductModal('edit', this)">[EDIT]</a>
+                                <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="deleteProduct(${p.id})">[DELETE]</a>
+                            </td>
+                        </tr>`).join('');
+                })
+                .catch(() => {});
+        }
+
+        function deleteProduct(id) {
+            if (!confirm('Delete this product?')) return;
+            fetch(`${API}/products.php`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            }).then(() => loadProducts());
+        }
+
+        // ── Users tab ───────────────────────────────────────────────────────────
+        function loadUsers() {
+            Promise.all([
+                fetch(`${API}/customers.php`).then(r => r.json()),
+                fetch(`${API}/staff.php`).then(r => r.json())
+            ]).then(([customers, staff]) => {
+                const clientTbody = document.querySelector('#users .col-md-6:first-child tbody');
+                if (clientTbody) {
+                    clientTbody.innerHTML = customers.length
+                        ? customers.map(c => `<tr><td class="px-4 py-3">${c.first_name} ${c.last_name}</td><td>${c.email||'—'}</td><td>—</td></tr>`).join('')
+                        : '<tr><td colspan="3" class="text-center">No clients.</td></tr>';
+                }
+                const staffTbody = document.querySelector('#users .col-md-6:last-child tbody');
+                if (staffTbody) {
+                    staffTbody.innerHTML = staff.length
+                        ? staff.map(s => `<tr><td class="px-4 py-3">${s.first_name} ${s.last_name}</td><td>${s.role_title||'—'}</td><td>${s.status}</td></tr>`).join('')
+                        : '<tr><td colspan="3" class="text-center">No staff.</td></tr>';
+                }
+            }).catch(() => {});
+        }
+    </script>
 
     <!-- logic and scripts -->
     <script>
