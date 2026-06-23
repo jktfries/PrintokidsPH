@@ -5,6 +5,7 @@ require_once '../includes/config.php';
 $pdo    = getPDO();
 $method = $_SERVER['REQUEST_METHOD'];
 
+
 if ($method === 'GET' && !isset($_GET['id'])) {
     $stmt = $pdo->query(
         'SELECT id, name, base_cost, category FROM products ORDER BY name LIMIT 100'
