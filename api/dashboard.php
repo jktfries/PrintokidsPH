@@ -4,6 +4,7 @@ require_once '../includes/config.php';
 
 $pdo = getPDO();
 
+
 $totalRevenue = $pdo->query(
     'SELECT COALESCE(SUM(price_charged), 0) AS total FROM order_services'
 )->fetch()['total'];
