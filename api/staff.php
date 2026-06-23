@@ -5,6 +5,7 @@ require_once '../includes/config.php';
 $pdo    = getPDO();
 $method = $_SERVER['REQUEST_METHOD'];
 
+
 if ($method === 'GET' && !isset($_GET['id'])) {
     $status_filter = trim($_GET['status'] ?? '');
     $allowed_status = ['Active', 'On Leave', 'Terminated'];
