@@ -16,7 +16,7 @@
     <header>
       <nav class="navbar navbar-expand-md navbar-light fixed-top">
         <a class="white navbar-brand" href="">
-          <img src="../printokids_images/printokids_logo_transparent.png" alt="" width="200" height="70">
+          <img src="../printokids_images/printokids_logo_transparent.png" alt="" width="200" height="70" class="logo">
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarcollapse" aria-controls="navbarcollapse" aria-expanded="false" aria-label="Toggle navigation" style="margin: 20px">
@@ -26,25 +26,31 @@
          <div class="collapse navbar-collapse" id="navbarcollapse">
            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
               <li class="nav-item">
-               <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal">
+               <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modal">
                  Home
                </button>
              <li class="nav-item">
-                <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#signInModal">
+                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#signInModal">
                    My Account
                 </button>
               </li>
              <li class="nav-item">
               <!--<a class="nav-link">Event Services</a>-->
-               <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal">
+               <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modal">
                  Event Services
                </button>
             
               <li class="nav-item">
-               <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal">
+               <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modal">
                  Contact Us
                </button>
              </li>
+
+             <li class="nav-item" id="logoutNavItem" style="display:none;">
+                <button type="button" class="btn btn-danger" onclick="doLogout()">
+                   Logout
+                </button>
+              </li>
            </ul>
          </div>
       </nav>
