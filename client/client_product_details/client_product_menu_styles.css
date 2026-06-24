@@ -18,13 +18,30 @@
 }
 
 .navbar {
-    background-image: linear-gradient(10deg, #FFF9C4, #eab66d);
+    /**background-image: linear-gradient(90deg,#d87e46, #fab78d);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;**/
+
+    background: #0000007f; /* translucent color */
+    backdrop-filter: blur(10px);           /* frosted blur */
+    -webkit-backdrop-filter: blur(10px);   /* Safari support */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    margin: 10px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
 }
 
 .navbar-nav .nav-item {
   margin-left: 10px;
   margin-right: 20px;
 }
+
+.logo {
+    filter: drop-shadow(4px 4px 6px rgba(58, 32, 0, 0.114));
+}
+
+
 
 /*****/
 
@@ -67,6 +84,44 @@ body {
 .back-button {
     padding: 30px;
     font-size: 20px;
+}
+
+/** Footer **/
+
+.footer {
+    background-image: 
+        linear-gradient(
+            90deg,
+            #d87e46 50%,
+            #f68f4fb0 60%,
+            #eab66d33 80% 
+        ),
+        url("../printokids_images/Printokids1.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.footer-content {
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.back-to-top-btn a{
+    font-size: 20px;
+    padding-top: 10px;
+    color: #466d49;;
+}
+
+.back-to-top-btn a:hover {
+    color: black;
+    text-decoration: underline;
+}
+
+.very-bottom {
+    padding: 20px;
 }
 
 

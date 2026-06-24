@@ -8,6 +8,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <link rel="stylesheet" href="client_product_menu_styles.css">
+    <link rel="icon" type="image/x-icon" href="../printokids_images/favicon.ico">
     <title>PrintoKids PH - TEST PRODUCT</title>
   </head>
   <body>
@@ -16,7 +17,7 @@
     <header>
       <nav class="navbar navbar-expand-md navbar-light fixed-top">
         <a class="white navbar-brand" href="">
-          <img src="../printokids_images/printokids_logo_transparent.png" alt="" width="200" height="70">
+          <img src="../printokids_images/printokids_logo_transparent.png" alt="" width="200" height="70" class="logo">
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarcollapse" aria-controls="navbarcollapse" aria-expanded="false" aria-label="Toggle navigation" style="margin: 20px">
@@ -26,25 +27,31 @@
          <div class="collapse navbar-collapse" id="navbarcollapse">
            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
               <li class="nav-item">
-               <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal">
+               <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modal">
                  Home
                </button>
              <li class="nav-item">
-                <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#signInModal">
+                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#signInModal">
                    My Account
                 </button>
               </li>
              <li class="nav-item">
               <!--<a class="nav-link">Event Services</a>-->
-               <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal">
+               <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modal">
                  Event Services
                </button>
             
               <li class="nav-item">
-               <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal">
+               <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modal">
                  Contact Us
                </button>
              </li>
+
+             <li class="nav-item" id="logoutNavItem" style="display:none;">
+                <button type="button" class="btn btn-danger" onclick="doLogout()">
+                   Logout
+                </button>
+              </li>
            </ul>
          </div>
       </nav>
@@ -64,16 +71,8 @@ Data pulled from the database.
 <div class="container mt-4">
     <div class="row g-4">
 
-      <!-- LEFT: PRODUCT PHOTO CAROUSEL -->
-      <!--<div class="col-md-5">
-        <div class="product-photo-box">
-          PRODUCT PHOTO
-        </div>
-      </div>
-
-      -->
-
-<!--Carousel-->
+<!-- LEFT: PRODUCT PHOTO CAROUSEL -->
+  <!--Carousel-->
       <div class="col-md-5">
 
       <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
@@ -191,12 +190,42 @@ Data pulled from the database.
     </div>
   </div>
 
-  </div>
+<!-- Footer -->
+    
+  <footer>
+    <div class="container-fluid footer">
+      <div class="footer-content">
 
-    <footer class="container">
-      <strong><p>&copy; 2026 PrintoKidsPH &middot;</strong>
-        <a href="#">Back to top</a> &middot;
-      </p>
+        <div class="row">
+          <div class="col-md-4 fst-italic fw-bolder">
+            <strong><p>Phone / Mobile:</p></strong>
+            <p>+63 927 610 9655</p>
+
+          </div>
+          <div class="col-md-4 fst-italic fw-bolder">
+            <strong><p>Instagram:</p></strong>
+            <a>@printokidsph</a>
+
+          </div> 
+           
+        </div>
+
+      </div>
+      
+
+    </div>
+      
+  
+
+  <div class="very-bottom">
+    <div>
+      <strong><p>&copy; 2026 PrintoKidsPH &middot;</strong></p>
+    </div>
+
+    <div class="back-to-top-btn">
+      <strong><a href="#">Back to top</a></strong>
+    </div> 
+  </div>
   </footer>
 
 
