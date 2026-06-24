@@ -18,8 +18,16 @@
 }
 
 .navbar {
-    background-image: linear-gradient(10deg, #FFF9C4, #eab66d);
+    background-image: linear-gradient(90deg,#d87e46, #fab78d);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
+
+.logo {
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+
 /**Selectable Product Categories**/
 
 .menu-text-layer {
@@ -122,4 +130,39 @@ a {
     margin: 20px;
 }
 
+/** Footer **/
 
+.footer {
+    background-image: 
+        linear-gradient(
+            90deg,
+            #d87e46 50%,
+            #f68f4fb0 60%,
+            #eab66d33 80% 
+        ),
+        url("../printokids_images/Printokids1.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 20px;
+}
+
+.footer-content {
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.back-to-top-btn a{
+    font-size: 20px;
+    padding-top: 10px;
+    color: #466d49;;
+}
+
+.back-to-top-btn a:hover {
+    color: black;
+    text-decoration: underline;
+}
+
+.very-bottom {
+    padding: 20px;
+}
