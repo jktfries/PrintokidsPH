@@ -83,7 +83,7 @@
 
             <div class="col">
               <div class="card h-100 text-center">
-                <button class="gift-btn btn-light w-100 h-100 card-body">
+                <button class="gift-btn btn-light w-100 h-100 card-body" data-bs-toggle="modal" data-bs-target="#giftingModal">
                   <div class="menu-text-layer">
                     <h2>Personalized Gifting</h2>
                   </div>  
@@ -93,7 +93,7 @@
 
             <div class="col">
               <div class="card h-100 text-center">
-                <button class="tote-btn btn-light w-100 h-100 card-body">
+                <button class="tote-btn btn-light w-100 h-100 card-body" data-bs-toggle="modal" data-bs-target="#totesModal">
                   <div class="menu-text-layer">
                     <h2>Tote Bags & Purses</h2>
                   </div>  
@@ -103,7 +103,7 @@
 
             <div class="col">
               <div class="card h-100 text-center">
-                <button class="booth-btn btn-light w-100 h-100 card-body">
+                <button class="booth-btn btn-light w-100 h-100 card-body" data-bs-toggle="modal" data-bs-target="#eventServicesModal">
                   <div class="menu-text-layer">
                     <h2>Interactive Booth</h2>
                   </div>  
@@ -170,6 +170,44 @@
 
   <!--MODALS-->
   <!-- These appear on top of the main page. can be called on will. Will not pop up naturally-->
+
+  <!-- personalized gifting modal -->
+  <div class="modal fade" id="giftingModal" tabindex="-1" aria-labelledby="giftingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark bg-gradient text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="giftingModalLabel">Personalized Gifting</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Make your milestones memorable with custom gifts explicitly catered for your loved ones. We curate unique items configured with premium styling and text of your choice.</p>
+          <p>Explore our catalog options or contact our sales team to arrange dedicated batch packages.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- tote bags and purses modal -->
+  <div class="modal fade" id="totesModal" tabindex="-1" aria-labelledby="totesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark bg-gradient text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="totesModalLabel">Tote Bags & Purses</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Carry your aesthetic with durability! Our canvas tote bags and minimalist purses feature vibrant, long-lasting prints perfect for daily errands, school setups, or fashion statement designs.</p>
+          <p>Bulk configurations are accepted for corporate giveaways and birthday token sets.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Newsletter Modal -->
 
