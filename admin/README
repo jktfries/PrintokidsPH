@@ -1,9 +1,43 @@
-# Admin Backend
-This folder contains all the secure, administrative pages for Printokids PH.
+# Admin Dashboard
 
-**What goes here**
-* `dashboard.php` (Sales reports and metrics)
-* `inventory.php` (CRUD for raw materials)
-* `orders.php` (Order fulfillment and employee tracking)
+This folder contains the administrative dashboard pages for Printokids PH.
 
-**Rule:** Do not put customer-facing pages in this folder
+## Main Files
+
+- `admin_index.html` - Main admin dashboard layout with tabs for Dashboard, Products, Inventory, Orders, Event Bookings, and Users.
+- `admin_dashboard.js` - Handles admin dashboard logic, API requests, tab switching, CRUD actions, filtering, searching, exporting, and dashboard summaries.
+- `admin_styles.css` - Contains custom styling for the admin dashboard.
+- `images/` - Contains admin dashboard image assets.
+
+## Admin Dashboard Modules
+
+### Dashboard
+Displays an overview of the system, including total products, low stock items, product orders, event bookings, registered users, low stock alerts, recent product orders, and recent event bookings.
+
+### Products
+Displays the product catalog available for client ordering. This is mainly for viewing/searching/filtering/exporting product catalog data.
+
+### Inventory
+Used for product inventory management. Admin can add products to inventory, edit stock details, delete products, manage current stock, reorder level, and stock status.
+
+### Orders
+Displays product orders only. Product orders come from client cart checkout and are stored in `product_orders` and `product_order_items`.
+
+### Event Bookings
+Displays event service bookings only. Event bookings come from event service booking data and are stored in `event_orders` and `order_services`.
+
+### Users
+Displays registered customer accounts. Users are created through client registration. Admin can edit or delete user records when needed.
+
+## Related API Files
+
+The admin dashboard connects to backend PHP APIs located in the `/api` folder:
+
+- `inventory.php`
+- `product_orders.php`
+- `event_bookings.php`
+- `customers.php`
+
+## Rule
+
+Do not place customer-facing pages in this folder. Client-facing pages should stay inside the `/client` folder.
