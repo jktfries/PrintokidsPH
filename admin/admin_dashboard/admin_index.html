@@ -1,14 +1,16 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <link rel="stylesheet" href="admin_styles.css">
-    
+
     <title>PrintoKids - Admin Dashboard</title>
 </head>
 
@@ -20,34 +22,43 @@
         <nav class="navbar navbar-expand-md navbar-light py-2">
             <div class="container-fluid px-4">
                 <a class="navbar-brand d-flex align-items-center" href="#">
-                    <img src="images/printokids_logo_transparent.png" alt="PrintoKids PH" width="160" height="55" class="me-3">
-                    <span class="fs-6 fw-bold text-secondary border-start border-2 ps-3 py-1 d-none d-sm-block">ADMIN DASHBOARD</span>
+                    <img src="images/printokids_logo_transparent.png" alt="PrintoKids PH" width="160" height="55"
+                        class="me-3">
+                    <span class="fs-6 fw-bold text-secondary border-start border-2 ps-3 py-1 d-none d-sm-block">ADMIN
+                        DASHBOARD</span>
                 </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar"
+                    aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="adminNavbar">
                     <!-- nav tabs and such -->
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-bold" id="dashboardTabs" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Products</a>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active border-0 bg-transparent tab-trigger" id="dashboard-tab"
+                            data-bs-target="#dashboard" type="button" role="tab">Dashboard</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active border-0 bg-transparent tab-trigger" id="inventory-tab" data-bs-target="#inventory" type="button" role="tab">Inventory</button>
+                            <button class="nav-link border-0 bg-transparent tab-trigger" id="products-tab"
+                            data-bs-target="#products" type="button" role="tab">Products</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link border-0 bg-transparent tab-trigger" id="orders-tab" data-bs-target="#orders" type="button" role="tab">Orders</button>
+                            <button class="nav-link border-0 bg-transparent tab-trigger" id="inventory-tab"
+                                data-bs-target="#inventory" type="button" role="tab">Inventory</button>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Event Bookings</a>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link border-0 bg-transparent tab-trigger" id="orders-tab"
+                                data-bs-target="#orders" type="button" role="tab">Orders</button>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Users</a>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link border-0 bg-transparent tab-trigger" id="event-bookings-tab"
+                                data-bs-target="#eventBookings" type="button" role="tab">Event Bookings</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link border-0 bg-transparent tab-trigger" id="users-tab"
+                                data-bs-target="#users" type="button" role="tab">Users</button>
                         </li>
                     </ul>
                 </div>
@@ -58,11 +69,137 @@
     <!-- Main Dashboard Content -->
     <main class="container-fluid px-4 mt-4 tab-content" id="dashboardTabsContent">
 
+        <!-- dashboard overview -->
+<div class="tab-pane fade show active" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+
+    <div class="mb-4">
+        <h4 class="fw-bold text-dark text-uppercase tracking-wide">Dashboard Overview</h4>
+        <p class="text-muted mb-0">Quick summary of product orders, event bookings, inventory, and registered users.</p>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md">
+            <div class="summary-card">
+                <span>Total Products</span>
+                <strong id="dashboardTotalProducts">0</strong>
+            </div>
+        </div>
+
+        <div class="col-md">
+            <div class="summary-card">
+                <span>Low Stock Items</span>
+                <strong id="dashboardLowStock">0</strong>
+            </div>
+        </div>
+
+        <div class="col-md">
+            <div class="summary-card">
+                <span>Product Orders</span>
+                <strong id="dashboardProductOrders">0</strong>
+            </div>
+        </div>
+
+        <div class="col-md">
+            <div class="summary-card">
+                <span>Event Bookings</span>
+                <strong id="dashboardEventBookings">0</strong>
+            </div>
+        </div>
+
+        <div class="col-md">
+            <div class="summary-card">
+                <span>Registered Users</span>
+                <strong id="dashboardUsers">0</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+    <div class="col-lg-4">
+        <div class="dashboard-panel">
+            <h5 class="fw-bold mb-3">Low Stock Alerts</h5>
+            <div id="dashboardLowStockList">
+                <p class="text-muted">No low stock items.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="dashboard-panel">
+            <h5 class="fw-bold mb-3">Recent Product Orders</h5>
+            <div id="dashboardRecentProductOrders">
+                <p class="text-muted">No recent product orders yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="dashboard-panel">
+            <h5 class="fw-bold mb-3">Recent Event Bookings</h5>
+            <div id="dashboardRecentBookings">
+                <p class="text-muted">No recent event bookings.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<!-- products dashboard -->
+<div class="tab-pane fade" id="products" role="tabpanel" aria-labelledby="products-tab">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="fw-bold text-dark text-uppercase tracking-wide">Products Catalog</h4>
+            <p class="text-muted mb-0">List of products available for client ordering.</p>
+        </div>
+
+        <div class="filter-status">
+            <strong>Filter by Stock:</strong>
+            <a href="javascript:void(0)" onclick="filterProductCatalog('All')">[ All ]</a>
+            <a href="javascript:void(0)" onclick="filterProductCatalog('In Stock')">[ In Stock ]</a>
+            <a href="javascript:void(0)" onclick="filterProductCatalog('Low Stock')">[ Low Stock ]</a>
+            <a href="javascript:void(0)" onclick="filterProductCatalog('Out of Stock')">[ Out of Stock ]</a>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <input 
+            type="text" 
+            id="productCatalogSearch" 
+            class="form-control w-50" 
+            placeholder="Search product name or category..."
+            oninput="searchProductCatalog(this.value)"
+        >
+
+        <a href="javascript:void(0)" onclick="exportProductCatalog()" class="text-decoration-none text-dark fw-bold">
+            [ Export Product Catalog ]
+        </a>
+    </div>
+
+    <div class="table-container bg-white border border-2 border-light">
+        <table class="table table-striped table-hover mb-0" id="productsCatalogTable">
+            <thead class="bg-light text-dark">
+                <tr>
+                    <th class="py-3 px-4">Product ID</th>
+                    <th class="py-3 px-4">Product Name</th>
+                    <th class="py-3 px-4">Category</th>
+                    <th class="py-3 px-4">Base Price</th>
+                    <th class="py-3 px-4">Stock Status</th>
+                    <th class="py-3 px-4">Tag</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+</div>
+
         <!-- inv control dashboard   -->
-        <div class="tab-pane fade show active" id="inventory" role="tabpanel" aria-labelledby="inventory-tab">
-            
+        <div class="tab-pane fade" id="inventory" role="tabpanel" aria-labelledby="inventory-tab">
+
             <div class="mb-3">
-                <h4 class="fw-bold text-dark text-uppercase tracking-wide">Centralized Stock Inventory</h4>
+                <h4 class="fw-bold text-dark text-uppercase tracking-wide">Product Inventory Management</h4>
             </div>
 
             <!-- table -->
@@ -84,214 +221,369 @@
                             <td class="px-4">50</td>
                             <td class="px-4">Optimal</td>
                             <td class="px-4 text-end">
-                                <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editInventoryRow(this)">[EDIT]</a> 
-                                <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a>
+                                <a href="javascript:void(0)" class="text-dark text-decoration-none me-2"
+                                    onclick="editInventoryRow(this)">[EDIT]</a>
+                                <a href="javascript:void(0)" class="text-dark text-decoration-none"
+                                    onclick="this.closest('tr').remove()">[DELETE]</a>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- "add stock" and "add stock details" buttons -->
+            <!-- "add stock" button -->
             <div class="mt-4">
-                <button class="btn btn-success me-2 px-4 shadow-sm" onclick="addStock()">Add Stock</button>
-                <button class="btn btn-outline-dark px-4 shadow-sm" onclick="addStockDetails()">Add Stock Details</button>
+                <button class="btn btn-success me-2 px-4 shadow-sm" onclick="addStock()">Add Product to Inventory</button>
             </div>
         </div>
 
         <!-- orders dashboard -->
-        <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
-            
+<div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold text-dark text-uppercase tracking-wide">Product Orders</h4>
+
+        <div class="filter-status">
+            <strong>Filter by Status:</strong>
+            <a href="javascript:void(0)" onclick="filterOrders('All')">[ All ]</a>
+            <a href="javascript:void(0)" onclick="filterOrders('Pending')">[ Pending ]</a>
+            <a href="javascript:void(0)" onclick="filterOrders('Confirmed')">[ Confirmed ]</a>
+            <a href="javascript:void(0)" onclick="filterOrders('In Production')">[ In Production ]</a>
+            <a href="javascript:void(0)" onclick="filterOrders('Completed')">[ Completed ]</a>
+        </div>
+    </div>
+
+    <div class="table-container bg-white border border-2 border-light">
+        <table class="table table-striped table-hover mb-0" id="ordersTable">
+            <thead class="bg-light text-dark">
+                <tr>
+                    <th class="py-3 px-4">Order ID</th>
+                    <th class="py-3 px-4">Client Name</th>
+                    <th class="py-3 px-4">Products Ordered</th>
+                    <th class="py-3 px-4">Quantity</th>
+                    <th class="py-3 px-4">Total Amount</th>
+                    <th class="py-3 px-4">Status</th>
+                    <th class="py-3 px-4 text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-end align-items-center mt-4">
+        <a href="javascript:void(0)" onclick="exportSalesHistory()" class="text-decoration-none text-dark fw-bold align-self-center">
+            [ Export Product Orders ]
+        </a>
+    </div>
+</div>
+
+        <!-- event bookings dashboard -->
+        <div class="tab-pane fade" id="eventBookings" role="tabpanel" aria-labelledby="event-bookings-tab">
+
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="fw-bold text-dark text-uppercase tracking-wide">Manage Orders & Fulfillment</h4>
-                <div class="text-dark fw-bold">
-                    Filter by Status: 
-                    <a href="javascript:void(0)" onclick="filterOrders('All')" class="text-decoration-none text-dark mx-1">[ All ]</a>
-                    <a href="javascript:void(0)" onclick="filterOrders('Pending')" class="text-decoration-none text-dark mx-1">[ Pending ]</a>
-                    <a href="javascript:void(0)" onclick="filterOrders('In Production')" class="text-decoration-none text-dark mx-1">[ In Production ]</a>
-                    <a href="javascript:void(0)" onclick="filterOrders('Completed')" class="text-decoration-none text-dark mx-1">[ Completed ]</a>
+                <h4 class="fw-bold text-dark text-uppercase tracking-wide">Event Bookings</h4>
+
+                <div class="filter-status">
+                    <strong>Filter by Status:</strong>
+                    <a href="javascript:void(0)" onclick="filterEventBookings('All')">[ All ]</a>
+                    <a href="javascript:void(0)" onclick="filterEventBookings('Pending')">[ Pending ]</a>
+                    <a href="javascript:void(0)" onclick="filterEventBookings('Confirmed')">[ Confirmed ]</a>
+                    <a href="javascript:void(0)" onclick="filterEventBookings('In Production')">[ In Production ]</a>
+                    <a href="javascript:void(0)" onclick="filterEventBookings('Completed')">[ Completed ]</a>
                 </div>
             </div>
 
-            <!-- table again -->
+            <!-- summary cards -->
+            <div class="row g-3 mb-4" id="eventBookingSummary">
+                <div class="col-md">
+                    <div class="summary-card">
+                        <span>Total</span>
+                        <strong id="bookingTotalCount">0</strong>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="summary-card">
+                        <span>Pending</span>
+                        <strong id="bookingPendingCount">0</strong>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="summary-card">
+                        <span>Confirmed</span>
+                        <strong id="bookingConfirmedCount">0</strong>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="summary-card">
+                        <span>In Production</span>
+                        <strong id="bookingProductionCount">0</strong>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="summary-card">
+                        <span>Completed</span>
+                        <strong id="bookingCompletedCount">0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- search and export -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <input type="text" id="eventBookingSearch" class="form-control w-50"
+                    placeholder="Search client, location, service, or asset..."
+                    oninput="searchEventBookings(this.value)">
+
+                <a href="javascript:void(0)" onclick="exportEventBookings()"
+                    class="text-decoration-none text-dark fw-bold">
+                    [ Export Event Bookings ]
+                </a>
+            </div>
+
             <div class="table-container bg-white border border-2 border-light">
-                <table class="table table-striped table-hover mb-0" id="ordersTable">
+                <table class="table table-striped table-hover mb-0" id="eventBookingsTable">
                     <thead class="bg-light text-dark">
                         <tr>
-                            <th scope="col" class="py-3 px-4">Order ID</th>
-                            <th scope="col" class="py-3 px-4">Client Name</th>
-                            <th scope="col" class="py-3 px-4">Total Amount</th>
-                            <th scope="col" class="py-3 px-4">Assigned Employee</th>
-                            <th scope="col" class="py-3 px-4">Status</th>
-                            <th scope="col" class="py-3 px-4 text-end">Action</th>
+                            <th class="py-3 px-4">Booking ID</th>
+                            <th class="py-3 px-4">Client Name</th>
+                            <th class="py-3 px-4">Event Location</th>
+                            <th class="py-3 px-4">Service</th>
+                            <th class="py-3 px-4">Asset</th>
+                            <th class="py-3 px-4">Schedule</th>
+                            <th class="py-3 px-4">Price</th>
+                            <th class="py-3 px-4">Status</th>
+                            <th class="py-3 px-4 text-end">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr class="order-row" data-status="Pending"><td class="px-4 py-3">ORD-001</td><td>John Doe</td><td>₱1,500.00</td><td>Jane Smith</td><td>Pending</td><td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a></td></tr>
-                        <tr class="order-row" data-status="In Production"><td class="px-4 py-3">ORD-002</td><td>Mary Sue</td><td>₱3,200.00</td><td>Mark Lee</td><td>In Production</td><td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a></td></tr>
-                        <tr class="order-row" data-status="Completed"><td class="px-4 py-3">ORD-003</td><td>Alice Lim</td><td>₱800.00</td><td>Jane Smith</td><td>Completed</td><td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a></td></tr>
-                        <tr class="order-row" data-status="Pending"><td class="px-4 py-3">ORD-004</td><td>Peter Santos</td><td>₱4,500.00</td><td>Mark Lee</td><td>Pending</td><td class="px-4 text-end"><a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a></td></tr>
-                    </tbody>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- users dashboard -->
+        <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold text-dark text-uppercase tracking-wide">Manage Users</h4>
+            </div>
+
+            <div class="table-container bg-white border border-2 border-light">
+                <table class="table table-striped table-hover mb-0" id="usersTable">
+                    <thead class="bg-light text-dark">
+                        <tr>
+                            <th class="py-3 px-4">User ID</th>
+                            <th class="py-3 px-4">Full Name</th>
+                            <th class="py-3 px-4">Email</th>
+                            <th class="py-3 px-4">Phone</th>
+                            <th class="py-3 px-4 text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
                 </table>
             </div>
 
-            <!-- added "add order" and "add order details" to match the other tab -->
-            <div class="mt-4 d-flex justify-content-between">
-                <div>
-                    <button class="btn btn-success me-2 px-4 shadow-sm" onclick="addOrder()">Add Order</button>
-                    <button class="btn btn-outline-dark px-4 shadow-sm" onclick="addOrderDetails()">Add Order Details</button>
-                </div>
-                <a href="#" class="text-decoration-none text-dark fw-bold align-self-center">[ Export Sales History ]</a>
-            </div>
         </div>
 
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+        crossorigin="anonymous"></script>
     <script src="admin_dashboard.js"></script>
 
-    <!-- logic and scripts -->
-    <script>
-        //--- changed tab switching logic since it wouldnt work in git codespace ---//
-        document.querySelectorAll('.tab-trigger').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                document.querySelectorAll('.tab-trigger').forEach(btn => btn.classList.remove('active'));
-                
-                document.querySelectorAll('.tab-pane').forEach(pane => {
-                    pane.classList.remove('show', 'active');
-                });
-                
-                this.classList.add('active');
-                
-                const targetId = this.getAttribute('data-bs-target');
-                document.querySelector(targetId).classList.add('show', 'active');
-            });
-        });
+    <!-- Inventory Modal -->
+    <div id="inventoryModal" class="pk-modal">
+        <div class="pk-modal-content">
+            <div class="pk-modal-header">
+                <h3 id="inventoryModalTitle">Add Stock</h3>
+                <button type="button" class="pk-modal-close" onclick="closeInventoryModal()">×</button>
+            </div>
 
-        //--- inventory logic ---//
-        
-        function addStock() {
-            const tableBody = document.getElementById('inventoryTable').getElementsByTagName('tbody')[0];
-            const newRow = tableBody.insertRow();
-            
-            newRow.style.backgroundColor = '#FFF9C4'; 
-            setTimeout(() => newRow.style.backgroundColor = '', 1500);
+            <form id="inventoryForm">
+                <input type="hidden" id="inventoryProductId">
 
-            newRow.innerHTML = `
-                <td class="px-4">New Item</td>
-                <td class="px-4">0</td>
-                <td class="px-4">0</td>
-                <td class="px-4">Pending</td>
-                <td class="px-4 text-end">
-                    <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editInventoryRow(this)">[EDIT]</a> 
-                    <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a>
-                </td>
-            `;
-            
-            const container = document.querySelector('#inventory .table-container');
-            container.scrollTop = container.scrollHeight;
-        }
+                <div class="pk-form-group">
+                    <label for="inventoryProductName">Product Name</label>
+                    <input type="text" id="inventoryProductName" required>
+                </div>
 
-        function addStockDetails() {
-            const tableBody = document.getElementById('inventoryTable').getElementsByTagName('tbody')[0];
-            const rows = tableBody.rows;
-            
-            if (rows.length === 0) {
-                alert("The inventory is empty. Please click 'Add Stock' first.");
-                return;
-            }
-            
-            const lastRowLink = rows[rows.length - 1].querySelector('td:last-child a');
-            editInventoryRow(lastRowLink);
-        }
+                <div class="pk-form-group">
+                    <label for="inventoryBaseCost">Base Cost</label>
+                    <input type="number" id="inventoryBaseCost" step="0.01" min="0" required>
+                </div>
 
-        function editInventoryRow(element) {
-            const row = element.closest('tr');
-            
-            let entryName = prompt("Edit Entry Name:", row.cells[0].innerText);
-            let currentStock = prompt("Edit Current Stock count:", row.cells[1].innerText);
-            let reorderLevel = prompt("Edit Reorder Level:", row.cells[2].innerText);
-            let status = prompt("Edit Status (e.g., Optimal, Low, Out of Stock):", row.cells[3].innerText);
+                <div class="pk-form-group">
+                    <label for="inventoryCategory">Category</label>
+                    <input type="text" id="inventoryCategory" value="General" required>
+                </div>
 
-            if (entryName !== null) row.cells[0].innerText = entryName;
-            if (currentStock !== null) row.cells[1].innerText = currentStock;
-            if (reorderLevel !== null) row.cells[2].innerText = reorderLevel;
-            if (status !== null) row.cells[3].innerText = status;
-        }
+                <div class="pk-form-group">
+                    <label for="inventoryStockCount">Current Stock Count</label>
+                    <input type="number" id="inventoryStockCount" min="0" required>
+                </div>
 
-        //--- orders logic ---//
+                <div class="pk-form-group">
+                    <label for="inventoryReorderLevel">Reorder Level</label>
+                    <input type="number" id="inventoryReorderLevel" min="0" required>
+                    <small>
+                        Reorder level is the minimum stock before the item becomes Low Stock.
+                    </small>
+                </div>
 
-        function addOrder() {
-            const tableBody = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
-            const newRow = tableBody.insertRow();
-            
-            // Add classes and data-status required for filtering
-            newRow.classList.add('order-row');
-            newRow.setAttribute('data-status', 'Pending');
-            
-            newRow.style.backgroundColor = '#FFF9C4'; 
-            setTimeout(() => newRow.style.backgroundColor = '', 1500);
+                <div class="pk-modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeInventoryModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-            newRow.innerHTML = `
-                <td class="px-4 py-3">NEW-ORD</td>
-                <td>Client Name</td>
-                <td>₱0.00</td>
-                <td>Unassigned</td>
-                <td>Pending</td>
-                <td class="px-4 text-end">
-                    <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrderRow(this)">[EDIT]</a> 
-                    <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="this.closest('tr').remove()">[DELETE]</a>
-                </td>
-            `;
-            
-            const container = document.querySelector('#orders .table-container');
-            container.scrollTop = container.scrollHeight;
-        }
+    <!-- Product Order Status Modal -->
+<div id="orderModal" class="pk-modal">
+    <div class="pk-modal-content">
+        <div class="pk-modal-header">
+            <h3 id="orderModalTitle">Update Product Order</h3>
+            <button type="button" class="pk-modal-close" onclick="closeOrderModal()">×</button>
+        </div>
 
-        function addOrderDetails() {
-            const tableBody = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
-            const rows = tableBody.rows;
-            
-            if (rows.length === 0) {
-                alert("There are no orders. Please click 'Add Order' first.");
-                return;
-            }
-            
-            const lastRowLink = rows[rows.length - 1].querySelector('td:last-child a');
-            editOrderRow(lastRowLink);
-        }
+        <form id="orderForm">
+            <input type="hidden" id="orderId">
 
-        function editOrderRow(element) {
-            const row = element.closest('tr');
-            
-            let orderId = prompt("Edit Order ID:", row.cells[0].innerText);
-            let clientName = prompt("Edit Client Name:", row.cells[1].innerText);
-            let totalAmount = prompt("Edit Total Amount:", row.cells[2].innerText);
-            let employee = prompt("Edit Assigned Employee:", row.cells[3].innerText);
-            let status = prompt("Edit Status (e.g., Pending, In Production, Completed):", row.cells[4].innerText);
+            <div class="pk-form-group">
+                <label>Client Name</label>
+                <input type="text" id="orderClientName" readonly>
+            </div>
 
-            if (orderId !== null) row.cells[0].innerText = orderId;
-            if (clientName !== null) row.cells[1].innerText = clientName;
-            if (totalAmount !== null) row.cells[2].innerText = totalAmount;
-            if (employee !== null) row.cells[3].innerText = employee;
-            if (status !== null) {
-                row.cells[4].innerText = status;
-                row.setAttribute('data-status', status); // Update the filter parameter
-            }
-        }
+            <div class="pk-form-group">
+                <label>Products Ordered</label>
+                <input type="text" id="orderProductsOrdered" readonly>
+            </div>
 
-        function filterOrders(status) {
-            const rows = document.querySelectorAll('.order-row');
-            rows.forEach(row => {
-                if (status === 'All' || row.getAttribute('data-status') === status) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-    </script>
+            <div class="pk-form-group">
+                <label>Total Amount</label>
+                <input type="text" id="orderTotalAmount" readonly>
+            </div>
+
+            <div class="pk-form-group">
+                <label for="orderStatus">Status</label>
+                <select id="orderStatus" required>
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="In Production">In Production</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+
+            <div class="pk-modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeOrderModal()">Cancel</button>
+                <button type="submit" class="btn-save">Save Status</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="pk-modal">
+        <div class="pk-modal-content">
+            <div class="pk-modal-header">
+                <h3 id="userModalTitle">Edit User</h3>
+                <button type="button" class="pk-modal-close" onclick="closeUserModal()">×</button>
+            </div>
+
+            <form id="userForm">
+                <input type="hidden" id="userId">
+
+                <div class="pk-form-group">
+                    <label for="userFirstName">First Name</label>
+                    <input type="text" id="userFirstName" required>
+                </div>
+
+                <div class="pk-form-group">
+                    <label for="userLastName">Last Name</label>
+                    <input type="text" id="userLastName" required>
+                </div>
+
+                <div class="pk-form-group">
+                    <label for="userEmail">Email</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+
+                <div class="pk-form-group">
+                    <label for="userPhone">Phone</label>
+                    <input type="text" id="userPhone">
+                </div>
+
+                <div class="pk-modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeUserModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Event Booking Details Modal -->
+    <div id="eventBookingModal" class="pk-modal">
+        <div class="pk-modal-content">
+            <div class="pk-modal-header">
+                <h3>Event Booking Details</h3>
+                <button type="button" class="pk-modal-close" onclick="closeEventBookingModal()">×</button>
+            </div>
+
+            <form id="eventBookingForm">
+                <input type="hidden" id="eventBookingOrderId">
+
+                <div class="pk-form-group">
+                    <label>Booking ID</label>
+                    <input type="text" id="eventBookingId" readonly>
+                </div>
+
+                <div class="pk-form-group">
+                    <label>Client Name</label>
+                    <input type="text" id="eventBookingClientName" readonly>
+                </div>
+
+                <div class="pk-form-group">
+                    <label>Event Location</label>
+                    <input type="text" id="eventBookingLocation" readonly>
+                </div>
+
+                <div class="pk-form-group">
+                    <label>Service</label>
+                    <input type="text" id="eventBookingService" readonly>
+                </div>
+
+                <div class="pk-form-group">
+                    <label>Asset</label>
+                    <input type="text" id="eventBookingAsset" readonly>
+                </div>
+
+                <div class="pk-form-group">
+                    <label>Schedule</label>
+                    <input type="text" id="eventBookingSchedule" readonly>
+                </div>
+
+                <div class="pk-form-group">
+                    <label>Price</label>
+                    <input type="text" id="eventBookingPrice" readonly>
+                </div>
+
+                <div class="pk-form-group">
+                    <label for="eventBookingStatus">Status</label>
+                    <select id="eventBookingStatus" required>
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="In Production">In Production</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+
+                <div class="pk-modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEventBookingModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </body>
+
 </html>
