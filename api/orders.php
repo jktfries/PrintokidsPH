@@ -75,26 +75,36 @@ else if ($method === 'POST') {
 }
 
 // PUT - Update order status
+// PUT - Update order
 else if ($method === 'PUT') {
     $data = json_decode(file_get_contents('php://input'), true);
+
     $id = intval($data['id'] ?? 0);
-    $status = $data['status'] ?? '';
-    
-    if ($id === 0 || empty($status)) {
+    $customer_id = intval($data['customer_id'] ?? 0);
+    $event_location = trim($data['event_location'] ?? '');
+    $status = trim($data['status'] ?? '');
+
+    if ($id === 0 || $customer_id === 0 || empty($event_location) || empty($status)) {
         http_response_code(400);
-        echo json_encode(['error' => 'Order ID and status required']);
+        echo json_encode(['error' => 'Order ID, customer ID, event location, and status are required']);
         exit;
     }
-    
-    $stmt = $conn->prepare("UPDATE event_orders SET status = ? WHERE id = ?");
-    $stmt->bind_param("si", $status, $id);
-    
+
+    $stmt = $conn->prepare("
+        UPDATE event_orders
+        SET customer_id = ?, event_location = ?, status = ?
+        WHERE id = ?
+    ");
+
+    $stmt->bind_param("issi", $customer_id, $event_location, $status, $id);
+
     if ($stmt->execute()) {
         echo json_encode(['success' => true]);
     } else {
         http_response_code(500);
         echo json_encode(['error' => 'Update failed: ' . $stmt->error]);
     }
+
     $stmt->close();
 }
 
