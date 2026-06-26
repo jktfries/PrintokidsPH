@@ -297,7 +297,6 @@ document.addEventListener('DOMContentLoaded', function () {
     loadOrders();
     loadUsers();
     loadEventBookings();
-    loadCustomersForOrderModal();
     setupTabListeners();
 
     setTimeout(() => {
@@ -666,6 +665,10 @@ function deleteOrder(orderId) {
             if (data.success) {
                 showAlert('Product order deleted successfully!', 'success');
                 loadOrders();
+
+                setTimeout(() => {
+                    loadDashboardOverview();
+                }, 500);
             } else {
                 showAlert(data.error || 'Failed to delete product order.', 'danger');
             }
@@ -808,7 +811,10 @@ function saveUserForm() {
                 closeUserModal();
                 showAlert('User updated successfully!', 'success');
                 loadUsers();
-                loadCustomersForOrderModal();
+                
+                setTimeout(() => {
+                    loadDashboardOverview();
+                }, 500);
             } else {
                 showAlert(data.error || 'Something went wrong.', 'danger');
             }
@@ -834,7 +840,10 @@ function deleteUser(userId) {
             if (data.success) {
                 showAlert('User deleted successfully!', 'success');
                 loadUsers();
-                loadCustomersForOrderModal();
+                
+                setTimeout(() => {
+                    loadDashboardOverview();
+                }, 500);
             } else {
                 showAlert(data.error || 'Cannot delete user. This user may already have existing orders.', 'danger');
             }
@@ -1003,25 +1012,25 @@ function saveEventBookingStatus() {
             status: status
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            closeEventBookingModal();
-            showAlert('Event booking status updated successfully!', 'success');
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeEventBookingModal();
+                showAlert('Event booking status updated successfully!', 'success');
 
-            loadEventBookings();
+                loadEventBookings();
 
-            setTimeout(() => {
-                loadDashboardOverview();
-            }, 500);
-        } else {
-            showAlert(data.error || 'Failed to update booking status.', 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Booking status update error:', error);
-        showAlert('Failed to update booking status.', 'danger');
-    });
+                setTimeout(() => {
+                    loadDashboardOverview();
+                }, 500);
+            } else {
+                showAlert(data.error || 'Failed to update booking status.', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Booking status update error:', error);
+            showAlert('Failed to update booking status.', 'danger');
+        });
 }
 
 function exportEventBookings() {
@@ -1119,67 +1128,6 @@ function formatBookingSchedule(startTime, endTime) {
     return `${start.toLocaleDateString()} ${start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 }
 
-function loadCustomersForOrderModal() {
-    fetch(`${API_BASE}/customers.php`)
-        .then(response => response.json())
-        .then(customers => {
-            allCustomers = customers;
-
-            const customerSelect = document.getElementById('orderCustomerId');
-            if (!customerSelect) return;
-
-            customerSelect.innerHTML = '<option value="">Select client</option>';
-
-            customers.forEach(customer => {
-                const option = document.createElement('option');
-                option.value = customer.id;
-                option.textContent = `${customer.id} - ${customer.first_name} ${customer.last_name}`;
-                customerSelect.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error('Error loading customers:', error);
-            showAlert('Failed to load customers for order form.', 'danger');
-        });
-}
-
-function displayOrders(orders) {
-    const tbody = document.querySelector('#ordersTable tbody');
-    tbody.innerHTML = '';
-
-    if (orders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No product orders found</td></tr>';
-        return;
-    }
-
-    orders.forEach(order => {
-        const row = document.createElement('tr');
-        row.className = 'order-row';
-        row.dataset.orderId = order.id;
-        row.dataset.status = order.status || 'Pending';
-
-        const assignedEmployeeStatus = getAssignedEmployeeStatus(order.status);
-
-        row.innerHTML = `
-            <td class="px-4 py-3">ORD-${String(order.id).padStart(3, '0')}</td>
-            <td>${order.first_name || ''} ${order.last_name || ''}</td>
-            <td>${order.event_location || 'N/A'}</td>
-            <td>${assignedEmployeeStatus}</td>
-            <td>
-                <span class="badge ${getStatusBadgeClass(order.status)}">
-                    ${order.status || 'Pending'}
-                </span>
-            </td>
-            <td class="px-4 text-end">
-                <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrder(${Number(order.id)})">[EDIT]</a>
-                <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="deleteOrder(${Number(order.id)})">[DELETE]</a>
-            </td>
-        `;
-
-        tbody.appendChild(row);
-    });
-}
-
 function getAssignedEmployeeStatus(status) {
     switch (status) {
         case 'Confirmed':
@@ -1206,53 +1154,12 @@ function getStatusBadgeClass(status) {
     }
 }
 
-function editOrder(orderId) {
-    const order = allOrders.find(o => Number(o.id) === Number(orderId));
-
-    if (!order) {
-        showAlert('Order not found.', 'danger');
-        return;
-    }
-
-    openOrderModal(order);
-}
-
-function deleteOrder(orderId) {
-    if (!confirm('Are you sure you want to delete this order?')) return;
-
-    fetch(`${API_BASE}/orders.php`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: Number(orderId) })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showAlert('Order deleted successfully!', 'success');
-                loadOrders();
-                loadEventBookings();
-            } else {
-                showAlert('Error deleting order: ' + (data.error || 'Unknown error'), 'danger');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('Error deleting order', 'danger');
-        });
-}
-
 function addOrder() {
     openOrderModal();
 }
 
 function addOrderDetails() {
     openOrderModal();
-}
-
-function editOrderRow(element) {
-    const row = element.closest('tr');
-    const orderId = row.dataset.orderId;
-    editOrder(Number(orderId));
 }
 
 function filterOrders(status) {
@@ -1269,93 +1176,9 @@ function filterOrders(status) {
     displayOrders(filteredOrders);
 }
 
-function openOrderModal(order = null) {
-    const modal = document.getElementById('orderModal');
-    const title = document.getElementById('orderModalTitle');
-
-    const orderIdInput = document.getElementById('orderId');
-    const customerIdInput = document.getElementById('orderCustomerId');
-    const eventLocationInput = document.getElementById('orderEventLocation');
-    const statusInput = document.getElementById('orderStatus');
-
-    loadCustomersForOrderModal();
-
-    if (order) {
-        title.textContent = 'Edit Order Details';
-
-        orderIdInput.value = order.id;
-        eventLocationInput.value = order.event_location || '';
-        statusInput.value = order.status || 'Pending';
-
-        setTimeout(() => {
-            customerIdInput.value = order.customer_id || '';
-        }, 200);
-    } else {
-        title.textContent = 'Add Order';
-
-        orderIdInput.value = '';
-        customerIdInput.value = '';
-        eventLocationInput.value = '';
-        statusInput.value = 'Pending';
-    }
-
-    modal.classList.add('show');
-}
-
 function closeOrderModal() {
     const modal = document.getElementById('orderModal');
     modal.classList.remove('show');
-}
-
-function saveOrderForm() {
-    const orderId = document.getElementById('orderId').value;
-
-    const orderData = {
-        customer_id: Number(document.getElementById('orderCustomerId').value),
-        event_location: document.getElementById('orderEventLocation').value.trim(),
-        status: document.getElementById('orderStatus').value
-    };
-
-    if (!orderData.customer_id || !orderData.event_location) {
-        showAlert('Please complete the customer ID and event location.', 'danger');
-        return;
-    }
-
-    let method = 'POST';
-
-    if (orderId) {
-        method = 'PUT';
-        orderData.id = Number(orderId);
-    }
-
-    fetch(`${API_BASE}/orders.php`, {
-        method: method,
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderData)
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                closeOrderModal();
-
-                if (method === 'POST') {
-                    showAlert('Order added successfully!', 'success');
-                } else {
-                    showAlert('Order updated successfully!', 'success');
-                }
-
-                loadOrders();
-                loadEventBookings();
-            } else {
-                showAlert(data.error || 'Something went wrong.', 'danger');
-            }
-        })
-        .catch(error => {
-            console.error('Order save error:', error);
-            showAlert('Failed to save order.', 'danger');
-        });
 }
 
 // ============================================
