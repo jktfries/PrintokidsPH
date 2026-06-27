@@ -10,7 +10,7 @@
 //   - logout properly calls POST with action in body
 // ============================================================
 
-const API = '../api';
+const API = window.API_ROOT || '../api';
 
 class AuthManager {
     constructor() {

@@ -3,7 +3,7 @@
 // localStorage for persistence; checkout POSTs to API
 // ============================================================
 
-const ORDERS_API = '../api/product_orders.php';
+const ORDERS_API = (window.API_ROOT || '../api') + '/product_orders.php';
 
 class CartManager {
     constructor() {
