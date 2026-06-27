@@ -21,11 +21,7 @@ if ($method === 'GET' && !isset($_GET['id'])) {
         stock_count,
         reorder_level,
         stock_status,
-        created_at,
-        CASE 
-            WHEN created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN 1
-            ELSE 0
-        END AS is_new
+        created_at
     FROM products
     ORDER BY id DESC
     LIMIT 100
@@ -54,11 +50,7 @@ else if ($method === 'GET' && isset($_GET['id'])) {
         stock_count,
         reorder_level,
         stock_status,
-        created_at,
-        CASE 
-            WHEN created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN 1
-            ELSE 0
-        END AS is_new
+        created_at
     FROM products
     WHERE id = ?
 ");
