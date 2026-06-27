@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <title>PrintoKids PH</title>
+</head>
+<body>
+
+<!-- ── NAVBAR ─────────────────────────────────────────────────── -->
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <img src="images/printokids_logo_transparent.png" alt="PrintoKids PH" width="180" height="62" class="logo">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light btn-sm me-1"
+                           data-bs-toggle="modal" data-bs-target="#homeModal" href="#">
+                            Home
+                        </a>
+                    </li>
+
+                    <li class="nav-item" id="myAccountNavItem" style="display:none">
+                        <a class="btn btn-outline-light btn-sm me-1"
+                           href="my_account/index.html">
+                            My Account
+                        </a>
+                    </li>
+
+                    <!-- Guest: show sign-in button -->
+                    <li class="nav-item guest-only">
+                        <a id="accountBtn" class="btn btn-outline-light btn-sm me-1"
+                           href="#" data-bs-toggle="modal" data-bs-target="#signInModal">
+                            My Account
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light btn-sm me-1"
+                           data-bs-toggle="modal" data-bs-target="#eventServicesModal" href="#">
+                            Event Services
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light btn-sm me-1"
+                           data-bs-toggle="modal" data-bs-target="#contactUsModal" href="#">
+                            Contact Us
+                        </a>
+                    </li>
+
+                    <!-- Cart -->
+                    <li class="nav-item">
+                        <button class="btn btn-outline-success btn-sm position-relative" id="cartBtn">
+                            🛒 Cart
+                            <span id="cartBadge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                style="display:none">0</span>
+                        </button>
+                    </li>
+
+                    <!-- Logout (auth-only) -->
+                    <li class="nav-item" id="logoutNavItem" style="display:none">
+                        <button class="btn btn-outline-danger btn-sm ms-1" id="logoutBtn">
+                            Logout
+                        </button>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- ── HERO CAROUSEL ──────────────────────────────────────────── -->
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active" data-bs-interval="5000">
+            <img src="images/clientBackground_TEMP.jpg" class="d-block w-100" alt="PrintoKids PH">
+            <div class="carousel-caption d-none d-md-block">
+                <h3 class="fw-bold">Personalized Merchandise &amp; Event Printing</h3>
+                <a class="btn btn-success btn-lg mt-2"
+                   data-bs-toggle="modal" data-bs-target="#homeModal" href="#">
+                    Browse Our Products
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── OUR SERVICES ───────────────────────────────────────────── -->
+<h2 class="section-title">Our Services</h2>
+<div class="container-fluid px-4 mb-4">
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+        <div class="col">
+            <div class="card h-100">
+                <button class="gift-btn btn-light w-100 h-100 card-body border-0"
+                    data-bs-toggle="modal" data-bs-target="#giftingModal">
+                    <div class="menu-text-layer"><h5 class="mb-0">Personalized Gifting</h5></div>
+                </button>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100">
+                <button class="tote-btn btn-light w-100 h-100 card-body border-0"
+                    data-bs-toggle="modal" data-bs-target="#totesModal">
+                    <div class="menu-text-layer"><h5 class="mb-0">Tote Bags &amp; Purses</h5></div>
+                </button>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100">
+                <button class="booth-btn btn-light w-100 h-100 card-body border-0"
+                    data-bs-toggle="modal" data-bs-target="#eventServicesModal">
+                    <div class="menu-text-layer"><h5 class="mb-0">Interactive Booth</h5></div>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Search & Filter ─────────────────────────────────────────── -->
+<div class="container-fluid px-4 mb-3 d-flex gap-2 flex-wrap align-items-center">
+    <input type="text" id="productSearch" class="form-control" style="max-width:320px"
+        placeholder="Search products…">
+    <button class="btn btn-outline-secondary btn-sm active" data-filter-category="all">All</button>
+</div>
+
+<!-- ── FEATURED PRODUCTS ──────────────────────────────────────── -->
+<h2 class="section-title">Featured Products</h2>
+<div class="container-fluid px-4">
+    <div class="row row-cols-1 row-cols-md-4 g-4 pb-4" id="products-container">
+        <div class="col text-center text-muted py-5">Loading products…</div>
+    </div>
+</div>
+
+<!-- ── NEWSLETTER STRIP ───────────────────────────────────────── -->
+<div class="newsletter-strip">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <p class="text-light fst-italic fw-bold mb-0">Sign up for exclusive deals from PrintoKids PH!</p>
+        <button class="btn btn-outline-success btn-sm"
+            data-bs-toggle="modal" data-bs-target="#newsletterModal">
+            Sign up here!
+        </button>
+    </div>
+</div>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<footer>
+    <div class="footer-bg">
+        <div class="footer-content">
+            <div class="row text-white">
+                <div class="col-md-4 fw-bold fst-italic">
+                    <p class="mb-1">Phone / Mobile:</p>
+                    <p>+63 927 610 9655</p>
+                </div>
+                <div class="col-md-4 fw-bold fst-italic">
+                    <p class="mb-1">Instagram:</p>
+                    <p>@printokidsph</p>
+                </div>
+                <div class="col-md-4 fw-bold fst-italic">
+                    <p class="mb-1">Facebook:</p>
+                    <p>PrintoKids PH</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="very-bottom">
+        <strong><p class="mb-0">&copy; 2026 PrintoKids PH</p></strong>
+        <div class="back-to-top-btn"><a href="#">Back to top</a></div>
+    </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MODALS
+════════════════════════════════════════════════════════════════ -->
+
+<!-- Sign In Modal -->
+<div class="modal fade" id="signInModal" tabindex="-1" aria-labelledby="signInModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark bg-gradient text-white">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signInModalLabel">Sign In to Your Account</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="signInEmail" placeholder="your@email.com">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" id="signInPassword" placeholder="Your password">
+                </div>
+                <p class="mt-2">Don't have an account?
+                    <a href="#" class="text-warning"
+                       data-bs-toggle="modal" data-bs-target="#signUpModal" data-bs-dismiss="modal">
+                        Sign up here!
+                    </a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="signInSubmitBtn">Sign In</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sign Up Modal -->
+<div class="modal fade" id="signUpModal" tabindex="-1" aria-labelledby="signUpModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark bg-gradient text-white">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signUpModalLabel">Create Your Account</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="signUpFullName" placeholder="Juan dela Cruz">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="signUpEmail" placeholder="your@email.com">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" id="signUpPhone" placeholder="09XXXXXXXXX">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Create Password</label>
+                    <input type="password" class="form-control" id="signUpPassword" placeholder="At least 8 characters">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter password">
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="termsCheck">
+                    <label class="form-check-label" for="termsCheck">
+                        I agree to the Terms of Service and Privacy Policy
+                    </label>
+                </div>
+                <p class="mt-2">Already have an account?
+                    <a href="#" class="text-warning"
+                       data-bs-toggle="modal" data-bs-target="#signInModal" data-bs-dismiss="modal">
+                        Sign in here!
+                    </a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="signUpSubmitBtn">Create Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Newsletter Modal -->
+<div class="modal fade" id="newsletterModal" tabindex="-1" aria-labelledby="newsletterModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark bg-gradient text-white">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newsletterModalLabel">Sign up for exclusive offers!</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" class="form-control" id="nlName" placeholder="Juan dela Cruz">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="nlEmail" placeholder="your@email.com">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Location (optional)</label>
+                    <input type="text" class="form-control" id="nlLocation" placeholder="Quezon City">
+                </div>
+                <div id="nlError"   class="alert alert-danger  py-2" style="display:none"></div>
+                <div id="nlSuccess" class="alert alert-success py-2" style="display:none"></div>
+                <p class="text-muted small">We'll never share your email with anyone else.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="submitNewsletter()">Subscribe</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Personalized Gifting Modal -->
+<div class="modal fade" id="giftingModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark bg-gradient text-white">
+            <div class="modal-header">
+                <h5 class="modal-title">Personalized Gifting</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>PrintoKids PH specializes in personalized gifts for every occasion. Our products include:</p>
+                <ul>
+                    <li>Custom mugs and tumblers</li>
+                    <li>Personalized keychains and magnets</li>
+                    <li>Custom stickers and labels</li>
+                    <li>Branded merchandise for events</li>
+                </ul>
+                <p>Browse our product catalog to find the perfect gift!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal"
+                    onclick="document.getElementById('products-container').scrollIntoView({behavior:'smooth'})">
+                    Browse Products
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Totes Modal -->
+<div class="modal fade" id="totesModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark bg-gradient text-white">
+            <div class="modal-header">
+                <h5 class="modal-title">Tote Bags &amp; Purses</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Our canvas tote bags and small purses are perfect for customization. Choose from:</p>
+                <ul>
+                    <li>Standard canvas tote bags</li>
+                    <li>Small zipper purses</li>
+                    <li>Eco-friendly designs</li>
+                </ul>
+                <p>Perfect for corporate giveaways, school events, and personal gifts.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Event Services Modal -->
+<div class="modal fade" id="eventServicesModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark bg-gradient text-white">
+            <div class="modal-header">
+                <h5 class="modal-title">Event Services</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="mb-4">What can we help you with?</p>
+                <div class="d-grid gap-3 col-8 mx-auto">
+                    <button class="btn btn-outline-light"
+                        data-bs-toggle="modal" data-bs-target="#boothInfoModal" data-bs-dismiss="modal">
+                        Booth Information
+                    </button>
+                    <button class="btn btn-outline-light"
+                        data-bs-toggle="modal" data-bs-target="#bookingInquiryModal" data-bs-dismiss="modal">
+                        Booking Inquiry
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booth Info Modal -->
+<div class="modal fade" id="boothInfoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark bg-gradient text-white">
+            <div class="modal-header">
+                <h5 class="modal-title">Pick &amp; Press Booth Information</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Our interactive Pick &amp; Press booths are perfect for any celebration:</p>
+                <ul>
+                    <li>Birthday parties &amp; debuts</li>
+                    <li>Weddings &amp; anniversaries</li>
+                    <li>Corporate events &amp; team-building</li>
+                    <li>School fairs &amp; graduations</li>
+                </ul>
+                <p>Guests personally decorate tote bags, purses, and other items using stickers and creative
+                materials — creating their own customized souvenir on the spot!</p>
+                <p class="mt-2"><strong>For rates and availability, proceed to Booking Inquiry or Contact Us.</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                    data-bs-toggle="modal" data-bs-target="#eventServicesModal">Back</button>
+                <button type="button" class="btn btn-success"
+                    data-bs-toggle="modal" data-bs-target="#bookingInquiryModal" data-bs-dismiss="modal">
+                    Book Now
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Inquiry Modal -->
+<div class="modal fade" id="bookingInquiryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark bg-gradient text-white">
+            <div class="modal-header">
+                <h5 class="modal-title">Booking Inquiry</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">Fill in your event details and we'll get back to you shortly:</p>
+                <div class="mb-3">
+                    <label class="form-label">Event Name *</label>
+                    <input type="text" class="form-control" id="bkEventName" placeholder="e.g. Sofia's 7th Birthday">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Event Type *</label>
+                    <select class="form-select" id="bkEventType">
+                        <option value="">— Select event type —</option>
+                        <option value="Birthday">Birthday</option>
+                        <option value="Wedding">Wedding</option>
+                        <option value="Corporate">Corporate Event</option>
+                        <option value="School Event">School Event</option>
+                        <option value="Debut">Debut</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Event Date *</label>
+                    <input type="date" class="form-control" id="bkEventDate">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Event Location / Venue *</label>
+                    <input type="text" class="form-control" id="bkEventLocation" placeholder="Complete address or venue name">
+                </div>
+                <div id="bkError"   class="alert alert-danger  py-2" style="display:none"></div>
+                <div id="bkSuccess" class="alert alert-success py-2" style="display:none"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                    data-bs-toggle="modal" data-bs-target="#eventServicesModal">Back</button>
+                <button type="button" class="btn btn-success" id="bkSubmitBtn" onclick="submitBookingInquiry()">
+                    Send Inquiry
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Us Modal -->
+<div class="modal fade" id="contactUsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark bg-gradient text-white">
+            <div class="modal-header">
+                <h5 class="modal-title">Get In Touch With Us</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Phone / Mobile:</strong> +63 927 610 9655</p>
+                <p><strong>Instagram:</strong> @printokidsph</p>
+                <p><strong>Facebook:</strong> PrintoKids PH</p>
+                <p class="mt-3 text-muted small">Message us on social media for fastest response. We typically reply within 24 hours.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Home / About Modal -->
+<div class="modal fade" id="homeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark bg-gradient text-white">
+            <div class="modal-header">
+                <h5 class="modal-title">About PrintoKids PH</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>PrintoKids PH is a small business based in the Philippines that focuses on personalized printing
+                services and customized souvenirs for different occasions and celebrations.</p>
+                <p>From customized merchandise to event giveaways, PrintoKids PH offers creative, affordable,
+                and high-quality products that help clients make their events more meaningful and memorable.</p>
+                <h6 class="mt-3">Our Specialties:</h6>
+                <ul>
+                    <li>Custom tote bags, mugs, stickers, labels, and tags</li>
+                    <li>Personalized souvenirs and keychains</li>
+                    <li>Interactive Pick &amp; Press event booths</li>
+                    <li>On-the-spot personalized giveaways</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal"
+                    data-bs-toggle="modal" data-bs-target="#eventServicesModal">
+                    Book an Event
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ── SCRIPTS ─────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+    crossorigin="anonymous"></script>
+<script src="products.js"></script>
+<script src="cart.js"></script>
+<script src="auth.js"></script>
+
+<script>
+const API_BASE = '../api';
+
+// ── Newsletter submit ──────────────────────────────────
+async function submitNewsletter() {
+    const name     = document.getElementById('nlName').value.trim();
+    const email    = document.getElementById('nlEmail').value.trim();
+    const location = document.getElementById('nlLocation').value.trim();
+    const errEl    = document.getElementById('nlError');
+    const okEl     = document.getElementById('nlSuccess');
+    errEl.style.display = 'none';
+    okEl.style.display  = 'none';
+
+    if (!name || !email) { errEl.textContent = 'Name and email are required.'; errEl.style.display = 'block'; return; }
+
+    try {
+        const res  = await fetch(`${API_BASE}/newsletter.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, location })
+        });
+        const data = await res.json();
+        if (data.success) {
+            okEl.textContent        = 'Thank you for subscribing!';
+            okEl.style.display      = 'block';
+            document.getElementById('nlName').value     = '';
+            document.getElementById('nlEmail').value    = '';
+            document.getElementById('nlLocation').value = '';
+        } else {
+            errEl.textContent = data.message || data.error || 'Could not subscribe.';
+            errEl.style.display = 'block';
+        }
+    } catch {
+        errEl.textContent = 'Network error. Please try again.';
+        errEl.style.display = 'block';
+    }
+}
+
+// ── Booking inquiry submit ─────────────────────────────
+async function submitBookingInquiry() {
+    const eventName    = document.getElementById('bkEventName').value.trim();
+    const eventType    = document.getElementById('bkEventType').value;
+    const eventDate    = document.getElementById('bkEventDate').value;
+    const eventLoc     = document.getElementById('bkEventLocation').value.trim();
+    const errEl        = document.getElementById('bkError');
+    const okEl         = document.getElementById('bkSuccess');
+    const btn          = document.getElementById('bkSubmitBtn');
+
+    errEl.style.display = 'none';
+    okEl.style.display  = 'none';
+
+    if (!eventName || !eventType || !eventLoc) {
+        errEl.textContent = 'Event name, type, and location are required.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    // Must be logged in to submit
+    try {
+        const sessionRes  = await fetch(`${API_BASE}/auth.php?action=check`);
+        const session     = await sessionRes.json();
+
+        if (!session.logged_in || session.user_type !== 'customer') {
+            errEl.textContent = 'Please sign in to submit a booking inquiry.';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        btn.disabled    = true;
+        btn.textContent = 'Sending…';
+
+        const res  = await fetch(`${API_BASE}/orders.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customer_id:    session.id,
+                event_name:     eventName,
+                event_type:     eventType,
+                event_date:     eventDate || null,
+                event_location: eventLoc,
+                status:         'Pending'
+            })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            okEl.textContent = 'Inquiry sent! We will get back to you soon.';
+            okEl.style.display = 'block';
+            document.getElementById('bkEventName').value     = '';
+            document.getElementById('bkEventType').value     = '';
+            document.getElementById('bkEventDate').value     = '';
+            document.getElementById('bkEventLocation').value = '';
+        } else {
+            errEl.textContent = data.error || 'Could not submit inquiry.';
+            errEl.style.display = 'block';
+        }
+    } catch {
+        errEl.textContent = 'Network error. Please try again.';
+        errEl.style.display = 'block';
+    } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Send Inquiry';
+    }
+}
+</script>
+
+</body>
+</html>
