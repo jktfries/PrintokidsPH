@@ -6,6 +6,15 @@ require_once '../includes/config.php';
 $pdo    = getPDO();
 $method = $_SERVER['REQUEST_METHOD'];
 
+// Auth guard — GET list requires admin session; individual record requires matching customer or admin
+if ($method === 'GET' && !isset($_GET['id'])) {
+    if (empty($_SESSION['staff_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Admin access required']);
+        exit;
+    }
+}
+
 if ($method === 'GET' && !isset($_GET['id'])) {
     $stmt = $pdo->query(
         'SELECT id, first_name, last_name, email, phone FROM customers ORDER BY last_name LIMIT 100'

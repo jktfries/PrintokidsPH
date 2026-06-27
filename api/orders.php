@@ -6,15 +6,31 @@ $pdo    = getPDO();
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET' && !isset($_GET['id'])) {
-    $stmt = $pdo->query(
-        'SELECT eo.id, eo.customer_id, c.first_name, c.last_name,
-                eo.event_name, eo.event_date, eo.event_type,
-                eo.event_location, eo.status, eo.order_date
-         FROM event_orders eo
-         JOIN customers c ON eo.customer_id = c.id
-         ORDER BY eo.order_date DESC
-         LIMIT 100'
-    );
+    $customer_id_filter = isset($_GET['customer_id']) ? (int) $_GET['customer_id'] : null;
+
+    if ($customer_id_filter) {
+        $stmt = $pdo->prepare(
+            'SELECT eo.id, eo.customer_id, c.first_name, c.last_name,
+                    eo.event_name, eo.event_date, eo.event_type,
+                    eo.event_location, eo.status, eo.order_date
+             FROM event_orders eo
+             JOIN customers c ON eo.customer_id = c.id
+             WHERE eo.customer_id = ?
+             ORDER BY eo.order_date DESC
+             LIMIT 100'
+        );
+        $stmt->execute([$customer_id_filter]);
+    } else {
+        $stmt = $pdo->query(
+            'SELECT eo.id, eo.customer_id, c.first_name, c.last_name,
+                    eo.event_name, eo.event_date, eo.event_type,
+                    eo.event_location, eo.status, eo.order_date
+             FROM event_orders eo
+             JOIN customers c ON eo.customer_id = c.id
+             ORDER BY eo.order_date DESC
+             LIMIT 100'
+        );
+    }
     echo json_encode($stmt->fetchAll());
 
 } elseif ($method === 'GET' && isset($_GET['id'])) {

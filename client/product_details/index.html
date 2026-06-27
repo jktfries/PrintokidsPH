@@ -241,7 +241,6 @@
     integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
     crossorigin="anonymous"></script>
 <script>window.API_ROOT = '../../api';</script>
-<script src="../products.js"></script>
 <script src="../cart.js"></script>
 <script src="../auth.js"></script>
 
@@ -369,13 +368,35 @@ function addProductToCart() {
     const qty   = parseInt(document.getElementById('orderQty').value) || 1;
     const notes = document.getElementById('customizationNotes').value.trim();
 
-    // Products.js loads all products — but this page may be accessed directly.
-    // Inject the product into productManager if it isn't there yet.
-    if (window.productManager && !window.productManager.products.find(p => Number(p.id) === Number(currentProduct.id))) {
-        window.productManager.products.push(currentProduct);
+    if (!window.cartManager) {
+        alert('Cart not ready — please refresh the page.');
+        return;
     }
 
-    window.cartManager?.addItem(currentProduct.id, qty, notes, uploadedMediaUrl);
+    // Directly inject product into cartManager without needing productManager
+    const existingInCart = window.cartManager.cart.find(
+        i => Number(i.id) === Number(currentProduct.id)
+    );
+    if (existingInCart) {
+        existingInCart.quantity += qty;
+        if (notes)           existingInCart.customization_notes = notes;
+        if (uploadedMediaUrl) existingInCart.media_upload_url   = uploadedMediaUrl;
+        window.cartManager.save();
+        window.cartManager.updateBadge();
+        window.cartManager.showAlert(`${currentProduct.name} updated in cart!`, 'success');
+    } else {
+        window.cartManager.cart.push({
+            id:                  Number(currentProduct.id),
+            name:                currentProduct.name,
+            price:               parseFloat(currentProduct.base_cost),
+            quantity:            qty,
+            customization_notes: notes           || '',
+            media_upload_url:    uploadedMediaUrl || '',
+        });
+        window.cartManager.save();
+        window.cartManager.updateBadge();
+        window.cartManager.showAlert(`${currentProduct.name} added to cart!`, 'success');
+    }
 
     const okEl = document.getElementById('addSuccess');
     okEl.style.display = 'block';

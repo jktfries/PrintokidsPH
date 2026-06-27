@@ -8,8 +8,23 @@ $allowedStatuses = ['Pending', 'Confirmed', 'In Production', 'Completed', 'Cance
 
 try {
 
-    // GET all product orders
+    // GET all product orders — requires session (admin sees all, customer filtered by their own id)
     if ($method === 'GET' && !isset($_GET['id'])) {
+        // Must be logged in as either admin or customer
+        if (empty($_SESSION['staff_id']) && empty($_SESSION['customer_id'])) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Authentication required']);
+            exit;
+        }
+
+        // If a customer is logged in (not admin), force filter to their own orders only
+        if (!empty($_SESSION['customer_id']) && empty($_SESSION['staff_id'])) {
+            $customer_id_filter = (int) $_SESSION['customer_id'];
+        } else {
+            $customer_id_filter = isset($_GET['customer_id']) ? (int) $_GET['customer_id'] : null;
+        }
+
+        $where = $customer_id_filter ? 'WHERE po.customer_id = ' . $customer_id_filter : '';
         $stmt = $pdo->query("
             SELECT 
                 po.id,
@@ -31,6 +46,7 @@ try {
             LEFT JOIN staff s ON po.employee_id = s.id
             LEFT JOIN product_order_items poi ON po.id = poi.order_id
             LEFT JOIN products p ON poi.product_id = p.id
+            $where
             GROUP BY po.id, po.customer_id, po.employee_id, po.shipping_address_id,
                      po.order_date, po.status, po.total_amount, po.tracking_number,
                      c.first_name, c.last_name, s.first_name, s.last_name

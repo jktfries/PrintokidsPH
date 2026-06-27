@@ -34,7 +34,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-header('Access-Control-Allow-Origin: *');
+// Allow requests from localhost (XAMPP). Update this to your production domain before going live.
+$allowed_origin = (isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'localhost') !== false)
+    ? 'http://' . $_SERVER['HTTP_HOST']
+    : '';
+if ($allowed_origin) {
+    header('Access-Control-Allow-Origin: ' . $allowed_origin);
+}
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

@@ -216,18 +216,15 @@ async function init() {
 async function loadOrders() {
     const container = document.getElementById('ordersList');
     try {
-        const res    = await fetch(`${API_BASE}/product_orders.php`);
+        const res    = await fetch(`${API_BASE}/product_orders.php?customer_id=${currentUser.id}`);
         const orders = await res.json();
 
-        // Filter to this customer's orders
-        const mine = orders.filter(o => Number(o.customer_id) === Number(currentUser.id));
-
-        if (!mine.length) {
+        if (!orders.length) {
             container.innerHTML = '<p class="text-muted small">No product orders yet. <a href="../index.html">Start shopping!</a></p>';
             return;
         }
 
-        container.innerHTML = mine.map(o => `
+        container.innerHTML = orders.map(o => `
             <div class="order-item">
                 <div style="flex:1;min-width:0">
                     <strong>ORD-${String(o.id).padStart(3,'0')}</strong>
@@ -254,18 +251,15 @@ async function loadOrders() {
 async function loadBookings() {
     const container = document.getElementById('bookingsList');
     try {
-        const res      = await fetch(`${API_BASE}/orders.php`);
+        const res      = await fetch(`${API_BASE}/orders.php?customer_id=${currentUser.id}`);
         const bookings = await res.json();
 
-        // Filter to this customer
-        const mine = bookings.filter(b => Number(b.customer_id) === Number(currentUser.id));
-
-        if (!mine.length) {
-            container.innerHTML = '<p class="text-muted small">No event bookings yet. <a href="../index.html" data-bs-toggle="modal" data-bs-target="#eventServicesModal">Book an event!</a></p>';
+        if (!bookings.length) {
+            container.innerHTML = '<p class="text-muted small">No event bookings yet. <a href="../index.html">Book an event!</a></p>';
             return;
         }
 
-        container.innerHTML = mine.map(b => `
+        container.innerHTML = bookings.map(b => `
             <div class="order-item">
                 <div style="flex:1">
                     <strong>${esc(b.event_name || 'Event Booking')}</strong>
