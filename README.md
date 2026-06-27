@@ -41,7 +41,7 @@ To run this project on your local machine (using XAMPP/WAMP):
 
 1. **Clone the repository** into your `htdocs` or `www` folder. 
 2. **Database Setup:** * Open phpMyAdmin.
-   * Create a new database named `printokids_db`.
+   * Create a new database named `printokidsph_db`.
    * Import the SQL schema file located in `/docs` (once generated).
 3. **Configuration:**
    * Go to the `/includes` folder.
