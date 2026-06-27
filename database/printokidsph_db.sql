@@ -455,7 +455,11 @@ CREATE TABLE `products` (
   `id` int(11) NOT NULL,
   `name` varchar(150) NOT NULL,
   `category` varchar(100) DEFAULT NULL,
-  `base_cost` decimal(10,2) NOT NULL
+  `base_cost` decimal(10,2) NOT NULL,
+  `stock_count` int(11) NOT NULL DEFAULT 0,
+  `reorder_level` int(11) NOT NULL DEFAULT 5,
+  `stock_status` varchar(50) NOT NULL DEFAULT 'In Stock',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
