@@ -1,12 +1,11 @@
 # PrintokidsPH
-The central hub for our codebase for the development of the website.
 
 "A dynamic, automated B2C web application with a centralized database system developed for **Printokids PH**, a customized printing and gifting business. This system eliminates manual order processing bottlenecks by integrating interactive event bookings, product customization, and an automated inventory deduction system."
 
 ### Project Context
 **Course:** ITS122P (Web Systems and Technologies 2)  
 **Institution:** Mapúa University  
-**Team (Group 1):** 
+**Team (Group 1):**
 * Franco Emmanuel T. Castillo
 * Fiona Mykee R. Enriquez
 * Jose II R. Del Carmen
@@ -17,43 +16,102 @@ The central hub for our codebase for the development of the website.
 ---
 
 ## Stack
-* **Frontend:** HTML5, Bootstrap 4, Tailwind CSS, JavaScript, XML, XSLT, XSD
-* **Backend:** PHP
-* **Database:** MySQL (Relational Database)
-* **Design/Prototyping:** Wireframes & ERD provided in the `/docs` folder.
+* **Frontend:** HTML5, Bootstrap 5.1, Vanilla JavaScript
+* **Backend:** PHP 8 (PDO/MySQL)
+* **Database:** MySQL via XAMPP
+* **Design/Prototyping:** Wireframes & ERD in `/docs`
 
 ---
 
 ## Repo Structure
-To avoid merge conflicts, please only work within the folder assigned to your current task:
 
-* `/admin` - Secure backend pages (Dashboard, Inventory CRUD, Order Management).
-* `/client` - Customer-facing portal (Shop, Customization, Event Booth Booking).
-* `/logic` - Pure PHP processing scripts (Authentication, Auto-deduction, Queries).
-* `/includes` - Reusable components (Tailwind headers, footers, database config).
-* `/assets` - Static files (Compiled CSS, custom JS, images, logos).
-* `/docs` - Project proposal, ERD, and wireframes for reference.
+```
+PrintokidsPH/
+├── admin/
+│   ├── admin_login/index.html        ← Admin login page
+│   └── admin_dashboard/
+│       ├── admin_index.html          ← Admin dashboard (all tabs)
+│       ├── admin_dashboard.js
+│       └── admin_styles.css
+├── api/                              ← PHP REST endpoints (PDO)
+│   ├── auth.php                      ← Login, register, logout, session check
+│   ├── products.php                  ← Product catalog (client-facing)
+│   ├── inventory.php                 ← Stock management (admin)
+│   ├── product_orders.php            ← Product orders + stock deduction
+│   ├── orders.php                    ← Event bookings
+│   ├── event_bookings.php            ← Event booking management (admin)
+│   ├── customers.php                 ← Customer CRUD (admin)
+│   ├── staff.php                     ← Staff CRUD (admin)
+│   ├── dashboard.php                 ← Dashboard metrics (admin)
+│   ├── newsletter.php                ← Newsletter subscriptions
+│   ├── services.php                  ← Services reference data
+│   └── upload.php                    ← Image upload for customization
+├── client/
+│   ├── index.html                    ← Homepage / shop
+│   ├── styles.css                    ← Shared stylesheet
+│   ├── auth.js                       ← Sign-in, sign-up, session management
+│   ├── cart.js                       ← Shopping cart + checkout
+│   ├── products.js                   ← Product grid + filters
+│   ├── images/                       ← Client images and logos
+│   ├── product_details/index.html    ← Product detail + customization page
+│   └── my_account/index.html         ← Customer account, orders, bookings
+├── database/
+│   └── printokidsph_db.sql           ← Complete schema (16 tables + seed data)
+├── docs/                             ← Project proposal, ERD, wireframes
+├── includes/
+│   ├── config.example.php            ← Database config template
+│   └── config.php                    ← Your local config (gitignored — never commit)
+├── logic/
+│   └── seed_db.php                   ← DB connectivity check script
+└── uploads/                          ← Customer design uploads (gitignored)
+```
 
 ---
 
 ## Local Setup Instructions
-To run this project on your local machine (using XAMPP/WAMP):
 
-1. **Clone the repository** into your `htdocs` or `www` folder. 
-2. **Database Setup:** * Open phpMyAdmin.
-   * Create a new database named `printokidsph_db`.
-   * Import the SQL schema file located in `/docs` (once generated).
-3. **Configuration:**
-   * Go to the `/includes` folder.
-   * Copy `config.example.php` and rename it to `config.php`.
-   * Update the credentials in `config.php` to match your local database (e.g., root, no password). **Never push `config.php` to GitHub.**
+### 1. Clone the repository
+Clone into your XAMPP `htdocs` folder:
+```
+C:\xampp\htdocs\PrintokidsPH\
+```
+The project will be accessible at: `http://localhost/PrintokidsPH/`
+
+### 2. Database setup
+1. Open phpMyAdmin (`http://localhost/phpmyadmin`)
+2. Create a new database named **`printokidsph_db`**
+3. Select the database, go to **Import**, and import `database/printokidsph_db.sql`
+4. This creates all 16 tables and seeds them with test data
+
+### 3. Configuration
+1. Go to the `/includes` folder
+2. Copy `config.example.php` and rename the copy to `config.php`
+3. Open `config.php` and update your credentials:
+   ```php
+   define('DB_HOST', 'localhost');
+   define('DB_NAME', 'printokidsph_db');
+   define('DB_USER', 'root');       // your MySQL username
+   define('DB_PASS', '');           // your MySQL password (blank by default in XAMPP)
+   ```
+4. **Never push `config.php` to GitHub** — it is already in `.gitignore`
+
+### 4. Access the project
+| Page | URL |
+|---|---|
+| Client homepage | `http://localhost/PrintokidsPH/client/index.html` |
+| Admin login | `http://localhost/PrintokidsPH/admin/admin_login/index.html` |
+| Admin dashboard | `http://localhost/PrintokidsPH/admin/admin_dashboard/admin_index.html` |
+
+**Default admin credentials:** Staff ID `1` / Password `admin1234`  
+Change this after first login.
 
 ---
 
-## Team Workflow (CRITICAL)
-Please **DO NOT** download the repository as a `.zip` file or manually upload files via the website. Use GitHub Desktop or the command line.
+## Team Workflow
 
-1. **Pull Before You Code:** Always click `Fetch Origin` -> `Pull` in GitHub Desktop before starting your work to ensure you have everyone else's latest updates.
-2. **Commit Often:** Don't wait until the end of the week to save your work. Make small, frequent commits with clear descriptions (e.g., *"Styled the checkout page button"* or *"Fixed inventory deduction query"*).
-3. **Push to Main:** Once your feature is working locally, click `Push Origin` to share it with the group. 
-4. **Communicate:** If you are about to make massive changes to core files (like `header.php`), message the group chat first so nobody overwrites your work.
+**DO NOT** download as a `.zip` or manually upload files via the GitHub website. Use GitHub Desktop or the command line.
+
+1. **Pull before you code:** Always `Fetch Origin` → `Pull` before starting work
+2. **Commit often:** Small, frequent commits with clear messages
+3. **Push to main:** Once your feature works locally, push to share with the group
+4. **Communicate:** Message the group before making large changes to shared files
