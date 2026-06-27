@@ -9,37 +9,41 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET' && !isset($_GET['id'])) {
     $category = trim($_GET['category'] ?? '');
 
-    if ($category !== '') {
-        $stmt = $pdo->prepare(
-            'SELECT p.id, p.name, p.category, p.base_cost,
-                    pi.image_url AS primary_image
-             FROM products p
-             LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_primary = 1
-             WHERE p.category = ?
-             ORDER BY p.name
-             LIMIT 100'
-        );
-        $stmt->execute([$category]);
-    } else {
-        $stmt = $pdo->query(
-            'SELECT p.id, p.name, p.category, p.base_cost,
-                    pi.image_url AS primary_image
-             FROM products p
-             LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_primary = 1
-             ORDER BY p.name
-             LIMIT 100'
-        );
+    $base_sql = 'SELECT p.id, p.name, p.category, p.base_cost, p.description, p.is_active,
+                        pi.image_url AS primary_image
+                 FROM products p
+                 LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_primary = 1';
+
+    // By default, only show active products to clients
+    $show_all = isset($_GET['show_all']) && $_GET['show_all'] === '1';
+
+    $conditions = [];
+    $params     = [];
+
+    if (!$show_all) {
+        $conditions[] = 'p.is_active = 1';
     }
+    if ($category !== '') {
+        $conditions[] = 'p.category = ?';
+        $params[]     = $category;
+    }
+
+    if (!empty($conditions)) {
+        $base_sql .= ' WHERE ' . implode(' AND ', $conditions);
+    }
+
+    $base_sql .= ' ORDER BY p.name LIMIT 100';
+
+    $stmt = $pdo->prepare($base_sql);
+    $stmt->execute($params);
     echo json_encode($stmt->fetchAll());
-    
 
 // GET single product with attributes and all images
 } elseif ($method === 'GET' && isset($_GET['id'])) {
     $id = (int) $_GET['id'];
-    
 
     $stmt = $pdo->prepare(
-        'SELECT id, name, category, base_cost FROM products WHERE id = ?'
+        'SELECT id, name, category, base_cost, description, is_active FROM products WHERE id = ?'
     );
     $stmt->execute([$id]);
     $product = $stmt->fetch();
@@ -68,10 +72,12 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     echo json_encode($product);
 
 } elseif ($method === 'POST') {
-    $data      = json_decode(file_get_contents('php://input'), true) ?? [];
-    $name      = trim($data['name'] ?? '');
-    $category  = trim($data['category'] ?? 'General');
-    $base_cost = (float) ($data['base_cost'] ?? 0);
+    $data        = json_decode(file_get_contents('php://input'), true) ?? [];
+    $name        = trim($data['name'] ?? '');
+    $category    = trim($data['category'] ?? 'General');
+    $base_cost   = (float) ($data['base_cost'] ?? 0);
+    $description = trim($data['description'] ?? '');
+    $is_active   = isset($data['is_active']) ? (int) $data['is_active'] : 1;
 
     if ($name === '' || $base_cost <= 0) {
         http_response_code(400);
@@ -80,9 +86,10 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     }
 
     $stmt = $pdo->prepare(
-        'INSERT INTO products (name, category, base_cost) VALUES (?, ?, ?)'
+        'INSERT INTO products (name, category, base_cost, description, is_active)
+         VALUES (?, ?, ?, ?, ?)'
     );
-    $stmt->execute([$name, $category, $base_cost]);
+    $stmt->execute([$name, $category, $base_cost, $description ?: null, $is_active]);
     $new_id = (int) $pdo->lastInsertId();
 
     // Optional: insert attributes
@@ -116,6 +123,14 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     if (isset($data['base_cost']) && (float) $data['base_cost'] > 0) {
         $fields[] = 'base_cost = ?';
         $params[] = (float) $data['base_cost'];
+    }
+    if (array_key_exists('description', $data)) {
+        $fields[] = 'description = ?';
+        $params[] = trim($data['description']) ?: null;
+    }
+    if (isset($data['is_active'])) {
+        $fields[] = 'is_active = ?';
+        $params[] = (int) $data['is_active'];
     }
 
     if (!empty($fields)) {

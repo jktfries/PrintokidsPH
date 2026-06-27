@@ -5,12 +5,11 @@ require_once '../includes/config.php';
 $pdo    = getPDO();
 $method = $_SERVER['REQUEST_METHOD'];
 
-
 if ($method === 'GET' && !isset($_GET['id'])) {
     $stmt = $pdo->query(
         'SELECT eo.id, eo.customer_id, c.first_name, c.last_name,
-                eo.event_name, eo.event_date, eo.event_location, eo.status,
-                eo.order_date
+                eo.event_name, eo.event_date, eo.event_type,
+                eo.event_location, eo.status, eo.order_date
          FROM event_orders eo
          JOIN customers c ON eo.customer_id = c.id
          ORDER BY eo.order_date DESC
@@ -21,8 +20,8 @@ if ($method === 'GET' && !isset($_GET['id'])) {
 } elseif ($method === 'GET' && isset($_GET['id'])) {
     $stmt = $pdo->prepare(
         'SELECT eo.id, eo.customer_id, c.first_name, c.last_name,
-                eo.event_name, eo.event_date, eo.event_location, eo.status,
-                eo.order_date
+                eo.event_name, eo.event_date, eo.event_type,
+                eo.event_location, eo.status, eo.order_date
          FROM event_orders eo
          JOIN customers c ON eo.customer_id = c.id
          WHERE eo.id = ?'
@@ -42,6 +41,7 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     $event_loc   = trim($data['event_location'] ?? '');
     $event_name  = trim($data['event_name'] ?? '');
     $event_date  = trim($data['event_date'] ?? '');
+    $event_type  = trim($data['event_type'] ?? '');
     $status      = trim($data['status'] ?? 'Pending');
 
     if ($customer_id === 0 || $event_loc === '') {
@@ -54,32 +54,65 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     if (!in_array($status, $allowed, true)) $status = 'Pending';
 
     $stmt = $pdo->prepare(
-        'INSERT INTO event_orders (customer_id, event_name, event_date, event_location, status)
-         VALUES (?, ?, ?, ?, ?)'
+        'INSERT INTO event_orders (customer_id, event_name, event_date, event_type, event_location, status)
+         VALUES (?, ?, ?, ?, ?, ?)'
     );
-    $stmt->execute([$customer_id, $event_name ?: null, $event_date ?: null, $event_loc, $status]);
+    $stmt->execute([
+        $customer_id,
+        $event_name  ?: null,
+        $event_date  ?: null,
+        $event_type  ?: null,
+        $event_loc,
+        $status,
+    ]);
     echo json_encode(['id' => (int) $pdo->lastInsertId(), 'success' => true]);
 
 } elseif ($method === 'PUT') {
-    $data   = json_decode(file_get_contents('php://input'), true) ?? [];
-    $id     = (int) ($data['id'] ?? 0);
-    $status = trim($data['status'] ?? '');
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    $id   = (int) ($data['id'] ?? 0);
 
-    if ($id === 0 || $status === '') {
+    if ($id === 0) {
         http_response_code(400);
-        echo json_encode(['error' => 'id and status are required']);
+        echo json_encode(['error' => 'Order ID required']);
         exit;
     }
 
-    $allowed = ['Pending', 'Confirmed', 'In Production', 'Completed', 'Cancelled'];
-    if (!in_array($status, $allowed, true)) {
+    $fields = [];
+    $params = [];
+
+    if (!empty($data['status'])) {
+        $allowed = ['Pending', 'Confirmed', 'In Production', 'Completed', 'Cancelled'];
+        if (in_array($data['status'], $allowed, true)) {
+            $fields[] = 'status = ?';
+            $params[] = $data['status'];
+        }
+    }
+    if (array_key_exists('event_name', $data)) {
+        $fields[] = 'event_name = ?';
+        $params[] = trim($data['event_name']) ?: null;
+    }
+    if (array_key_exists('event_date', $data)) {
+        $fields[] = 'event_date = ?';
+        $params[] = trim($data['event_date']) ?: null;
+    }
+    if (array_key_exists('event_type', $data)) {
+        $fields[] = 'event_type = ?';
+        $params[] = trim($data['event_type']) ?: null;
+    }
+    if (array_key_exists('event_location', $data)) {
+        $fields[] = 'event_location = ?';
+        $params[] = trim($data['event_location']);
+    }
+
+    if (empty($fields)) {
         http_response_code(400);
-        echo json_encode(['error' => 'Invalid status value']);
+        echo json_encode(['error' => 'No fields to update']);
         exit;
     }
 
-    $stmt = $pdo->prepare('UPDATE event_orders SET status = ? WHERE id = ?');
-    $stmt->execute([$status, $id]);
+    $params[] = $id;
+    $stmt = $pdo->prepare('UPDATE event_orders SET ' . implode(', ', $fields) . ' WHERE id = ?');
+    $stmt->execute($params);
     echo json_encode(['success' => true]);
 
 } elseif ($method === 'DELETE') {
