@@ -66,7 +66,7 @@
 
     <!-- Error state -->
     <div id="productError" class="alert alert-danger" style="display:none">
-        Product not found. <a href="../index.html">Back to shop</a>
+        Product not found. Redirecting to the shop in 3 seconds… <a href="../index.html">Go now</a>
     </div>
 
     <!-- Product content -->
@@ -272,6 +272,8 @@ async function loadProduct() {
 function showError() {
     document.getElementById('productLoading').style.display = 'none';
     document.getElementById('productError').style.display   = 'block';
+    // Auto-redirect to shop after 3 seconds
+    setTimeout(() => { window.location.href = '../index.html'; }, 3000);
 }
 
 function renderProduct(p) {
