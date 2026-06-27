@@ -4,7 +4,7 @@
 // "View Details" navigates to product_details/index.html?id=X
 // ============================================================
 
-const PRODUCTS_API = '../api/products.php';
+const PRODUCTS_API = (window.API_ROOT || '../api') + '/products.php';
 
 class ProductManager {
     constructor() {
