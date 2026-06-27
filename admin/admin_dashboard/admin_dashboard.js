@@ -1,372 +1,865 @@
-// ============================================
-// ADMIN DASHBOARD - API INTEGRATION
-// ============================================
+// ============================================================
+// PrintoKids PH — Admin Dashboard
+// ============================================================
+// API path: ../api  (relative from admin/admin_dashboard/)
+// ============================================================
 
-const API_BASE = '../api';
-let allProducts = [];
-let allOrders = [];
+const API = '../api';
 
-// ============================================
-// INITIALIZATION
-// ============================================
+// ── Global state ────────────────────────────────────────────
+let allProducts       = [];
+let allOrders         = [];
+let allEventBookings  = [];
+let allUsers          = [];
+let allStaff          = [];
 
-document.addEventListener('DOMContentLoaded', function() {
-    loadInventory();
-    loadOrders();
+let currentProductFilter      = 'All';
+let currentProductSearch      = '';
+let currentOrderFilter        = 'All';
+let currentEventFilter        = 'All';
+let currentEventSearch        = '';
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', async () => {
+    // Session guard — redirect to login if not an admin
+    try {
+        const res  = await fetch(`${API}/auth.php?action=check`);
+        const data = await res.json();
+        if (!data.logged_in || data.user_type !== 'admin') {
+            window.location.href = '../admin_login/index.html';
+            return;
+        }
+    } catch {
+        window.location.href = '../admin_login/index.html';
+        return;
+    }
+
     setupTabListeners();
+    setupFormListeners();
+
+    // Load all data in parallel so dashboard can aggregate immediately
+    await Promise.all([
+        loadInventory(),
+        loadOrders(),
+        loadEventBookings(),
+        loadUsers(),
+        loadStaff(),
+    ]);
+
+    loadDashboardOverview();
 });
 
+// ============================================================
+// LOGOUT
+// ============================================================
+function handleLogout() {
+    fetch(`${API}/auth.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout' })
+    }).finally(() => {
+        window.location.href = '../admin_login/index.html';
+    });
+}
+
+// ============================================================
+// TAB NAVIGATION
+// ============================================================
 function setupTabListeners() {
-    const tabTriggers = document.querySelectorAll('.tab-trigger');
-    tabTriggers.forEach(trigger => {
-        trigger.addEventListener('click', function() {
-            const targetId = this.getAttribute('data-bs-target');
-            if (targetId === '#inventory') {
-                loadInventory();
-            } else if (targetId === '#orders') {
-                loadOrders();
-            }
+    document.querySelectorAll('.tab-trigger').forEach(trigger => {
+        trigger.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('show', 'active'));
+
+            this.classList.add('active');
+            const target = document.querySelector(this.getAttribute('data-bs-target'));
+            if (target) target.classList.add('show', 'active');
+
+            const id = this.getAttribute('data-bs-target');
+            if      (id === '#dashboard')     loadDashboardOverview();
+            else if (id === '#products')      applyProductCatalogFilters();
+            else if (id === '#inventory')     displayInventory(allProducts);
+            else if (id === '#orders')        displayOrders(applyOrderFilter(allOrders));
+            else if (id === '#eventBookings') applyEventBookingFilters();
+            else if (id === '#users')         { displayUsers(allUsers); displayStaff(allStaff); }
         });
     });
 }
 
-// ============================================
-// INVENTORY FUNCTIONS
-// ============================================
+// ============================================================
+// FORM LISTENERS
+// ============================================================
+function setupFormListeners() {
+    document.getElementById('inventoryForm')?.addEventListener('submit', e => { e.preventDefault(); saveInventoryForm(); });
+    document.getElementById('orderForm')?.addEventListener('submit', e => { e.preventDefault(); saveOrderForm(); });
+    document.getElementById('userForm')?.addEventListener('submit', e => { e.preventDefault(); saveUserForm(); });
+    document.getElementById('eventBookingForm')?.addEventListener('submit', e => { e.preventDefault(); saveEventBookingStatus(); });
+}
 
-function loadInventory() {
-    fetch(`${API_BASE}/inventory.php`)
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to load inventory');
-            return response.json();
-        })
-        .then(data => {
-            allProducts = data;
-            displayInventory(data);
-        })
-        .catch(error => {
-            console.error('Error loading inventory:', error);
-            showAlert('Error loading inventory: ' + error.message, 'danger');
-        });
+// ============================================================
+// DASHBOARD
+// ============================================================
+function loadDashboardOverview() {
+    const lowStock = allProducts.filter(p =>
+        p.stock_status === 'Low Stock' || p.stock_status === 'Out of Stock'
+    );
+
+    const totalRevenue = allOrders.reduce((sum, o) => sum + parseFloat(o.total_amount || 0), 0);
+
+    setText('dashboardTotalProducts', allProducts.length);
+    setText('dashboardLowStock', lowStock.length);
+    setText('dashboardProductOrders', allOrders.length);
+    setText('dashboardEventBookings', allEventBookings.length);
+    setText('dashboardUsers', allUsers.length);
+    setText('dashboardRevenue', '₱' + totalRevenue.toFixed(2));
+
+    displayDashboardLowStock(lowStock.slice(0, 5));
+    displayDashboardRecentProductOrders(allOrders.slice(0, 5));
+    displayDashboardRecentBookings(allEventBookings.slice(0, 5));
+}
+
+function displayDashboardLowStock(items) {
+    const el = document.getElementById('dashboardLowStockList');
+    if (!el) return;
+    if (!items.length) { el.innerHTML = '<p class="text-muted">No low stock items.</p>'; return; }
+    el.innerHTML = items.map(item => `
+        <div class="dashboard-list-item">
+            <div>
+                <strong>${esc(item.name)}</strong>
+                <small>Stock: ${item.stock_count ?? 0} | Reorder at: ${item.reorder_level ?? 0}</small>
+            </div>
+            <span class="badge ${stockBadge(item.stock_status)}">${item.stock_status || 'Low Stock'}</span>
+        </div>
+    `).join('');
+}
+
+function displayDashboardRecentProductOrders(orders) {
+    const el = document.getElementById('dashboardRecentProductOrders');
+    if (!el) return;
+    if (!orders.length) { el.innerHTML = '<p class="text-muted">No recent product orders yet.</p>'; return; }
+    el.innerHTML = orders.map(o => `
+        <div class="dashboard-list-item">
+            <div>
+                <strong>ORD-${pad(o.id)}</strong>
+                <small>${esc(o.first_name)} ${esc(o.last_name)} — ${esc(o.products_ordered || 'N/A')}</small>
+                <small>₱${parseFloat(o.total_amount || 0).toFixed(2)}</small>
+            </div>
+            <span class="badge ${statusBadge(o.status)}">${o.status || 'Pending'}</span>
+        </div>
+    `).join('');
+}
+
+function displayDashboardRecentBookings(bookings) {
+    const el = document.getElementById('dashboardRecentBookings');
+    if (!el) return;
+    if (!bookings.length) { el.innerHTML = '<p class="text-muted">No recent event bookings.</p>'; return; }
+    el.innerHTML = bookings.map(b => `
+        <div class="dashboard-list-item">
+            <div>
+                <strong>BKG-${pad(b.booking_id)}</strong>
+                <small>${esc(b.first_name)} ${esc(b.last_name)} — ${esc(b.event_location || 'N/A')}</small>
+            </div>
+            <span class="badge ${statusBadge(b.status)}">${b.status || 'Pending'}</span>
+        </div>
+    `).join('');
+}
+
+// ============================================================
+// PRODUCTS CATALOG
+// ============================================================
+function filterProductCatalog(status) { currentProductFilter = status; applyProductCatalogFilters(); }
+function searchProductCatalog(kw)     { currentProductSearch  = kw;     applyProductCatalogFilters(); }
+
+function applyProductCatalogFilters() {
+    let list = [...allProducts];
+    if (currentProductFilter !== 'All')
+        list = list.filter(p => p.stock_status === currentProductFilter);
+    if (currentProductSearch.trim()) {
+        const kw = currentProductSearch.toLowerCase();
+        list = list.filter(p =>
+            `${p.id} ${p.name} ${p.category} ${p.base_cost} ${p.stock_status}`.toLowerCase().includes(kw)
+        );
+    }
+    displayProductCatalog(list);
+}
+
+function displayProductCatalog(products) {
+    const tbody = document.querySelector('#productsCatalogTable tbody');
+    if (!tbody) return;
+    if (!products.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No products found</td></tr>';
+        return;
+    }
+    tbody.innerHTML = products.map(p => `
+        <tr>
+            <td class="px-4">PRD-${pad(p.id)}</td>
+            <td class="px-4">${esc(p.name)}</td>
+            <td class="px-4">${esc(p.category || 'General')}</td>
+            <td class="px-4">₱${parseFloat(p.base_cost || 0).toFixed(2)}</td>
+            <td class="px-4"><span class="badge ${stockBadge(p.stock_status)}">${p.stock_status || 'In Stock'}</span></td>
+            <td class="px-4">${Number(p.is_active) === 1
+                ? '<span class="badge bg-success">Active</span>'
+                : '<span class="badge bg-secondary">Archived</span>'}</td>
+            <td class="px-4">${Number(p.is_new) === 1
+                ? '<span class="badge bg-info text-dark">New</span>'
+                : '<span class="text-muted">—</span>'}</td>
+        </tr>
+    `).join('');
+}
+
+function exportProductCatalog() {
+    let list = [...allProducts];
+    if (currentProductFilter !== 'All') list = list.filter(p => p.stock_status === currentProductFilter);
+    if (currentProductSearch.trim()) {
+        const kw = currentProductSearch.toLowerCase();
+        list = list.filter(p => `${p.id} ${p.name} ${p.category}`.toLowerCase().includes(kw));
+    }
+    if (!list.length) { showAlert('No products to export.', 'warning'); return; }
+
+    const headers = ['Product ID','Product Name','Category','Base Price','Stock Count','Reorder Level','Stock Status','Active'];
+    const rows    = list.map(p => [
+        `PRD-${pad(p.id)}`, p.name||'', p.category||'', parseFloat(p.base_cost||0).toFixed(2),
+        p.stock_count??0, p.reorder_level??0, p.stock_status||'', Number(p.is_active)===1?'Yes':'No'
+    ]);
+    downloadCSV('printokids_product_catalog.csv', headers, rows);
+    showAlert('Product catalog exported.', 'success');
+}
+
+// ============================================================
+// INVENTORY CRUD
+// ============================================================
+async function loadInventory() {
+    try {
+        const res  = await fetch(`${API}/inventory.php`);
+        allProducts = await res.json();
+        displayInventory(allProducts);
+    } catch (e) {
+        showAlert('Error loading inventory: ' + e.message, 'danger');
+    }
 }
 
 function displayInventory(products) {
     const tbody = document.querySelector('#inventoryTable tbody');
-    tbody.innerHTML = ''; // Clear existing rows
-    
-    if (products.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No products found</td></tr>';
+    if (!tbody) return;
+    if (!products.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No products found</td></tr>';
         return;
     }
-    
-    products.forEach(product => {
-        const row = document.createElement('tr');
-        row.dataset.productId = product.id;
-        row.innerHTML = `
-            <td class="px-4">${product.name}</td>
-            <td class="px-4">${product.base_cost || 'N/A'}</td>
-            <td class="px-4">${product.category || 'General'}</td>
-            <td class="px-4"><span class="badge bg-success">In Stock</span></td>
+    tbody.innerHTML = products.map(p => `
+        <tr data-id="${p.id}">
+            <td class="px-4">${esc(p.name)}</td>
+            <td class="px-4" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(p.description||'')}">${esc(p.description || '—')}</td>
+            <td class="px-4">${p.stock_count ?? 0}</td>
+            <td class="px-4">${p.reorder_level ?? 0}</td>
+            <td class="px-4"><span class="badge ${stockBadge(p.stock_status)}">${p.stock_status || 'In Stock'}</span></td>
+            <td class="px-4">${Number(p.is_active) === 1
+                ? '<span class="badge bg-success">Active</span>'
+                : '<span class="badge bg-secondary">Archived</span>'}</td>
             <td class="px-4 text-end">
-                <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editProduct(${product.id})">[EDIT]</a>
-                <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="deleteProduct(${product.id})">[DELETE]</a>
+                <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editProduct(${p.id})">[EDIT]</a>
+                <a href="javascript:void(0)" class="text-danger text-decoration-none" onclick="archiveProduct(${p.id}, ${Number(p.is_active)})">${Number(p.is_active)===1?'[ARCHIVE]':'[RESTORE]'}</a>
             </td>
-        `;
-        tbody.appendChild(row);
-    });
+        </tr>
+    `).join('');
 }
 
-function editProduct(productId) {
-    const product = allProducts.find(p => p.id === productId);
-    if (!product) return;
-    
-    const newName = prompt('Enter product name:', product.name);
-    if (newName === null) return;
-    
-    const newCost = prompt('Enter base cost:', product.base_cost);
-    if (newCost === null) return;
-    
-    const updateData = {
-        id: productId,
-        name: newName,
-        base_cost: parseFloat(newCost)
-    };
-    
-    fetch(`${API_BASE}/inventory.php`, {
+function editProduct(id) {
+    const p = allProducts.find(x => Number(x.id) === Number(id));
+    if (!p) { showAlert('Product not found.', 'danger'); return; }
+    openInventoryModal(p);
+}
+
+function archiveProduct(id, currentActive) {
+    const action = currentActive === 1 ? 'archive' : 'restore';
+    if (!confirm(`${action === 'archive' ? 'Archive' : 'Restore'} this product?`)) return;
+
+    fetch(`${API}/inventory.php`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateData)
+        body: JSON.stringify({ id: Number(id), is_active: currentActive === 1 ? 0 : 1 })
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
         if (data.success) {
-            showAlert('Product updated successfully!', 'success');
+            showAlert(`Product ${action}d successfully.`, 'success');
             loadInventory();
         } else {
-            showAlert('Error updating product: ' + (data.error || 'Unknown error'), 'danger');
+            showAlert(data.error || 'Failed.', 'danger');
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        showAlert('Error updating product', 'danger');
-    });
+    .catch(() => showAlert('Request failed.', 'danger'));
 }
 
-function deleteProduct(productId) {
-    if (!confirm('Are you sure you want to delete this product?')) return;
-    
-    fetch(`${API_BASE}/inventory.php`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: productId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showAlert('Product deleted successfully!', 'success');
-            loadInventory();
-        } else {
-            showAlert('Error deleting product: ' + (data.error || 'Unknown error'), 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showAlert('Error deleting product', 'danger');
-    });
+function openInventoryModal(product = null) {
+    const modal = document.getElementById('inventoryModal');
+    document.getElementById('inventoryModalTitle').textContent = product ? 'Edit Product' : 'Add Product';
+    document.getElementById('inventoryProductId').value    = product?.id || '';
+    document.getElementById('inventoryProductName').value  = product?.name || '';
+    document.getElementById('inventoryBaseCost').value     = product?.base_cost || '';
+    document.getElementById('inventoryCategory').value     = product?.category || 'General';
+    document.getElementById('inventoryDescription').value  = product?.description || '';
+    document.getElementById('inventoryStockCount').value   = product?.stock_count ?? 0;
+    document.getElementById('inventoryReorderLevel').value = product?.reorder_level ?? 10;
+    document.getElementById('inventoryIsActive').value     = product ? String(product.is_active ?? 1) : '1';
+    modal.classList.add('show');
 }
 
-function addStock() {
-    const productName = prompt('Enter product name:');
-    if (!productName) return;
-    
-    const baseCost = prompt('Enter base cost:');
-    if (!baseCost) return;
-    
-    const category = prompt('Enter category (optional):', 'General');
-    
-    const newProduct = {
-        name: productName,
-        base_cost: parseFloat(baseCost),
-        category: category || 'General'
+function closeInventoryModal() {
+    document.getElementById('inventoryModal').classList.remove('show');
+}
+
+function saveInventoryForm() {
+    const id = document.getElementById('inventoryProductId').value;
+    const payload = {
+        name:          document.getElementById('inventoryProductName').value.trim(),
+        base_cost:     parseFloat(document.getElementById('inventoryBaseCost').value),
+        category:      document.getElementById('inventoryCategory').value.trim() || 'General',
+        description:   document.getElementById('inventoryDescription').value.trim(),
+        stock_count:   parseInt(document.getElementById('inventoryStockCount').value),
+        reorder_level: parseInt(document.getElementById('inventoryReorderLevel').value),
+        is_active:     parseInt(document.getElementById('inventoryIsActive').value),
     };
-    
-    fetch(`${API_BASE}/inventory.php`, {
-        method: 'POST',
+
+    if (!payload.name || isNaN(payload.base_cost) || isNaN(payload.stock_count) || isNaN(payload.reorder_level)) {
+        showAlert('Please fill in all required fields.', 'danger');
+        return;
+    }
+
+    const method = id ? 'PUT' : 'POST';
+    if (id) payload.id = Number(id);
+
+    fetch(`${API}/inventory.php`, {
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newProduct)
+        body: JSON.stringify(payload)
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
         if (data.success) {
-            showAlert('Product added successfully!', 'success');
-            loadInventory();
+            closeInventoryModal();
+            showAlert(id ? 'Product updated.' : 'Product added.', 'success');
+            loadInventory().then(() => applyProductCatalogFilters());
         } else {
-            showAlert('Error adding product: ' + (data.error || 'Unknown error'), 'danger');
+            showAlert(data.error || 'Save failed.', 'danger');
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        showAlert('Error adding product', 'danger');
-    });
+    .catch(() => showAlert('Request failed.', 'danger'));
 }
 
-function addStockDetails() {
-    alert('Stock Details feature coming soon!');
+// ============================================================
+// PRODUCT ORDERS
+// ============================================================
+async function loadOrders() {
+    try {
+        const res = await fetch(`${API}/product_orders.php`);
+        allOrders = await res.json();
+        displayOrders(applyOrderFilter(allOrders));
+    } catch (e) {
+        showAlert('Error loading product orders: ' + e.message, 'danger');
+    }
 }
 
-function editInventoryRow(element) {
-    const row = element.closest('tr');
-    const productId = row.dataset.productId;
-    editProduct(productId);
+function applyOrderFilter(orders) {
+    if (currentOrderFilter === 'All') return orders;
+    return orders.filter(o => o.status === currentOrderFilter);
 }
 
-// ============================================
-// ORDERS FUNCTIONS
-// ============================================
-
-function loadOrders() {
-    fetch(`${API_BASE}/orders.php`)
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to load orders');
-            return response.json();
-        })
-        .then(data => {
-            allOrders = data;
-            displayOrders(data);
-        })
-        .catch(error => {
-            console.error('Error loading orders:', error);
-            showAlert('Error loading orders: ' + error.message, 'danger');
-        });
+function filterOrders(status) {
+    currentOrderFilter = status;
+    displayOrders(applyOrderFilter(allOrders));
 }
 
 function displayOrders(orders) {
     const tbody = document.querySelector('#ordersTable tbody');
-    tbody.innerHTML = ''; // Clear existing rows
-    
-    if (orders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No orders found</td></tr>';
+    if (!tbody) return;
+    if (!orders.length) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">No product orders found</td></tr>';
         return;
     }
-    
-    orders.forEach(order => {
-        const row = document.createElement('tr');
-        row.className = 'order-row';
-        row.dataset.orderId = order.id;
-        row.dataset.status = order.status || 'Pending';
-        row.innerHTML = `
-            <td class="px-4 py-3">ORD-${String(order.id).padStart(3, '0')}</td>
-            <td>${order.first_name} ${order.last_name}</td>
-            <td>₱${order.event_location || 'N/A'}</td>
-            <td>Staff Pending</td>
-            <td><span class="badge ${getStatusBadgeClass(order.status)}">${order.status || 'Pending'}</span></td>
+    tbody.innerHTML = orders.map(o => `
+        <tr>
+            <td class="px-4">ORD-${pad(o.id)}</td>
+            <td>${esc(o.first_name)} ${esc(o.last_name)}</td>
+            <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(o.products_ordered||'')}">${esc(o.products_ordered || 'N/A')}</td>
+            <td>${o.total_quantity || 0}</td>
+            <td>₱${parseFloat(o.total_amount || 0).toFixed(2)}</td>
+            <td>${o.employee_first_name ? esc(o.employee_first_name + ' ' + o.employee_last_name) : '<span class="text-muted">—</span>'}</td>
+            <td>${o.tracking_number ? esc(o.tracking_number) : '<span class="text-muted">—</span>'}</td>
+            <td><span class="badge ${statusBadge(o.status)}">${o.status || 'Pending'}</span></td>
             <td class="px-4 text-end">
-                <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrder(${order.id})">[EDIT]</a>
-                <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="deleteOrder(${order.id})">[DELETE]</a>
+                <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editOrder(${Number(o.id)})">[EDIT]</a>
+                <a href="javascript:void(0)" class="text-danger text-decoration-none" onclick="deleteOrder(${Number(o.id)})">[DELETE]</a>
             </td>
-        `;
-        tbody.appendChild(row);
-    });
+        </tr>
+    `).join('');
 }
 
-function getStatusBadgeClass(status) {
-    switch(status) {
-        case 'Pending': return 'bg-warning text-dark';
-        case 'Confirmed': return 'bg-info';
-        case 'In Production': return 'bg-primary';
-        case 'Completed': return 'bg-success';
-        default: return 'bg-secondary';
+async function editOrder(id) {
+    // Fetch full order detail (includes items with customization + media)
+    try {
+        const res   = await fetch(`${API}/product_orders.php?id=${id}`);
+        const order = await res.json();
+        if (order.error) { showAlert('Order not found.', 'danger'); return; }
+        openOrderModal(order);
+    } catch {
+        showAlert('Failed to load order details.', 'danger');
     }
 }
 
-function editOrder(orderId) {
-    const order = allOrders.find(o => o.id === orderId);
-    if (!order) return;
-    
-    const newStatus = prompt('Enter new status (Pending/Confirmed/In Production/Completed):', order.status);
-    if (newStatus === null) return;
-    
-    const updateData = {
-        id: orderId,
-        status: newStatus
+function openOrderModal(order) {
+    // Populate staff dropdown
+    const staffSel = document.getElementById('orderAssignedStaff');
+    staffSel.innerHTML = '<option value="">— Unassigned —</option>';
+    allStaff.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = `${s.first_name} ${s.last_name} (${s.role_title || 'Staff'})`;
+        if (Number(order.employee_id) === Number(s.id)) opt.selected = true;
+        staffSel.appendChild(opt);
+    });
+
+    document.getElementById('orderId').value           = order.id;
+    document.getElementById('orderClientName').value   = `${order.first_name || ''} ${order.last_name || ''}`.trim();
+    document.getElementById('orderTotalAmount').value  = `₱${parseFloat(order.total_amount || 0).toFixed(2)}`;
+    document.getElementById('orderProductsOrdered').value = order.products_ordered ||
+        (order.items ? order.items.map(i => `${i.name} x${i.quantity}`).join(', ') : 'N/A');
+    document.getElementById('orderStatus').value       = order.status || 'Pending';
+    document.getElementById('orderTrackingNumber').value = order.tracking_number || '';
+
+    // Customization notes (aggregate from items)
+    const notes = (order.items || []).filter(i => i.customization_notes).map(i => `${i.name}: ${i.customization_notes}`).join('\n');
+    const notesRow = document.getElementById('customizationNotesRow');
+    if (notes) {
+        document.getElementById('orderCustomizationNotes').value = notes;
+        notesRow.style.display = 'block';
+    } else {
+        notesRow.style.display = 'none';
+    }
+
+    // Media upload links
+    const mediaLinks = (order.items || []).filter(i => i.media_upload_url);
+    const mediaRow   = document.getElementById('mediaUploadRow');
+    if (mediaLinks.length) {
+        document.getElementById('orderMediaLink').innerHTML = mediaLinks.map(i =>
+            `<a href="${esc(i.media_upload_url)}" target="_blank" class="d-block">${esc(i.name)}: View Upload</a>`
+        ).join('');
+        mediaRow.style.display = 'block';
+    } else {
+        mediaRow.style.display = 'none';
+    }
+
+    document.getElementById('orderModal').classList.add('show');
+}
+
+function closeOrderModal() {
+    document.getElementById('orderModal').classList.remove('show');
+}
+
+function saveOrderForm() {
+    const id = Number(document.getElementById('orderId').value);
+    if (!id) return;
+
+    const payload = {
+        id,
+        status:       document.getElementById('orderStatus').value,
+        employee_id:  document.getElementById('orderAssignedStaff').value || null,
+        tracking_number: document.getElementById('orderTrackingNumber').value.trim() || null,
     };
-    
-    fetch(`${API_BASE}/orders.php`, {
+
+    fetch(`${API}/product_orders.php`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateData)
+        body: JSON.stringify(payload)
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
         if (data.success) {
-            showAlert('Order updated successfully!', 'success');
+            closeOrderModal();
+            showAlert('Order updated successfully.', 'success');
             loadOrders();
         } else {
-            showAlert('Error updating order: ' + (data.error || 'Unknown error'), 'danger');
+            showAlert(data.error || 'Update failed.', 'danger');
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        showAlert('Error updating order', 'danger');
-    });
+    .catch(() => showAlert('Request failed.', 'danger'));
 }
 
-function deleteOrder(orderId) {
-    if (!confirm('Are you sure you want to delete this order?')) return;
-    
-    fetch(`${API_BASE}/orders.php`, {
+function deleteOrder(id) {
+    if (!confirm('Delete this product order? This cannot be undone.')) return;
+    fetch(`${API}/product_orders.php`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: orderId })
+        body: JSON.stringify({ id: Number(id) })
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
         if (data.success) {
-            showAlert('Order deleted successfully!', 'success');
+            showAlert('Order deleted.', 'success');
             loadOrders();
         } else {
-            showAlert('Error deleting order: ' + (data.error || 'Unknown error'), 'danger');
+            showAlert(data.error || 'Delete failed.', 'danger');
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        showAlert('Error deleting order', 'danger');
-    });
+    .catch(() => showAlert('Request failed.', 'danger'));
 }
 
-function addOrder() {
-    const customerId = prompt('Enter customer ID:');
-    if (!customerId) return;
-    
-    const eventLocation = prompt('Enter event location:');
-    if (!eventLocation) return;
-    
-    const newOrder = {
-        customer_id: parseInt(customerId),
-        event_location: eventLocation,
-        status: 'Pending'
-    };
-    
-    fetch(`${API_BASE}/orders.php`, {
-        method: 'POST',
+function exportSalesHistory() {
+    const list = applyOrderFilter(allOrders);
+    if (!list.length) { showAlert('No orders to export.', 'warning'); return; }
+    const headers = ['Order ID','Customer','Products','Qty','Total','Staff','Tracking','Status','Date'];
+    const rows    = list.map(o => [
+        `ORD-${pad(o.id)}`,
+        `${o.first_name||''} ${o.last_name||''}`.trim(),
+        o.products_ordered || '',
+        o.total_quantity || 0,
+        parseFloat(o.total_amount||0).toFixed(2),
+        o.employee_first_name ? `${o.employee_first_name} ${o.employee_last_name}` : '',
+        o.tracking_number || '',
+        o.status || '',
+        o.order_date || ''
+    ]);
+    downloadCSV('printokids_product_orders.csv', headers, rows);
+    showAlert('Sales history exported.', 'success');
+}
+
+// ============================================================
+// EVENT BOOKINGS
+// ============================================================
+async function loadEventBookings() {
+    try {
+        const res     = await fetch(`${API}/event_bookings.php`);
+        allEventBookings = await res.json();
+        displayEventBookingSummary(allEventBookings);
+        applyEventBookingFilters();
+    } catch (e) {
+        showAlert('Error loading event bookings: ' + e.message, 'danger');
+    }
+}
+
+function displayEventBookingSummary(bookings) {
+    setText('bookingTotalCount',      bookings.length);
+    setText('bookingPendingCount',    bookings.filter(b => b.status === 'Pending').length);
+    setText('bookingConfirmedCount',  bookings.filter(b => b.status === 'Confirmed').length);
+    setText('bookingProductionCount', bookings.filter(b => b.status === 'In Production').length);
+    setText('bookingCompletedCount',  bookings.filter(b => b.status === 'Completed').length);
+}
+
+function filterEventBookings(status) { currentEventFilter = status; applyEventBookingFilters(); }
+function searchEventBookings(kw)     { currentEventSearch  = kw;    applyEventBookingFilters(); }
+
+function applyEventBookingFilters() {
+    let list = [...allEventBookings];
+    if (currentEventFilter !== 'All')
+        list = list.filter(b => b.status === currentEventFilter);
+    if (currentEventSearch.trim()) {
+        const kw = currentEventSearch.toLowerCase();
+        list = list.filter(b =>
+            `${b.booking_id} ${b.first_name} ${b.last_name} ${b.event_location} ${b.service_name} ${b.asset_name} ${b.status}`
+            .toLowerCase().includes(kw)
+        );
+    }
+    displayEventBookings(list);
+    displayEventBookingSummary(allEventBookings);
+}
+
+function displayEventBookings(bookings) {
+    const tbody = document.querySelector('#eventBookingsTable tbody');
+    if (!tbody) return;
+    if (!bookings.length) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">No event bookings found</td></tr>';
+        return;
+    }
+    tbody.innerHTML = bookings.map(b => `
+        <tr>
+            <td class="px-4">BKG-${pad(b.booking_id)}</td>
+            <td class="px-4">${esc(b.first_name)} ${esc(b.last_name)}</td>
+            <td class="px-4">${esc(b.event_type || '—')}</td>
+            <td class="px-4">${esc(b.event_location || 'N/A')}</td>
+            <td class="px-4">${esc(b.service_name || 'N/A')}</td>
+            <td class="px-4">${formatSchedule(b.start_time, b.end_time)}</td>
+            <td class="px-4">₱${parseFloat(b.price_charged || 0).toFixed(2)}</td>
+            <td class="px-4"><span class="badge ${statusBadge(b.status)}">${b.status || 'Pending'}</span></td>
+            <td class="px-4 text-end">
+                <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="viewEventBooking(${Number(b.booking_id)})">[VIEW]</a>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function viewEventBooking(id) {
+    const b = allEventBookings.find(x => Number(x.booking_id) === Number(id));
+    if (!b) { showAlert('Booking not found.', 'danger'); return; }
+
+    document.getElementById('eventBookingOrderId').value    = b.order_id;
+    document.getElementById('eventBookingId').value         = `BKG-${pad(b.booking_id)}`;
+    document.getElementById('eventBookingClientName').value = `${b.first_name || ''} ${b.last_name || ''}`.trim();
+    document.getElementById('eventBookingType').value       = b.event_type || '—';
+    document.getElementById('eventBookingLocation').value   = b.event_location || 'N/A';
+    document.getElementById('eventBookingService').value    = b.service_name || 'N/A';
+    document.getElementById('eventBookingAsset').value      = b.asset_name || 'N/A';
+    document.getElementById('eventBookingSchedule').value   = formatSchedule(b.start_time, b.end_time);
+    document.getElementById('eventBookingPrice').value      = `₱${parseFloat(b.price_charged || 0).toFixed(2)}`;
+    document.getElementById('eventBookingStatus').value     = b.status || 'Pending';
+
+    document.getElementById('eventBookingModal').classList.add('show');
+}
+
+function closeEventBookingModal() {
+    document.getElementById('eventBookingModal').classList.remove('show');
+}
+
+function saveEventBookingStatus() {
+    const orderId = Number(document.getElementById('eventBookingOrderId').value);
+    const status  = document.getElementById('eventBookingStatus').value;
+    if (!orderId || !status) { showAlert('Missing order ID or status.', 'danger'); return; }
+
+    fetch(`${API}/event_bookings.php`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newOrder)
+        body: JSON.stringify({ order_id: orderId, status })
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
         if (data.success) {
-            showAlert('Order added successfully!', 'success');
-            loadOrders();
+            closeEventBookingModal();
+            showAlert('Booking status updated.', 'success');
+            loadEventBookings();
         } else {
-            showAlert('Error adding order: ' + (data.error || 'Unknown error'), 'danger');
+            showAlert(data.error || 'Update failed.', 'danger');
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        showAlert('Error adding order', 'danger');
-    });
+    .catch(() => showAlert('Request failed.', 'danger'));
 }
 
-function addOrderDetails() {
-    alert('Order Details feature coming soon!');
+function exportEventBookings() {
+    let list = [...allEventBookings];
+    if (currentEventFilter !== 'All') list = list.filter(b => b.status === currentEventFilter);
+    if (!list.length) { showAlert('No bookings to export.', 'warning'); return; }
+    const headers = ['Booking ID','Order ID','Client','Event Type','Location','Service','Asset','Schedule','Price','Status'];
+    const rows    = list.map(b => [
+        `BKG-${pad(b.booking_id)}`, `ORD-${pad(b.order_id)}`,
+        `${b.first_name||''} ${b.last_name||''}`.trim(),
+        b.event_type || '',
+        b.event_location || '', b.service_name || '', b.asset_name || '',
+        formatSchedule(b.start_time, b.end_time),
+        parseFloat(b.price_charged||0).toFixed(2), b.status || ''
+    ]);
+    downloadCSV('printokids_event_bookings.csv', headers, rows);
+    showAlert('Event bookings exported.', 'success');
 }
 
-function editOrderRow(element) {
-    const row = element.closest('tr');
-    const orderId = row.dataset.orderId;
-    editOrder(orderId);
+// ============================================================
+// USERS — CLIENTS + STAFF
+// ============================================================
+async function loadUsers() {
+    try {
+        const res = await fetch(`${API}/customers.php`);
+        allUsers  = await res.json();
+        displayUsers(allUsers);
+    } catch (e) {
+        showAlert('Error loading clients: ' + e.message, 'danger');
+    }
 }
 
-function filterOrders(status) {
-    const rows = document.querySelectorAll('#ordersTable tbody tr.order-row');
-    
-    rows.forEach(row => {
-        if (status === 'All' || row.dataset.status === status) {
-            row.style.display = '';
+async function loadStaff() {
+    try {
+        const res = await fetch(`${API}/staff.php`);
+        allStaff  = await res.json();
+        displayStaff(allStaff);
+    } catch (e) {
+        showAlert('Error loading staff: ' + e.message, 'danger');
+    }
+}
+
+function switchUserSubTab(tab) {
+    document.getElementById('clientsSubPanel').style.display = tab === 'clients' ? '' : 'none';
+    document.getElementById('staffSubPanel').style.display   = tab === 'staff'   ? '' : 'none';
+    document.getElementById('clientsSubTab').classList.toggle('active', tab === 'clients');
+    document.getElementById('staffSubTab').classList.toggle('active', tab === 'staff');
+}
+
+function displayUsers(users) {
+    const tbody = document.querySelector('#usersTable tbody');
+    if (!tbody) return;
+    if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No clients found</td></tr>';
+        return;
+    }
+    tbody.innerHTML = users.map(u => `
+        <tr>
+            <td class="px-4">USR-${pad(u.id)}</td>
+            <td class="px-4">${esc(u.first_name)} ${esc(u.last_name)}</td>
+            <td class="px-4">${esc(u.email || 'N/A')}</td>
+            <td class="px-4">${esc(u.phone || 'N/A')}</td>
+            <td class="px-4 text-end">
+                <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editUser(${Number(u.id)})">[EDIT]</a>
+                <a href="javascript:void(0)" class="text-danger text-decoration-none" onclick="deleteUser(${Number(u.id)})">[DELETE]</a>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function displayStaff(staff) {
+    const tbody = document.querySelector('#staffTable tbody');
+    if (!tbody) return;
+    if (!staff.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No staff found</td></tr>';
+        return;
+    }
+    tbody.innerHTML = staff.map(s => `
+        <tr>
+            <td class="px-4">STF-${pad(s.id)}</td>
+            <td class="px-4">${esc(s.first_name)} ${esc(s.last_name)}</td>
+            <td class="px-4">${esc(s.role_title || '—')}</td>
+            <td class="px-4">${esc(s.contact_number || 'N/A')}</td>
+            <td class="px-4"><span class="badge ${s.status === 'Active' ? 'bg-success' : s.status === 'On Leave' ? 'bg-warning text-dark' : 'bg-secondary'}">${s.status}</span></td>
+            <td class="px-4">${Number(s.is_admin) === 1 ? '<span class="badge bg-danger">Admin</span>' : '—'}</td>
+        </tr>
+    `).join('');
+}
+
+function editUser(id) {
+    const u = allUsers.find(x => Number(x.id) === Number(id));
+    if (!u) { showAlert('Client not found.', 'danger'); return; }
+    openUserModal(u);
+}
+
+function openUserModal(user) {
+    document.getElementById('userId').value        = user.id;
+    document.getElementById('userFirstName').value = user.first_name || '';
+    document.getElementById('userLastName').value  = user.last_name  || '';
+    document.getElementById('userEmail').value     = user.email      || '';
+    document.getElementById('userPhone').value     = user.phone      || '';
+    document.getElementById('userModal').classList.add('show');
+}
+
+function closeUserModal() {
+    document.getElementById('userModal').classList.remove('show');
+}
+
+function saveUserForm() {
+    const id = document.getElementById('userId').value;
+    if (!id) return;
+
+    const payload = {
+        id:         Number(id),
+        first_name: document.getElementById('userFirstName').value.trim(),
+        last_name:  document.getElementById('userLastName').value.trim(),
+        email:      document.getElementById('userEmail').value.trim(),
+        phone:      document.getElementById('userPhone').value.trim(),
+    };
+
+    if (!payload.first_name || !payload.last_name || !payload.email) {
+        showAlert('First name, last name, and email are required.', 'danger');
+        return;
+    }
+
+    fetch(`${API}/customers.php`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            closeUserModal();
+            showAlert('Client updated successfully.', 'success');
+            loadUsers();
         } else {
-            row.style.display = 'none';
+            showAlert(data.error || 'Update failed.', 'danger');
         }
-    });
+    })
+    .catch(() => showAlert('Request failed.', 'danger'));
 }
 
-// ============================================
+function deleteUser(id) {
+    if (!confirm('Delete this client? This also removes their orders and addresses.')) return;
+    fetch(`${API}/customers.php`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: Number(id) })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Client deleted.', 'success');
+            loadUsers();
+        } else {
+            showAlert(data.error || 'Delete failed.', 'danger');
+        }
+    })
+    .catch(() => showAlert('Request failed.', 'danger'));
+}
+
+// ============================================================
 // UTILITIES
-// ============================================
+// ============================================================
+function pad(n) { return String(n).padStart(3, '0'); }
+
+function esc(str) {
+    if (str == null) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+}
+
+function stockBadge(status) {
+    switch (status) {
+        case 'In Stock':    return 'bg-success';
+        case 'Low Stock':   return 'bg-warning text-dark';
+        case 'Out of Stock':return 'bg-danger';
+        default:            return 'bg-secondary';
+    }
+}
+
+function statusBadge(status) {
+    switch (status) {
+        case 'Pending':       return 'bg-warning text-dark';
+        case 'Confirmed':     return 'bg-info text-dark';
+        case 'In Production': return 'bg-primary';
+        case 'Completed':     return 'bg-success';
+        case 'Cancelled':     return 'bg-danger';
+        default:              return 'bg-secondary';
+    }
+}
+
+function formatSchedule(start, end) {
+    if (!start || !end) return 'N/A';
+    const s = new Date(start);
+    const e = new Date(end);
+    const fmt = d => d.toLocaleDateString('en-PH') + ' ' + d.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
+    return `${fmt(s)} – ${new Date(end).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' })}`;
+}
+
+function downloadCSV(filename, headers, rows) {
+    const csv = [
+        headers.join(','),
+        ...rows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+}
 
 function showAlert(message, type = 'info') {
-    // Create a simple alert div - you can style this better
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-    alertDiv.role = 'alert';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    
-    // Insert at top of main content
-    const main = document.querySelector('main');
-    main.insertBefore(alertDiv, main.firstChild);
-    
-    // Auto-dismiss after 5 seconds
-    setTimeout(() => alertDiv.remove(), 5000);
+    const div = document.createElement('div');
+    div.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+    div.style.cssText = 'z-index:10000;min-width:300px;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
+    div.role = 'alert';
+    div.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+    document.body.appendChild(div);
+    setTimeout(() => div.remove(), 4000);
 }
