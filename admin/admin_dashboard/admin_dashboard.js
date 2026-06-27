@@ -182,14 +182,12 @@ function displayProductCatalog(products) {
     tbody.innerHTML = '';
 
     if (!products || products.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No products found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No products found</td></tr>';
         return;
     }
 
     products.forEach(product => {
         const row = document.createElement('tr');
-
-        const isNew = Number(product.is_new) === 1;
 
         row.innerHTML = `
             <td class="px-4">PRD-${String(product.id).padStart(3, '0')}</td>
@@ -200,10 +198,7 @@ function displayProductCatalog(products) {
                 <span class="badge ${getStockBadgeClass(product.stock_status)}">
                     ${product.stock_status || 'In Stock'}
                 </span>
-            </td>
-            <td class="px-4">
-                ${isNew ? '<span class="badge bg-success">NEW PRODUCT</span>' : '<span class="text-muted">—</span>'}
-            </td>
+            </td>          
         `;
 
         tbody.appendChild(row);
@@ -245,8 +240,7 @@ function exportProductCatalog() {
         'Product Name',
         'Category',
         'Base Price',
-        'Stock Status',
-        'New Product'
+        'Stock Status'
     ];
 
     const rows = exportProducts.map(product => [
@@ -254,8 +248,7 @@ function exportProductCatalog() {
         product.name || '',
         product.category || '',
         parseFloat(product.base_cost || 0).toFixed(2),
-        product.stock_status || 'In Stock',
-        Number(product.is_new) === 1 ? 'Yes' : 'No'
+        product.stock_status || 'In Stock'
     ]);
 
     const csvContent = [
@@ -361,15 +354,27 @@ function setupTabListeners() {
             }
 
             if (targetId === '#dashboard') {
-                loadDashboardOverview();
+                loadEventBookings();
+                loadOrders();
+                loadInventory();
+                loadUsers();
+
+                setTimeout(() => {
+                    loadDashboardOverview();
+                }, 500);
+
             } else if (targetId === '#products') {
                 loadProductCatalog();
+
             } else if (targetId === '#inventory') {
                 loadInventory();
+
             } else if (targetId === '#orders') {
                 loadOrders();
+
             } else if (targetId === '#eventBookings') {
                 loadEventBookings();
+
             } else if (targetId === '#users') {
                 loadUsers();
             }
@@ -811,7 +816,7 @@ function saveUserForm() {
                 closeUserModal();
                 showAlert('User updated successfully!', 'success');
                 loadUsers();
-                
+
                 setTimeout(() => {
                     loadDashboardOverview();
                 }, 500);
@@ -840,7 +845,7 @@ function deleteUser(userId) {
             if (data.success) {
                 showAlert('User deleted successfully!', 'success');
                 loadUsers();
-                
+
                 setTimeout(() => {
                     loadDashboardOverview();
                 }, 500);
@@ -1152,33 +1157,6 @@ function getStatusBadgeClass(status) {
         case 'Completed': return 'bg-success';
         default: return 'bg-secondary';
     }
-}
-
-function addOrder() {
-    openOrderModal();
-}
-
-function addOrderDetails() {
-    openOrderModal();
-}
-
-function filterOrders(status) {
-    currentOrderFilter = status;
-
-    let filteredOrders = allOrders;
-
-    if (status !== 'All') {
-        filteredOrders = allOrders.filter(order => {
-            return (order.status || 'Pending') === status;
-        });
-    }
-
-    displayOrders(filteredOrders);
-}
-
-function closeOrderModal() {
-    const modal = document.getElementById('orderModal');
-    modal.classList.remove('show');
 }
 
 // ============================================
