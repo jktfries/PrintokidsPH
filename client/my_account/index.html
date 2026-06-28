@@ -162,9 +162,9 @@
         <!-- RIGHT column: Orders + Bookings -->
         <div class="col-lg-8">
 
-            <!-- Product orders -->
+            <!-- Orders -->
             <div class="account-card">
-                <h5>Product Orders</h5>
+                <h5>Orders</h5>
                 <div id="ordersList">
                     <p class="text-muted small">Loading orders…</p>
                 </div>
@@ -203,6 +203,26 @@
             </div>
             <div class="modal-body pt-2" id="orderDetailBody">
                 <div class="text-center py-4 text-muted small">Loading…</div>
+            </div>
+            <!-- Cancel / reason section injected by JS -->
+            <div id="odCancelSection" style="display:none" class="px-3 pb-2">
+                <hr class="my-3">
+                <p class="text-uppercase fw-bold text-muted small mb-2" style="letter-spacing:.05em">Cancel Order</p>
+                <div id="odRefundWarning" class="alert alert-warning py-2 px-3 mb-2 small" style="display:none">
+                    <strong>Note:</strong> You have already paid for this order.
+                    Cancelling will flag it for a <strong>refund</strong>, which our team will process manually within 3-5 business days.
+                </div>
+                <textarea id="odCancelReason" class="form-control form-control-sm mb-2" rows="3"
+                    placeholder="Reason for cancellation (optional)…"></textarea>
+                <div id="odCancelError" class="alert alert-danger py-2 small" style="display:none"></div>
+                <button class="btn btn-danger btn-sm" onclick="cancelOrder()">Cancel My Order</button>
+            </div>
+            <!-- Already-cancelled: show customer's reason -->
+            <div id="odCancelReasonDisplay" style="display:none" class="px-3 pb-2">
+                <hr class="my-3">
+                <p class="text-uppercase fw-bold text-muted small mb-1" style="letter-spacing:.05em">Cancellation Reason</p>
+                <div id="odCancelReasonText"
+                    style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 12px;font-size:0.875rem;color:#664d03"></div>
             </div>
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
@@ -662,9 +682,11 @@ const orderDetailModalEl = document.getElementById('orderDetailModal');
 const orderDetailModal   = orderDetailModalEl ? new bootstrap.Modal(orderDetailModalEl) : null;
 
 const PAYMENT_STATUS_CLASS = {
-    'Unpaid':   'bg-warning text-dark',
-    'Paid':     'bg-info text-dark',
-    'Verified': 'bg-success',
+    'Unpaid':         'bg-warning text-dark',
+    'Paid':           'bg-info text-dark',
+    'Verified':       'bg-success',
+    'Refund Pending': 'bg-danger',
+    'Refunded':       'bg-secondary',
 };
 
 async function openOrderDetail(id) {
@@ -684,8 +706,7 @@ async function openOrderDetail(id) {
 
         document.getElementById('odDate').textContent =
             order.order_date ? new Date(order.order_date).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' }) : '';
-        document.getElementById('odStatusBadge').innerHTML =
-            `<span class="badge ${statusBadge(order.status)}">${order.status || 'Pending'}</span>`;
+        document.getElementById('odStatusBadge').innerHTML = statusBadge(order.status);
 
         const addr    = order.shipping_address || {};
         const addrStr = addr.street_address
@@ -756,9 +777,59 @@ async function openOrderDetail(id) {
             </div>
             ${trackingHtml}
         `;
+
+        // Store order id for cancelOrder()
+        document.getElementById('odCancelSection').dataset.orderId = order.id;
+
+        const cancelSection     = document.getElementById('odCancelSection');
+        const cancelReasonDisp  = document.getElementById('odCancelReasonDisplay');
+        const refundWarning     = document.getElementById('odRefundWarning');
+        document.getElementById('odCancelReason').value = '';
+        document.getElementById('odCancelError').style.display = 'none';
+
+        if (['Pending', 'Confirmed'].includes(order.status)) {
+            cancelSection.style.display = '';
+            cancelReasonDisp.style.display = 'none';
+            const paid = ['Paid', 'Verified'].includes(order.payment_status);
+            refundWarning.style.display = paid ? '' : 'none';
+        } else if (order.status === 'Cancelled' && order.cancellation_reason) {
+            cancelSection.style.display = 'none';
+            cancelReasonDisp.style.display = '';
+            document.getElementById('odCancelReasonText').textContent = order.cancellation_reason;
+        } else {
+            cancelSection.style.display = 'none';
+            cancelReasonDisp.style.display = 'none';
+        }
     } catch (e) {
         document.getElementById('orderDetailBody').innerHTML =
             `<p class="text-danger small">Could not load order details: ${esc(e.message)}</p>`;
+    }
+}
+
+async function cancelOrder() {
+    const orderId = Number(document.getElementById('odCancelSection').dataset.orderId);
+    const reason  = document.getElementById('odCancelReason').value.trim();
+    const errEl   = document.getElementById('odCancelError');
+    errEl.style.display = 'none';
+    if (!orderId) return;
+
+    try {
+        const res  = await fetch(`${API_BASE}/product_orders.php`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_id: orderId, status: 'Cancelled', cancellation_reason: reason }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            orderDetailModal.hide();
+            await loadOrders();
+        } else {
+            errEl.textContent   = data.error || 'Could not cancel order. Please contact us directly.';
+            errEl.style.display = 'block';
+        }
+    } catch {
+        errEl.textContent   = 'Connection error. Please try again.';
+        errEl.style.display = 'block';
     }
 }
 
@@ -773,7 +844,7 @@ function openBookingDetail(idx) {
 
     document.getElementById('bdRef').textContent         = `BKG-${String(b.booking_id).padStart(3,'0')}`;
     document.getElementById('bdTitle').textContent       = b.event_name || 'Booth Booking';
-    document.getElementById('bdStatusBadge').innerHTML   = `<span class="badge ${statusBadge(b.status)}">${b.status || 'Pending'}</span>`;
+    document.getElementById('bdStatusBadge').innerHTML   = statusBadge(b.status);
     document.getElementById('bdOrderId').value           = b.order_id;
 
     document.getElementById('bdEventName').textContent  = b.event_name  || '—';
