@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <title>All Products — PrintoKids PH</title>
+</head>
+<body>
+
+<!-- ── NAVBAR ─────────────────────────────────────────────────── -->
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../index.html">
+                <img src="../images/printokids_logo_transparent.png" alt="PrintoKids PH" width="180" height="62" class="logo">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light btn-sm me-1" href="../index.html">
+                            Home
+                        </a>
+                    </li>
+
+                    <li class="nav-item" id="myAccountNavItem" style="display:none">
+                        <a class="btn btn-outline-light btn-sm me-1" href="../my_account/index.html">
+                            My Account
+                        </a>
+                    </li>
+
+                    <li class="nav-item guest-only">
+                        <a id="accountBtn" class="btn btn-outline-light btn-sm me-1"
+                           href="#" data-bs-toggle="modal" data-bs-target="#signInModal">
+                            My Account
+                        </a>
+                    </li>
+
+                    <!-- Cart -->
+                    <li class="nav-item">
+                        <button class="btn btn-outline-success btn-sm position-relative" id="cartBtn">
+                            🛒 Cart
+                            <span id="cartBadge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                style="display:none">0</span>
+                        </button>
+                    </li>
+
+                    <!-- Logout (auth-only) -->
+                    <li class="nav-item" id="logoutNavItem" style="display:none">
+                        <button class="btn btn-outline-danger btn-sm ms-1" id="logoutBtn">
+                            Logout
+                        </button>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- ── PAGE HEADER ─────────────────────────────────────────────── -->
+<div style="padding-top:80px;background:#f8f9fa;border-bottom:1px solid #dee2e6;" class="py-3 px-4 mb-2">
+    <div class="container-fluid d-flex align-items-center gap-3">
+        <a href="../index.html" class="text-decoration-none text-muted small">&larr; Back to Home</a>
+        <h4 class="mb-0 fw-bold" style="color:#4a7c59;">Our Products</h4>
+    </div>
+</div>
+
+<!-- ── Search & Filter ─────────────────────────────────────────── -->
+<div class="container-fluid px-4 mb-3 d-flex gap-2 flex-wrap align-items-center">
+    <input type="text" id="productSearch" class="form-control" style="max-width:320px"
+        placeholder="Search products…">
+    <button class="btn btn-outline-secondary btn-sm active" data-filter-category="all">All</button>
+</div>
+
+<!-- ── PRODUCTS GRID ───────────────────────────────────────────── -->
+<div class="container-fluid px-4">
+    <div class="row row-cols-1 row-cols-md-4 g-4 pb-4" id="products-container">
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-secondary" role="status" aria-hidden="true"></div>
+            <p class="text-muted mt-2 mb-0">Loading products…</p>
+        </div>
+    </div>
+</div>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<footer>
+    <div class="footer-bg">
+        <div class="footer-content">
+            <div class="row text-white">
+                <div class="col-md-4 fw-bold fst-italic">
+                    <p class="mb-1">Phone / Mobile:</p>
+                    <p>+63 927 610 9655</p>
+                </div>
+                <div class="col-md-4 fw-bold fst-italic">
+                    <p class="mb-1">Instagram:</p>
+                    <p>@printokidsph</p>
+                </div>
+                <div class="col-md-4 fw-bold fst-italic">
+                    <p class="mb-1">Facebook:</p>
+                    <p>PrintoKids PH</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="very-bottom">
+        <strong><p class="mb-0">&copy; 2026 PrintoKids PH</p></strong>
+        <div class="back-to-top-btn"><a href="#">Back to top</a></div>
+    </div>
+</footer>
+
+<!-- ── SCRIPTS ─────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+    crossorigin="anonymous"></script>
+<script>
+    window.API_ROOT             = '../../api';
+    window.PRODUCTS_IMG_FALLBACK = '../images/Product_TEMP.png';
+    window.PRODUCTS_DETAIL_URL  = '../product_details/index.html';
+    window.MY_ACCOUNT_URL       = '../my_account/index.html';
+</script>
+<script src="../products.js"></script>
+<script src="../cart.js"></script>
+<script src="../auth.js"></script>
+</body>
+</html>

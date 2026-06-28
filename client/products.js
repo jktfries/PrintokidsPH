@@ -4,14 +4,17 @@
 // "View Details" navigates to product_details/index.html?id=X
 // ============================================================
 
-const PRODUCTS_API = (window.API_ROOT || '../api') + '/products.php';
+const PRODUCTS_API          = (window.API_ROOT || '../api') + '/products.php';
+const PRODUCTS_IMG_FALLBACK = window.PRODUCTS_IMG_FALLBACK || 'images/Product_TEMP.png';
+const PRODUCTS_DETAIL_URL   = window.PRODUCTS_DETAIL_URL   || 'product_details/index.html';
 
 class ProductManager {
     constructor() {
-        this.products        = [];
+        this.products         = [];
         this.filteredProducts = [];
         this.currentCategory  = 'all';
         this.currentSearch    = '';
+        this.displayLimit     = window.PRODUCTS_DISPLAY_LIMIT || null;
     }
 
     async init() {
@@ -48,21 +51,27 @@ class ProductManager {
 
         if (!this.filteredProducts.length) {
             container.innerHTML = '<p class="text-center text-muted py-4">No products found.</p>';
+            const btn = document.getElementById('viewMoreBtn');
+            if (btn) btn.style.display = 'none';
             return;
         }
 
-        container.innerHTML = this.filteredProducts.map(p => {
+        const toShow = this.displayLimit
+            ? this.filteredProducts.slice(0, this.displayLimit)
+            : this.filteredProducts;
+
+        container.innerHTML = toShow.map(p => {
             const oos = p.stock_status === 'Out of Stock';
             return `
             <div class="col">
                 <div class="card h-100 text-center product-card${oos ? ' oos-card' : ''}"
                      style="${oos ? 'opacity:0.55;' : ''}"
-                     onclick="window.location.href='product_details/index.html?id=${p.id}'">
+                     onclick="window.location.href='${PRODUCTS_DETAIL_URL}?id=${p.id}'">
                     <div class="position-relative">
-                        <img src="${p.primary_image || 'images/Product_TEMP.png'}"
+                        <img src="${p.primary_image || PRODUCTS_IMG_FALLBACK}"
                              class="card-img-top"
                              alt="${this.esc(p.name)}"
-                             onerror="this.src='images/Product_TEMP.png'">
+                             onerror="this.src='${PRODUCTS_IMG_FALLBACK}'">
                         ${oos ? `<span class="position-absolute top-0 start-0 w-100 text-center py-1 small fw-bold text-white" style="background:rgba(220,53,69,0.85);">Out of Stock</span>` : ''}
                     </div>
                     <div class="card-body d-flex flex-column">
@@ -75,7 +84,7 @@ class ProductManager {
                     </div>
                     <div class="card-footer bg-white border-top-0 pb-3">
                         <button class="btn btn-outline-secondary btn-sm me-1"
-                            onclick="event.stopPropagation(); window.location.href='product_details/index.html?id=${p.id}'">
+                            onclick="event.stopPropagation(); window.location.href='${PRODUCTS_DETAIL_URL}?id=${p.id}'">
                             View Details
                         </button>
                         <button class="btn btn-success btn-sm"
@@ -88,6 +97,13 @@ class ProductManager {
             </div>
             `;
         }).join('');
+
+        // Show/hide "View All" button
+        const btn = document.getElementById('viewMoreBtn');
+        if (btn) {
+            btn.style.display = (this.displayLimit && this.filteredProducts.length > this.displayLimit)
+                ? 'block' : 'none';
+        }
     }
 
     // ── Filters ────────────────────────────────────────────
