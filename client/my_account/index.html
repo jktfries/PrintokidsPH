@@ -137,6 +137,26 @@
                 </div>
             </div>
 
+            <!-- Change Password -->
+            <div class="account-card">
+                <h5>Change Password</h5>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Current Password</label>
+                    <input type="password" class="form-control form-control-sm" id="pwCurrent" autocomplete="current-password">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">New Password</label>
+                    <input type="password" class="form-control form-control-sm" id="pwNew" placeholder="Min. 8 characters" autocomplete="new-password">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Confirm New Password</label>
+                    <input type="password" class="form-control form-control-sm" id="pwConfirm" autocomplete="new-password">
+                </div>
+                <div id="pwError"   class="alert alert-danger  py-2 small" style="display:none"></div>
+                <div id="pwSuccess" class="alert alert-success py-2 small" style="display:none">Password changed successfully.</div>
+                <button class="btn btn-success btn-sm" onclick="changePassword()">Change Password</button>
+            </div>
+
         </div>
 
         <!-- RIGHT column: Orders + Bookings -->
@@ -816,6 +836,54 @@ async function cancelBooking() {
             await loadBookings();
         } else {
             errEl.textContent   = data.error || 'Could not cancel booking. Please contact us directly.';
+            errEl.style.display = 'block';
+        }
+    } catch {
+        errEl.textContent   = 'Connection error. Please try again.';
+        errEl.style.display = 'block';
+    }
+}
+
+// ── Change Password ─────────────────────────────────────
+async function changePassword() {
+    const current = document.getElementById('pwCurrent').value;
+    const newPw   = document.getElementById('pwNew').value;
+    const confirm = document.getElementById('pwConfirm').value;
+    const errEl   = document.getElementById('pwError');
+    const okEl    = document.getElementById('pwSuccess');
+    errEl.style.display = 'none';
+    okEl.style.display  = 'none';
+
+    if (!current || !newPw || !confirm) {
+        errEl.textContent   = 'All fields are required.';
+        errEl.style.display = 'block';
+        return;
+    }
+    if (newPw !== confirm) {
+        errEl.textContent   = 'New passwords do not match.';
+        errEl.style.display = 'block';
+        return;
+    }
+    if (newPw.length < 8) {
+        errEl.textContent   = 'New password must be at least 8 characters.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    try {
+        const res  = await fetch(`${API_BASE}/auth.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'change_password', current_password: current, new_password: newPw }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('pwCurrent').value = '';
+            document.getElementById('pwNew').value     = '';
+            document.getElementById('pwConfirm').value = '';
+            okEl.style.display = 'block';
+        } else {
+            errEl.textContent   = data.error || 'Could not change password.';
             errEl.style.display = 'block';
         }
     } catch {
