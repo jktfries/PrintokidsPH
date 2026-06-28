@@ -20,6 +20,93 @@ let currentOrderFilter        = 'All';
 let currentEventFilter        = 'All';
 let currentEventSearch        = '';
 
+let currentBulkSelect         = null;
+
+// ============================================================
+// BULK SELECT
+// ============================================================
+class BulkSelect {
+    constructor(tableId, deleteUrl, bodyKey, reloadFn) {
+        this.table     = document.querySelector(tableId);
+        this.deleteUrl = deleteUrl;
+        this.bodyKey   = bodyKey || 'ids';
+        this.reloadFn  = reloadFn;
+    }
+
+    attach() {
+        if (currentBulkSelect) currentBulkSelect.clearAll();
+        currentBulkSelect = this;
+
+        const selectAll = this.table?.querySelector('thead .select-all-cb');
+        if (!selectAll || !this.table) return;
+
+        selectAll.addEventListener('change', () => {
+            this.table.querySelectorAll('tbody .row-cb').forEach(cb => { cb.checked = selectAll.checked; });
+            this._updateBar();
+        });
+
+        this.table.querySelector('tbody')?.addEventListener('change', e => {
+            if (!e.target.classList.contains('row-cb')) return;
+            const allCbs = [...this.table.querySelectorAll('tbody .row-cb')];
+            const allChk = allCbs.every(cb => cb.checked);
+            const anyChk = allCbs.some(cb => cb.checked);
+            selectAll.checked       = allChk;
+            selectAll.indeterminate = !allChk && anyChk;
+            this._updateBar();
+        });
+    }
+
+    getSelectedIds() {
+        return [...(this.table?.querySelectorAll('tbody .row-cb:checked') || [])].map(cb => Number(cb.value));
+    }
+
+    _updateBar() {
+        const ids = this.getSelectedIds();
+        const bar = document.getElementById('bulkBar');
+        const cnt = document.getElementById('bulkBarCount');
+        if (!bar) return;
+        if (ids.length > 0) {
+            bar.style.display = 'flex';
+            if (cnt) cnt.textContent = `${ids.length} item${ids.length !== 1 ? 's' : ''} selected`;
+        } else {
+            bar.style.display = 'none';
+        }
+    }
+
+    clearAll() {
+        this.table?.querySelectorAll('tbody .row-cb').forEach(cb => { cb.checked = false; });
+        const sa = this.table?.querySelector('thead .select-all-cb');
+        if (sa) { sa.checked = false; sa.indeterminate = false; }
+        const bar = document.getElementById('bulkBar');
+        if (bar) bar.style.display = 'none';
+    }
+}
+
+async function executeBulkDelete() {
+    if (!currentBulkSelect) return;
+    const ids = currentBulkSelect.getSelectedIds();
+    if (!ids.length) return;
+    if (!confirm(`Delete ${ids.length} item${ids.length !== 1 ? 's' : ''}? This cannot be undone.`)) return;
+
+    try {
+        const res  = await fetch(currentBulkSelect.deleteUrl, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [currentBulkSelect.bodyKey]: ids }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            showAlert(`${ids.length} item${ids.length !== 1 ? 's' : ''} deleted.`, 'success');
+            currentBulkSelect.clearAll();
+            currentBulkSelect.reloadFn?.();
+        } else {
+            showAlert(data.error || 'Bulk delete failed.', 'danger');
+        }
+    } catch {
+        showAlert('Request failed.', 'danger');
+    }
+}
+
 // ============================================================
 // INIT
 // ============================================================
@@ -83,6 +170,7 @@ function setupTabListeners() {
     document.querySelectorAll('.tab-trigger').forEach(trigger => {
         trigger.addEventListener('click', function (e) {
             e.preventDefault();
+            currentBulkSelect?.clearAll();
             document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('show', 'active'));
 
@@ -204,11 +292,12 @@ function displayProductCatalog(products) {
     const tbody = document.querySelector('#productsCatalogTable tbody');
     if (!tbody) return;
     if (!products.length) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No products found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No products found</td></tr>';
         return;
     }
     tbody.innerHTML = products.map(p => `
         <tr>
+            <td class="px-3"><input type="checkbox" class="row-cb" value="${p.id}"></td>
             <td class="px-4">PRD-${pad(p.id)}</td>
             <td class="px-4">${esc(p.name)}</td>
             <td class="px-4">${esc(p.category || 'General')}</td>
@@ -222,6 +311,10 @@ function displayProductCatalog(products) {
                 : '<span class="text-muted">—</span>'}</td>
         </tr>
     `).join('');
+
+    new BulkSelect('#productsCatalogTable', `${API}/products.php`, 'ids', () => {
+        loadInventory().then(() => applyProductCatalogFilters());
+    }).attach();
 }
 
 function exportProductCatalog() {
@@ -259,11 +352,12 @@ function displayInventory(products) {
     const tbody = document.querySelector('#inventoryTable tbody');
     if (!tbody) return;
     if (!products.length) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No products found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">No products found</td></tr>';
         return;
     }
     tbody.innerHTML = products.map(p => `
         <tr data-id="${p.id}">
+            <td class="px-3"><input type="checkbox" class="row-cb" value="${p.id}"></td>
             <td class="px-2 text-center">
                 ${p.primary_image
                     ? `<img src="${esc(p.primary_image)}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ddd" onerror="this.style.display='none'">`
@@ -286,6 +380,10 @@ function displayInventory(products) {
             </td>
         </tr>
     `).join('');
+
+    new BulkSelect('#inventoryTable', `${API}/products.php`, 'ids', () => {
+        loadInventory().then(() => applyProductCatalogFilters());
+    }).attach();
 }
 
 function editProduct(id) {
@@ -556,11 +654,12 @@ function displayOrders(orders) {
     const tbody = document.querySelector('#ordersTable tbody');
     if (!tbody) return;
     if (!orders.length) {
-        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">No product orders found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4">No product orders found</td></tr>';
         return;
     }
     tbody.innerHTML = orders.map(o => `
         <tr>
+            <td class="px-3"><input type="checkbox" class="row-cb" value="${o.id}"></td>
             <td class="px-4">ORD-${pad(o.id)}</td>
             <td>${esc(o.first_name)} ${esc(o.last_name)}</td>
             <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(o.products_ordered||'')}">${esc(o.products_ordered || 'N/A')}</td>
@@ -575,6 +674,8 @@ function displayOrders(orders) {
             </td>
         </tr>
     `).join('');
+
+    new BulkSelect('#ordersTable', `${API}/product_orders.php`, 'ids', loadOrders).attach();
 }
 
 async function editOrder(id) {
@@ -627,12 +728,10 @@ function openOrderModal(order) {
         ? '₱' + parseFloat(order.shipping_fee).toFixed(2) : '—';
 
     const ps = order.payment_status || 'Unpaid';
-    const psBadgeClass = ps === 'Verified' ? 'bg-success' : ps === 'Paid' ? 'bg-info text-dark' : 'bg-warning text-dark';
-    document.getElementById('orderPaymentStatusBadge').innerHTML =
-        `<span class="badge ${psBadgeClass}">${esc(ps)}</span>`;
+    const psSelect = document.getElementById('orderPaymentStatus');
+    if (psSelect) psSelect.value = ps;
 
     const proofRow = document.getElementById('proofOfPaymentRow');
-    const markBtn  = document.getElementById('markPaidBtn');
     if (order.proof_of_payment_url) {
         document.getElementById('orderProofOfPayment').innerHTML =
             `<a href="${esc(order.proof_of_payment_url)}" target="_blank" class="d-block">
@@ -641,9 +740,24 @@ function openOrderModal(order) {
                 <span class="d-block small mt-1">View full image</span>
              </a>`;
         proofRow.style.display = '';
-        if (markBtn) markBtn.style.display = ps === 'Verified' ? 'none' : '';
     } else {
         proofRow.style.display = 'none';
+    }
+
+    // Refund alert
+    const refundRow = document.getElementById('orderRefundAlertRow');
+    if (refundRow) refundRow.style.display = ps === 'Refund Pending' ? '' : 'none';
+
+    // Cancellation reason
+    const cancelRow = document.getElementById('orderCancelReasonRow');
+    const cancelEl  = document.getElementById('orderCancelReason');
+    if (cancelRow && cancelEl) {
+        if (order.cancellation_reason) {
+            cancelEl.textContent       = order.cancellation_reason;
+            cancelRow.style.display    = '';
+        } else {
+            cancelRow.style.display    = 'none';
+        }
     }
 
     // Customization notes (aggregate from items)
@@ -681,9 +795,10 @@ function saveOrderForm() {
 
     const payload = {
         id,
-        status:       document.getElementById('orderStatus').value,
-        employee_id:  document.getElementById('orderAssignedStaff').value || null,
+        status:          document.getElementById('orderStatus').value,
+        employee_id:     document.getElementById('orderAssignedStaff').value || null,
         tracking_number: document.getElementById('orderTrackingNumber').value.trim() || null,
+        payment_status:  document.getElementById('orderPaymentStatus')?.value || undefined,
     };
 
     fetch(`${API}/product_orders.php`, {
@@ -786,11 +901,12 @@ function displayEventBookings(bookings) {
     const tbody = document.querySelector('#eventBookingsTable tbody');
     if (!tbody) return;
     if (!bookings.length) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No event bookings found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">No event bookings found</td></tr>';
         return;
     }
     tbody.innerHTML = bookings.map(b => `
         <tr>
+            <td class="px-3"><input type="checkbox" class="row-cb" value="${b.booking_id}"></td>
             <td class="px-4">BKG-${pad(b.booking_id)}</td>
             <td class="px-4">${esc(b.first_name)} ${esc(b.last_name)}</td>
             <td class="px-4">${esc(b.event_type || '—')}</td>
@@ -804,6 +920,8 @@ function displayEventBookings(bookings) {
             </td>
         </tr>
     `).join('');
+
+    new BulkSelect('#eventBookingsTable', `${API}/event_bookings.php`, 'ids', loadEventBookings).attach();
 }
 
 function viewEventBooking(id) {
@@ -960,7 +1078,7 @@ function displayUsers(users) {
     const tbody = document.querySelector('#usersTable tbody');
     if (!tbody) return;
     if (!users.length) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No clients found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">No clients found</td></tr>';
         return;
     }
     tbody.innerHTML = users.map(u => {
@@ -973,6 +1091,7 @@ function displayUsers(users) {
             : '—';
         return `
         <tr>
+            <td class="px-3"><input type="checkbox" class="row-cb" value="${u.id}"></td>
             <td class="px-4">USR-${pad(u.id)}</td>
             <td class="px-4">${esc(u.first_name)} ${esc(u.last_name)}</td>
             <td class="px-4">${esc(u.email || 'N/A')}</td>
@@ -988,19 +1107,22 @@ function displayUsers(users) {
             </td>
         </tr>`;
     }).join('');
+
+    new BulkSelect('#usersTable', `${API}/customers.php`, 'ids', loadUsers).attach();
 }
 
 function displayStaff(staff) {
     const tbody = document.querySelector('#staffTable tbody');
     if (!tbody) return;
     if (!staff.length) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No staff found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">No staff found</td></tr>';
         return;
     }
     tbody.innerHTML = staff.map(s => {
         const statusCls = s.status === 'Active' ? 'bg-success' : s.status === 'On Leave' ? 'bg-warning text-dark' : 'bg-secondary';
         return `
         <tr>
+            <td class="px-3"><input type="checkbox" class="row-cb" value="${s.id}"></td>
             <td class="px-4">STF-${pad(s.id)}</td>
             <td class="px-4">${esc(s.first_name)} ${esc(s.last_name)}</td>
             <td class="px-4">${esc(s.email || '—')}</td>
@@ -1014,6 +1136,8 @@ function displayStaff(staff) {
             </td>
         </tr>`;
     }).join('');
+
+    new BulkSelect('#staffTable', `${API}/staff.php`, 'ids', loadStaff).attach();
 }
 
 function editUser(id) {
@@ -1373,28 +1497,6 @@ async function uploadAdminQRCode() {
         }
     } catch {
         if (statusEl) statusEl.innerHTML = '<span class="text-danger">Request failed.</span>';
-    }
-}
-
-async function markOrderPaid() {
-    const id = Number(document.getElementById('orderId').value);
-    if (!id) return;
-    try {
-        const res  = await fetch(`${API}/product_orders.php`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, payment_status: 'Verified' }),
-        });
-        const data = await res.json();
-        if (data.success) {
-            showAlert('Order marked as Verified.', 'success');
-            closeOrderModal();
-            loadOrders();
-        } else {
-            showAlert(data.error || 'Update failed.', 'danger');
-        }
-    } catch {
-        showAlert('Request failed.', 'danger');
     }
 }
 
