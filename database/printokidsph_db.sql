@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 28, 2026 at 05:58 PM
+-- Generation Time: Jun 28, 2026 at 06:33 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -616,19 +616,20 @@ CREATE TABLE `product_orders` (
   `payment_status` varchar(20) NOT NULL DEFAULT 'Unpaid',
   `proof_of_payment_url` varchar(255) DEFAULT NULL,
   `shipping_fee` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `tracking_number` varchar(100) DEFAULT NULL
+  `tracking_number` varchar(100) DEFAULT NULL,
+  `cancellation_reason` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `product_orders`
 --
 
-INSERT INTO `product_orders` (`id`, `customer_id`, `employee_id`, `shipping_address_id`, `order_date`, `status`, `total_amount`, `payment_method`, `payment_status`, `proof_of_payment_url`, `shipping_fee`, `tracking_number`) VALUES
-(1, 51, 17, NULL, '2026-06-28 12:44:57', 'In Production', 1392.00, 'Cash on Delivery', 'Unpaid', NULL, 0.00, '102929-92293934954-000'),
-(2, 51, NULL, 51, '2026-06-28 17:07:43', 'Confirmed', 344.00, 'QR Pay', 'Verified', 'http://localhost/PrintokidsPH/uploads/media_6a40e45c97e912.54825453.jpg', 80.00, NULL),
-(3, 51, NULL, 51, '2026-06-28 17:34:01', 'Pending', 892.00, 'QR Pay', 'Verified', 'http://localhost/PrintokidsPH/uploads/media_6a40ea824d6c31.56339600.jpg', 80.00, NULL),
-(4, 51, NULL, 51, '2026-06-28 17:36:17', 'Pending', 608.00, 'Cash on Delivery', 'Unpaid', NULL, 80.00, NULL),
-(5, 51, 47, 51, '2026-06-28 17:39:30', 'In Production', 384.00, 'QR Pay', 'Verified', 'http://localhost/PrintokidsPH/uploads/media_6a40ebcf414bc7.19591056.jpg', 80.00, NULL);
+INSERT INTO `product_orders` (`id`, `customer_id`, `employee_id`, `shipping_address_id`, `order_date`, `status`, `total_amount`, `payment_method`, `payment_status`, `proof_of_payment_url`, `shipping_fee`, `tracking_number`, `cancellation_reason`) VALUES
+(1, 51, 17, NULL, '2026-06-28 12:44:57', 'In Production', 1392.00, 'Cash on Delivery', 'Unpaid', NULL, 0.00, '102929-92293934954-000', NULL),
+(2, 51, NULL, 51, '2026-06-28 17:07:43', 'Confirmed', 344.00, 'QR Pay', 'Verified', 'http://localhost/PrintokidsPH/uploads/media_6a40e45c97e912.54825453.jpg', 80.00, NULL, NULL),
+(3, 51, NULL, 51, '2026-06-28 17:34:01', 'Pending', 892.00, 'QR Pay', 'Verified', 'http://localhost/PrintokidsPH/uploads/media_6a40ea824d6c31.56339600.jpg', 80.00, NULL, NULL),
+(4, 51, NULL, 51, '2026-06-28 17:36:17', 'Pending', 608.00, 'Cash on Delivery', 'Unpaid', NULL, 80.00, NULL, NULL),
+(5, 51, 47, 51, '2026-06-28 17:39:30', 'In Production', 384.00, 'QR Pay', 'Verified', 'http://localhost/PrintokidsPH/uploads/media_6a40ebcf414bc7.19591056.jpg', 80.00, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -770,7 +771,8 @@ INSERT INTO `staff` (`id`, `first_name`, `last_name`, `email`, `contact_number`,
 (47, 'Bea', 'Villanueva', NULL, '09280275937', 'Active', NULL, 0),
 (48, 'Jane', 'Garcia', NULL, '09921749087', 'Active', NULL, 0),
 (49, 'Sarah', 'Cruz', NULL, '09207700531', 'Active', NULL, 0),
-(50, 'Bea', 'Torres', NULL, '09723575195', 'On Leave', NULL, 0);
+(50, 'Bea', 'Torres', NULL, '09723575195', 'On Leave', NULL, 0),
+(51, 'Henri', 'Caballero', 'cbllrjc@gmail.com', '63 9165130301', 'Active', '$2y$10$Z4NEWAFCimr/q1gWdDLGjehRaE5smxf.l1iipXFEAN/F7ewUUc7li', 0);
 
 -- --------------------------------------------------------
 
@@ -1081,7 +1083,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT for table `staff`
 --
 ALTER TABLE `staff`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- Constraints for dumped tables
