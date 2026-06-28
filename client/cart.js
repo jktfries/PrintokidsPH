@@ -125,6 +125,7 @@ class CartManager {
         this.cart = [];
         this.save();
         this.updateBadge();
+        this.showCartModal();
     }
 
     getSubtotal()  { return this.cart.reduce((t, i) => t + i.price * i.quantity, 0); }
