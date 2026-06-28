@@ -5,8 +5,18 @@ require_once '../includes/config.php';
 $pdo    = getPDO();
 $method = $_SERVER['REQUEST_METHOD'];
 
-// GET - List all event bookings with details
+// GET - List event bookings
+// Admin sees all; logged-in customer sees only their own
 if ($method === 'GET') {
+    $customerFilter = null;
+    if (!empty($_SESSION['customer_id']) && empty($_SESSION['staff_id'])) {
+        $customerFilter = (int) $_SESSION['customer_id'];
+    } elseif (isset($_GET['customer_id']) && !empty($_SESSION['staff_id'])) {
+        $customerFilter = (int) $_GET['customer_id'];
+    }
+
+    $where = $customerFilter ? "WHERE eo.customer_id = $customerFilter" : '';
+
     $stmt = $pdo->query("
         SELECT
             eo.id                                                      AS booking_id,
@@ -16,48 +26,133 @@ if ($method === 'GET') {
             eo.event_date,
             eo.event_location,
             eo.status,
+            eo.admin_notes,
+            eo.cancellation_reason,
             c.first_name,
             c.last_name,
-            GROUP_CONCAT(s.service_name SEPARATOR ', ')                AS service_name,
-            GROUP_CONCAT(a.asset_name   SEPARATOR ', ')                AS asset_name,
+            c.email,
+            c.phone,
+            GROUP_CONCAT(DISTINCT s.service_name SEPARATOR ', ')       AS service_name,
+            GROUP_CONCAT(DISTINCT a.asset_name   SEPARATOR ', ')       AS asset_name,
             MIN(os.start_time)                                         AS start_time,
-            MAX(os.end_time)                                           AS end_time,
-            COALESCE(SUM(os.price_charged), 0)                        AS price_charged
+            MAX(os.end_time)                                           AS end_time
         FROM event_orders eo
-        INNER JOIN customers c      ON eo.customer_id = c.id
-        LEFT  JOIN order_services os ON os.order_id   = eo.id
+        INNER JOIN customers c       ON eo.customer_id = c.id
+        LEFT  JOIN order_services os ON os.order_id    = eo.id
         LEFT  JOIN services s        ON os.service_id  = s.id
         LEFT  JOIN assets a          ON os.asset_id    = a.id
+        $where
         GROUP BY eo.id, eo.event_name, eo.event_type, eo.event_date,
-                 eo.event_location, eo.status, c.first_name, c.last_name
+                 eo.event_location, eo.status, eo.admin_notes, eo.cancellation_reason,
+                 c.first_name, c.last_name, c.email, c.phone
         ORDER BY eo.id DESC
         LIMIT 100
     ");
     echo json_encode($stmt->fetchAll());
+    exit;
 }
 
-// PUT - Update event booking status
+// PUT - Update booking
 elseif ($method === 'PUT') {
-    $data = json_decode(file_get_contents('php://input'), true);
-
+    $data     = json_decode(file_get_contents('php://input'), true);
     $order_id = (int) ($data['order_id'] ?? 0);
     $status   = trim($data['status'] ?? '');
 
-    $allowed = ['Pending', 'Confirmed', 'In Production', 'Completed'];
-
-    if ($order_id === 0 || !in_array($status, $allowed)) {
+    if ($order_id === 0 || $status === '') {
         http_response_code(400);
-        echo json_encode(['error' => 'Valid order ID and status are required']);
+        echo json_encode(['error' => 'order_id and status are required']);
         exit;
     }
 
-    $stmt = $pdo->prepare("UPDATE event_orders SET status = ? WHERE id = ?");
-    $stmt->execute([$status, $order_id]);
+    // ── Customer path: can only cancel their own pending/confirmed booking ──
+    if (!empty($_SESSION['customer_id']) && empty($_SESSION['staff_id'])) {
+        $customerId = (int) $_SESSION['customer_id'];
+
+        if ($status !== 'Cancelled') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Customers may only cancel bookings']);
+            exit;
+        }
+
+        // Verify ownership and current status
+        $check = $pdo->prepare(
+            'SELECT id, status FROM event_orders WHERE id = ? AND customer_id = ?'
+        );
+        $check->execute([$order_id, $customerId]);
+        $booking = $check->fetch();
+
+        if (!$booking) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Booking not found']);
+            exit;
+        }
+
+        if (!in_array($booking['status'], ['Pending', 'Confirmed'])) {
+            http_response_code(409);
+            echo json_encode(['error' => 'Only pending or confirmed bookings can be cancelled']);
+            exit;
+        }
+
+        $reason = isset($data['cancellation_reason']) ? trim($data['cancellation_reason']) : null;
+
+        $stmt = $pdo->prepare(
+            'UPDATE event_orders SET status = ?, cancellation_reason = ? WHERE id = ? AND customer_id = ?'
+        );
+        $stmt->execute(['Cancelled', $reason, $order_id, $customerId]);
+
+        echo json_encode(['success' => true]);
+        exit;
+    }
+
+    // ── Admin path ──
+    if (empty($_SESSION['staff_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Authentication required']);
+        exit;
+    }
+
+    $allowed = ['Pending', 'Confirmed', 'In Production', 'Completed', 'Cancelled'];
+    if (!in_array($status, $allowed)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid status value']);
+        exit;
+    }
+
+    $notes = $data['admin_notes'] ?? null;
+
+    $stmt = $pdo->prepare(
+        'UPDATE event_orders SET status = ?, admin_notes = ? WHERE id = ?'
+    );
+    $stmt->execute([$status, $notes !== null ? trim($notes) : null, $order_id]);
 
     echo json_encode(['success' => true]);
+    exit;
 }
 
-else {
-    http_response_code(405);
-    echo json_encode(['error' => 'Method not allowed']);
+// DELETE - Remove an event booking (admin only)
+elseif ($method === 'DELETE') {
+    if (empty($_SESSION['staff_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Admin access required']);
+        exit;
+    }
+
+    $data     = json_decode(file_get_contents('php://input'), true);
+    $order_id = (int) ($data['order_id'] ?? 0);
+
+    if ($order_id === 0) {
+        http_response_code(400);
+        echo json_encode(['error' => 'order_id is required']);
+        exit;
+    }
+
+    // FK CASCADE handles order_services and event_staff_assignments
+    $stmt = $pdo->prepare('DELETE FROM event_orders WHERE id = ?');
+    $stmt->execute([$order_id]);
+
+    echo json_encode(['success' => true]);
+    exit;
 }
+
+http_response_code(405);
+echo json_encode(['error' => 'Method not allowed']);
