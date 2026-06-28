@@ -27,8 +27,10 @@ if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
 }
 
 // ── Validate file type ──────────────────────────────────────
-$allowedMimes = ['image/jpeg', 'image/png', 'image/jpg'];
-$allowedExts  = ['jpg', 'jpeg', 'png'];
+$imageMimes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+$imageExts  = ['jpg', 'jpeg', 'png', 'webp'];
+$videoMimes = ['video/mp4', 'video/webm', 'video/quicktime'];
+$videoExts  = ['mp4', 'webm', 'mov'];
 
 $finfo    = finfo_open(FILEINFO_MIME_TYPE);
 $mimeType = finfo_file($finfo, $_FILES['file']['tmp_name']);
@@ -36,17 +38,23 @@ finfo_close($finfo);
 
 $ext = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
 
-if (!in_array($mimeType, $allowedMimes) || !in_array($ext, $allowedExts)) {
+$isImage = in_array($mimeType, $imageMimes, true) && in_array($ext, $imageExts, true);
+$isVideo = in_array($mimeType, $videoMimes, true) && in_array($ext, $videoExts, true);
+
+if (!$isImage && !$isVideo) {
     http_response_code(400);
-    echo json_encode(['error' => 'Only .jpg and .png images are allowed.']);
+    echo json_encode(['error' => 'Only jpg, png, webp images or mp4, webm, mov videos are allowed.']);
     exit;
 }
 
-// ── Validate file size (max 5MB) ────────────────────────────
-$maxBytes = 5 * 1024 * 1024;
+$mediaType = $isImage ? 'image' : 'video';
+
+// ── Validate file size (5 MB for images, 50 MB for videos) ─
+$maxBytes = $isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
 if ($_FILES['file']['size'] > $maxBytes) {
+    $limit = $isVideo ? '50MB' : '5MB';
     http_response_code(400);
-    echo json_encode(['error' => 'File size must be 5MB or less.']);
+    echo json_encode(['error' => "File size must be {$limit} or less."]);
     exit;
 }
 
@@ -81,7 +89,8 @@ $baseUrl   = $protocol . '://' . $host . rtrim($scriptDir, '/');
 $fileUrl   = $baseUrl . '/uploads/' . $filename;
 
 echo json_encode([
-    'success'  => true,
-    'url'      => $fileUrl,
-    'filename' => $filename,
+    'success'    => true,
+    'url'        => $fileUrl,
+    'filename'   => $filename,
+    'media_type' => $mediaType,
 ]);
