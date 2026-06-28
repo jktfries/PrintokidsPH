@@ -1,10 +1,10 @@
 // ============================================================
 // PrintoKids PH — Admin Dashboard
 // ============================================================
-// API path: ../api  (relative from admin/admin_dashboard/)
+// API path: ../../api  (relative from admin/admin_dashboard/)
 // ============================================================
 
-const API = '../api';
+const API = '../../api';
 
 // ── Global state ────────────────────────────────────────────
 let allProducts       = [];

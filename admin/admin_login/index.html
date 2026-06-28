@@ -57,13 +57,15 @@
             <input type="password" class="form-control" id="staffPassword" placeholder="Enter your password">
         </div>
         <button class="btn-login" onclick="handleAdminLogin()">Sign In</button>
-        <p class="text-center text-muted mt-3 mb-0" style="font-size:13px;">
+        <!--<p class="text-center text-muted mt-3 mb-0" style="font-size:13px;">
             Default: Staff ID <strong>1</strong> / Password <strong>admin1234</strong>
         </p>
+    -->
+        //
     </div>
 
     <script>
-        const API = '../api';
+        const API = '../../api';
 
         fetch(`${API}/auth.php?action=check`)
             .then(r => r.json())

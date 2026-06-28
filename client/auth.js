@@ -3,7 +3,7 @@
 // Fixes applied:
 //   - PHP session as source of truth (not localStorage)
 //   - action sent in POST body, not URL query string
-//   - reads signUpFullName and signUpPhone (matching index.html IDs)
+//   - reads signUpFirstName, signUpLastName, signUpPhone (matching index.html IDs)
 //   - button selectors use IDs (signInSubmitBtn / signUpSubmitBtn)
 //   - getUserId() method added (required by cart.js)
 //   - phone field sent to register endpoint
@@ -11,7 +11,6 @@
 // ============================================================
 
 const API = window.API_ROOT || '../api';
-const MY_ACCOUNT = window.MY_ACCOUNT_URL || 'my_account/index.html';
 
 class AuthManager {
     constructor() {
@@ -90,15 +89,15 @@ class AuthManager {
 
     // ── Sign up ────────────────────────────────────────────
     async handleSignUp() {
-        // IDs match index.html exactly
-        const fullName        = document.getElementById('signUpFullName')?.value.trim();
+        const firstName       = document.getElementById('signUpFirstName')?.value.trim();
+        const lastName        = document.getElementById('signUpLastName')?.value.trim();
         const email           = document.getElementById('signUpEmail')?.value.trim();
         const phone           = document.getElementById('signUpPhone')?.value.trim();
         const password        = document.getElementById('signUpPassword')?.value;
         const confirmPassword = document.getElementById('confirmPassword')?.value;
         const termsCheck      = document.getElementById('termsCheck')?.checked;
 
-        if (!fullName || !email || !phone || !password || !confirmPassword) {
+        if (!firstName || !lastName || !email || !phone || !password || !confirmPassword) {
             this.showAlert('All fields are required.', 'warning');
             return;
         }
@@ -114,10 +113,6 @@ class AuthManager {
             this.showAlert('Password must be at least 8 characters.', 'warning');
             return;
         }
-
-        const parts     = fullName.split(/\s+/);
-        const firstName = parts[0];
-        const lastName  = parts.slice(1).join(' ') || 'User';
 
         try {
             const res  = await fetch(`${API}/auth.php`, {
@@ -176,7 +171,7 @@ class AuthManager {
         if (this.currentUser) {
             if (accountBtn) {
                 accountBtn.textContent = `${this.currentUser.first_name || 'Account'}`;
-                accountBtn.setAttribute('href', MY_ACCOUNT);
+                accountBtn.setAttribute('href', window.MY_ACCOUNT_URL || 'my_account/index.html');
                 accountBtn.removeAttribute('data-bs-toggle');
                 accountBtn.removeAttribute('data-bs-target');
             }
