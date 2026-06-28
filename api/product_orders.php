@@ -26,7 +26,7 @@ try {
 
         $where = $customer_id_filter ? 'WHERE po.customer_id = ' . $customer_id_filter : '';
         $stmt = $pdo->query("
-            SELECT 
+            SELECT
                 po.id,
                 po.customer_id,
                 po.employee_id,
@@ -34,6 +34,10 @@ try {
                 po.order_date,
                 po.status,
                 po.total_amount,
+                po.shipping_fee,
+                po.payment_method,
+                po.payment_status,
+                po.proof_of_payment_url,
                 po.tracking_number,
                 c.first_name,
                 c.last_name,
@@ -48,8 +52,9 @@ try {
             LEFT JOIN products p ON poi.product_id = p.id
             $where
             GROUP BY po.id, po.customer_id, po.employee_id, po.shipping_address_id,
-                     po.order_date, po.status, po.total_amount, po.tracking_number,
-                     c.first_name, c.last_name, s.first_name, s.last_name
+                     po.order_date, po.status, po.total_amount, po.shipping_fee,
+                     po.payment_method, po.payment_status, po.proof_of_payment_url,
+                     po.tracking_number, c.first_name, c.last_name, s.first_name, s.last_name
             ORDER BY po.order_date DESC
             LIMIT 100
         ");
@@ -62,7 +67,9 @@ try {
 
         $stmt = $pdo->prepare("
             SELECT po.id, po.customer_id, po.employee_id, po.shipping_address_id,
-                   po.order_date, po.status, po.total_amount, po.tracking_number,
+                   po.order_date, po.status, po.total_amount, po.shipping_fee,
+                   po.payment_method, po.payment_status, po.proof_of_payment_url,
+                   po.tracking_number,
                    c.first_name, c.last_name,
                    s.first_name AS employee_first_name,
                    s.last_name AS employee_last_name
@@ -113,6 +120,13 @@ try {
         $employee_id         = !empty($data['employee_id']) ? (int) $data['employee_id'] : null;
         $shipping_address_id = !empty($data['shipping_address_id']) ? (int) $data['shipping_address_id'] : null;
         $items               = $data['items'] ?? [];
+
+        $allowed_payment     = ['Cash on Delivery', 'QR Pay', 'Card'];
+        $payment_method      = in_array($data['payment_method'] ?? '', $allowed_payment, true)
+                               ? $data['payment_method']
+                               : 'Cash on Delivery';
+        $shipping_fee        = isset($data['shipping_fee']) ? round((float) $data['shipping_fee'], 2) : 0.00;
+        $proof_url           = trim($data['proof_of_payment_url'] ?? '') ?: null;
 
         if ($customer_id === 0 || !is_array($items) || count($items) === 0) {
             http_response_code(400);
@@ -189,10 +203,15 @@ try {
 
         // Insert order
         $orderStmt = $pdo->prepare("
-            INSERT INTO product_orders (customer_id, employee_id, shipping_address_id, status, total_amount)
-            VALUES (?, ?, ?, 'Pending', ?)
+            INSERT INTO product_orders
+                (customer_id, employee_id, shipping_address_id, status,
+                 total_amount, shipping_fee, payment_method, payment_status, proof_of_payment_url)
+            VALUES (?, ?, ?, 'Pending', ?, ?, ?, 'Unpaid', ?)
         ");
-        $orderStmt->execute([$customer_id, $employee_id, $shipping_address_id, $totalAmount]);
+        $orderStmt->execute([
+            $customer_id, $employee_id, $shipping_address_id,
+            $totalAmount, $shipping_fee, $payment_method, $proof_url
+        ]);
         $orderId = (int) $pdo->lastInsertId();
 
         // Insert items + deduct stock
@@ -269,6 +288,11 @@ try {
         if (array_key_exists('tracking_number', $data)) {
             $fields[] = 'tracking_number = ?';
             $params[] = trim($data['tracking_number']) ?: null;
+        }
+        $allowedPaymentStatuses = ['Unpaid', 'Paid', 'Verified'];
+        if (!empty($data['payment_status']) && in_array($data['payment_status'], $allowedPaymentStatuses, true)) {
+            $fields[] = 'payment_status = ?';
+            $params[] = $data['payment_status'];
         }
 
         if (empty($fields)) {
