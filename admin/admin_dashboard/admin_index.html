@@ -48,6 +48,9 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link border-0 bg-transparent tab-trigger" data-bs-target="#users" type="button">Users</button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link border-0 bg-transparent tab-trigger" data-bs-target="#settings" type="button">Settings</button>
+                    </li>
                     <li class="nav-item ms-3">
                         <button class="btn btn-sm btn-outline-danger mt-1" onclick="handleLogout()">Logout</button>
                     </li>
@@ -364,6 +367,115 @@
     </div>
 </div>
 
+<!-- ── SETTINGS TAB ────────────────────────────────────────── -->
+<div class="tab-pane fade" id="settings" role="tabpanel">
+    <div class="mb-4">
+        <h4 class="fw-bold text-dark text-uppercase tracking-wide">Store Settings</h4>
+        <p class="text-muted mb-0">Configure payment methods, shipping rates, and QR payment details.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Payment Methods -->
+        <div class="col-lg-5">
+            <div class="dashboard-panel">
+                <h5 class="fw-bold mb-3">Payment Methods</h5>
+                <p class="text-muted small mb-3">Toggle which payment methods are available to customers during checkout.</p>
+                <div class="mb-3 d-flex justify-content-between align-items-center border-bottom pb-2">
+                    <div>
+                        <strong>💵 Cash on Delivery</strong>
+                        <p class="mb-0 small text-muted">Customer pays when order arrives.</p>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="toggleCOD" style="width:3rem;height:1.5rem"
+                               onchange="savePaymentToggle('payment_cod_enabled', this.checked)">
+                    </div>
+                </div>
+                <div class="mb-3 d-flex justify-content-between align-items-center border-bottom pb-2">
+                    <div>
+                        <strong>📱 QR Pay</strong>
+                        <p class="mb-0 small text-muted">Customer scans QR and uploads proof.</p>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="toggleQR" style="width:3rem;height:1.5rem"
+                               onchange="savePaymentToggle('payment_qr_enabled', this.checked)">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>💳 Card Payment</strong>
+                        <p class="mb-0 small text-muted">Credit / Debit card (no processor yet).</p>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="toggleCard" style="width:3rem;height:1.5rem"
+                               onchange="savePaymentToggle('payment_card_enabled', this.checked)">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QR Code Upload -->
+        <div class="col-lg-7">
+            <div class="dashboard-panel">
+                <h5 class="fw-bold mb-3">QR Payment Code</h5>
+                <p class="text-muted small mb-3">Upload your bank/e-wallet QR code. Customers see this during checkout when QR Pay is selected.</p>
+                <div id="settingsQRPreview" class="mb-3 text-center" style="display:none">
+                    <img id="settingsQRImage" src="" alt="QR Code" style="max-width:200px;border:1px solid #ddd;border-radius:8px">
+                    <p class="small text-muted mt-1">Current QR code</p>
+                </div>
+                <p id="settingsQRNone" class="text-muted small">No QR code uploaded yet.</p>
+                <div class="d-flex gap-2 align-items-center">
+                    <input type="file" class="form-control" id="qrUploadInput"
+                           accept="image/jpeg,image/png,image/webp" style="max-width:280px">
+                    <button class="btn btn-dark" onclick="uploadAdminQRCode()">Upload QR</button>
+                </div>
+                <div id="qrUploadStatus" class="mt-2 small"></div>
+            </div>
+        </div>
+
+        <!-- Shipping Rates -->
+        <div class="col-lg-5">
+            <div class="dashboard-panel">
+                <h5 class="fw-bold mb-3">Shipping Rates (₱)</h5>
+                <p class="text-muted small mb-3">Flat rate per zone. Applied automatically based on the customer's delivery address province.</p>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Metro Manila (NCR)</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">₱</span>
+                            <input type="number" class="form-control" id="rateNCR" min="0" step="0.01" placeholder="80.00">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Luzon</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">₱</span>
+                            <input type="number" class="form-control" id="rateLuzon" min="0" step="0.01" placeholder="150.00">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Visayas</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">₱</span>
+                            <input type="number" class="form-control" id="rateVisayas" min="0" step="0.01" placeholder="200.00">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Mindanao</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">₱</span>
+                            <input type="number" class="form-control" id="rateMindanao" min="0" step="0.01" placeholder="200.00">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-dark mt-3" onclick="saveShippingRates()">Save Shipping Rates</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </main>
 
 <!-- ═══════════════════════════════════════════════════════
@@ -455,6 +567,32 @@
             <div class="pk-form-group" id="shippingAddressRow" style="display:none">
                 <label>Shipping Address</label>
                 <input type="text" id="orderShippingAddress" readonly>
+            </div>
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <div class="pk-form-group">
+                        <label>Payment Method</label>
+                        <input type="text" id="orderPaymentMethod" readonly>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="pk-form-group">
+                        <label>Payment Status</label>
+                        <div id="orderPaymentStatusBadge" class="pt-1"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="pk-form-group">
+                        <label>Shipping Fee</label>
+                        <input type="text" id="orderShippingFee" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="pk-form-group" id="proofOfPaymentRow" style="display:none">
+                <label>Proof of Payment</label>
+                <div id="orderProofOfPayment" style="font-size:14px;padding:4px 0;"></div>
+                <button type="button" class="btn btn-sm btn-success mt-1" id="markPaidBtn"
+                    onclick="markOrderPaid()">Mark as Verified</button>
             </div>
             <!-- Customization notes (read-only, pulled from items) -->
             <div class="pk-form-group" id="customizationNotesRow" style="display:none">

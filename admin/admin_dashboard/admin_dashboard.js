@@ -12,6 +12,7 @@ let allOrders         = [];
 let allEventBookings  = [];
 let allUsers          = [];
 let allStaff          = [];
+let allSettings       = {};
 
 let currentProductFilter      = 'All';
 let currentProductSearch      = '';
@@ -46,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadEventBookings(),
         loadUsers(),
         loadStaff(),
+        loadSettings(),
     ]);
 
     loadDashboardOverview();
@@ -85,6 +87,7 @@ function setupTabListeners() {
             else if (id === '#orders')        displayOrders(applyOrderFilter(allOrders));
             else if (id === '#eventBookings') loadEventBookings();
             else if (id === '#users')         { displayUsers(allUsers); displayStaff(allStaff); }
+            else if (id === '#settings')      renderSettingsTab();
         });
     });
 }
@@ -438,8 +441,33 @@ function openOrderModal(order) {
     } else {
         addrRow.style.display = 'none';
     }
-    document.getElementById('orderStatus').value       = order.status || 'Pending';
+    document.getElementById('orderStatus').value        = order.status || 'Pending';
     document.getElementById('orderTrackingNumber').value = order.tracking_number || '';
+
+    // Payment fields
+    document.getElementById('orderPaymentMethod').value = order.payment_method || '—';
+    document.getElementById('orderShippingFee').value   = order.shipping_fee != null
+        ? '₱' + parseFloat(order.shipping_fee).toFixed(2) : '—';
+
+    const ps = order.payment_status || 'Unpaid';
+    const psBadgeClass = ps === 'Verified' ? 'bg-success' : ps === 'Paid' ? 'bg-info text-dark' : 'bg-warning text-dark';
+    document.getElementById('orderPaymentStatusBadge').innerHTML =
+        `<span class="badge ${psBadgeClass}">${esc(ps)}</span>`;
+
+    const proofRow = document.getElementById('proofOfPaymentRow');
+    const markBtn  = document.getElementById('markPaidBtn');
+    if (order.proof_of_payment_url) {
+        document.getElementById('orderProofOfPayment').innerHTML =
+            `<a href="${esc(order.proof_of_payment_url)}" target="_blank" class="d-block">
+                <img src="${esc(order.proof_of_payment_url)}" alt="Proof of payment"
+                     style="max-width:120px;border:1px solid #ddd;border-radius:4px">
+                <span class="d-block small mt-1">View full image</span>
+             </a>`;
+        proofRow.style.display = '';
+        if (markBtn) markBtn.style.display = ps === 'Verified' ? 'none' : '';
+    } else {
+        proofRow.style.display = 'none';
+    }
 
     // Customization notes (aggregate from items)
     const notes = (order.items || []).filter(i => i.customization_notes).map(i => `${i.name}: ${i.customization_notes}`).join('\n');
@@ -808,6 +836,156 @@ function deleteUser(id) {
         }
     })
     .catch(() => showAlert('Request failed.', 'danger'));
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+async function loadSettings() {
+    try {
+        const res = await fetch(`${API}/settings.php`);
+        allSettings = await res.json();
+    } catch {
+        allSettings = {};
+    }
+}
+
+function renderSettingsTab() {
+    const s = allSettings;
+    const setToggle = (id, key) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = s[key] !== '0';
+    };
+    setToggle('toggleCOD',  'payment_cod_enabled');
+    setToggle('toggleQR',   'payment_qr_enabled');
+    setToggle('toggleCard', 'payment_card_enabled');
+
+    const setRate = (id, key) => {
+        const el = document.getElementById(id);
+        if (el) el.value = s[key] ?? '';
+    };
+    setRate('rateNCR',      'shipping_ncr');
+    setRate('rateLuzon',    'shipping_luzon');
+    setRate('rateVisayas',  'shipping_visayas');
+    setRate('rateMindanao', 'shipping_mindanao');
+
+    const qrPreview = document.getElementById('settingsQRPreview');
+    const qrNone    = document.getElementById('settingsQRNone');
+    const qrImg     = document.getElementById('settingsQRImage');
+    if (s.qr_code_url) {
+        if (qrImg)     qrImg.src           = s.qr_code_url;
+        if (qrPreview) qrPreview.style.display = '';
+        if (qrNone)    qrNone.style.display    = 'none';
+    } else {
+        if (qrPreview) qrPreview.style.display = 'none';
+        if (qrNone)    qrNone.style.display    = '';
+    }
+}
+
+async function savePaymentToggle(key, enabled) {
+    try {
+        const res  = await fetch(`${API}/settings.php`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [key]: enabled ? '1' : '0' }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            allSettings[key] = enabled ? '1' : '0';
+            showAlert('Payment setting saved.', 'success');
+        } else {
+            showAlert(data.error || 'Save failed.', 'danger');
+            await loadSettings(); renderSettingsTab();
+        }
+    } catch {
+        showAlert('Request failed.', 'danger');
+        await loadSettings(); renderSettingsTab();
+    }
+}
+
+async function saveShippingRates() {
+    const rates = {
+        shipping_ncr:      document.getElementById('rateNCR')?.value      || '0',
+        shipping_luzon:    document.getElementById('rateLuzon')?.value    || '0',
+        shipping_visayas:  document.getElementById('rateVisayas')?.value  || '0',
+        shipping_mindanao: document.getElementById('rateMindanao')?.value || '0',
+    };
+    try {
+        const res  = await fetch(`${API}/settings.php`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rates),
+        });
+        const data = await res.json();
+        if (data.success) {
+            Object.assign(allSettings, rates);
+            showAlert('Shipping rates saved.', 'success');
+        } else {
+            showAlert(data.error || 'Save failed.', 'danger');
+        }
+    } catch {
+        showAlert('Request failed.', 'danger');
+    }
+}
+
+async function uploadAdminQRCode() {
+    const input = document.getElementById('qrUploadInput');
+    const file  = input?.files?.[0];
+    if (!file) { showAlert('Please select an image file.', 'warning'); return; }
+
+    const statusEl = document.getElementById('qrUploadStatus');
+    if (statusEl) statusEl.innerHTML = '<span class="text-muted">Uploading…</span>';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const upRes  = await fetch(`${API}/upload.php`, { method: 'POST', body: formData });
+        const upData = await upRes.json();
+        if (!upData.url) {
+            if (statusEl) statusEl.innerHTML = `<span class="text-danger">${esc(upData.error || 'Upload failed.')}</span>`;
+            return;
+        }
+
+        const saveRes  = await fetch(`${API}/settings.php`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ qr_code_url: upData.url }),
+        });
+        const saveData = await saveRes.json();
+        if (saveData.success) {
+            allSettings.qr_code_url = upData.url;
+            if (statusEl) statusEl.innerHTML = '<span class="text-success">✔ QR code updated.</span>';
+            renderSettingsTab();
+            if (input) input.value = '';
+        } else {
+            if (statusEl) statusEl.innerHTML = `<span class="text-danger">${esc(saveData.error || 'Save failed.')}</span>`;
+        }
+    } catch {
+        if (statusEl) statusEl.innerHTML = '<span class="text-danger">Request failed.</span>';
+    }
+}
+
+async function markOrderPaid() {
+    const id = Number(document.getElementById('orderId').value);
+    if (!id) return;
+    try {
+        const res  = await fetch(`${API}/product_orders.php`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, payment_status: 'Verified' }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            showAlert('Order marked as Verified.', 'success');
+            closeOrderModal();
+            loadOrders();
+        } else {
+            showAlert(data.error || 'Update failed.', 'danger');
+        }
+    } catch {
+        showAlert('Request failed.', 'danger');
+    }
 }
 
 // ============================================================
