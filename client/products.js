@@ -51,13 +51,20 @@ class ProductManager {
             return;
         }
 
-        container.innerHTML = this.filteredProducts.map(p => `
+        container.innerHTML = this.filteredProducts.map(p => {
+            const oos = p.stock_status === 'Out of Stock';
+            return `
             <div class="col">
-                <div class="card h-100 text-center product-card" onclick="window.location.href='product_details/index.html?id=${p.id}'">
-                    <img src="${p.primary_image || 'images/Product_TEMP.png'}"
-                         class="card-img-top"
-                         alt="${this.esc(p.name)}"
-                         onerror="this.src='images/Product_TEMP.png'">
+                <div class="card h-100 text-center product-card${oos ? ' oos-card' : ''}"
+                     style="${oos ? 'opacity:0.55;' : ''}"
+                     onclick="window.location.href='product_details/index.html?id=${p.id}'">
+                    <div class="position-relative">
+                        <img src="${p.primary_image || 'images/Product_TEMP.png'}"
+                             class="card-img-top"
+                             alt="${this.esc(p.name)}"
+                             onerror="this.src='images/Product_TEMP.png'">
+                        ${oos ? `<span class="position-absolute top-0 start-0 w-100 text-center py-1 small fw-bold text-white" style="background:rgba(220,53,69,0.85);">Out of Stock</span>` : ''}
+                    </div>
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title mb-1">${this.esc(p.name)}</h5>
                         <p class="card-text text-muted small mb-1">${this.esc(p.category || 'General')}</p>
@@ -72,13 +79,15 @@ class ProductManager {
                             View Details
                         </button>
                         <button class="btn btn-success btn-sm"
-                            onclick="event.stopPropagation(); cartManager.addItem(${p.id}, 1)">
-                            Add to Cart
+                            ${oos ? 'disabled' : ''}
+                            onclick="event.stopPropagation(); ${oos ? '' : `cartManager.addItem(${p.id}, 1)`}">
+                            ${oos ? 'Out of Stock' : 'Add to Cart'}
                         </button>
                     </div>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     // ── Filters ────────────────────────────────────────────
