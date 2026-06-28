@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 28, 2026 at 12:23 PM
+-- Generation Time: Jun 28, 2026 at 04:32 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -203,55 +203,57 @@ CREATE TABLE `event_orders` (
   `event_type` varchar(100) DEFAULT NULL,
   `order_date` datetime DEFAULT current_timestamp(),
   `event_location` varchar(255) NOT NULL,
-  `status` varchar(50) DEFAULT 'Pending'
+  `status` varchar(50) DEFAULT 'Pending',
+  `admin_notes` text DEFAULT NULL,
+  `cancellation_reason` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `event_orders`
 --
 
-INSERT INTO `event_orders` (`id`, `customer_id`, `event_name`, `event_date`, `event_type`, `order_date`, `event_location`, `status`) VALUES
-(10, 23, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Pasig Convention Center', 'Confirmed'),
-(11, 36, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Quezon City Convention Center', 'Confirmed'),
-(12, 29, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Taguig Convention Center', 'Confirmed'),
-(13, 48, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Quezon City Convention Center', 'Confirmed'),
-(14, 34, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Pasig Convention Center', 'Confirmed'),
-(15, 24, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Manila Convention Center', 'Pending'),
-(16, 46, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Pasig Convention Center', 'Confirmed'),
-(17, 50, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Taguig Convention Center', 'Confirmed'),
-(18, 32, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed'),
-(19, 23, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Mandaluyong Convention Center', 'Confirmed'),
-(20, 20, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Taguig Convention Center', 'Confirmed'),
-(21, 27, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Pending'),
-(22, 4, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed'),
-(23, 38, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Confirmed'),
-(24, 6, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Confirmed'),
-(25, 25, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Confirmed'),
-(26, 33, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Mandaluyong Convention Center', 'Confirmed'),
-(27, 40, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Pending'),
-(28, 42, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Mandaluyong Convention Center', 'Confirmed'),
-(29, 9, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Alabang Convention Center', 'Confirmed'),
-(30, 33, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Confirmed'),
-(31, 25, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Confirmed'),
-(32, 27, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Alabang Convention Center', 'Confirmed'),
-(33, 28, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Alabang Convention Center', 'Pending'),
-(34, 26, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Confirmed'),
-(35, 19, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Confirmed'),
-(36, 32, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Confirmed'),
-(37, 27, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Taguig Convention Center', 'Confirmed'),
-(38, 32, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed'),
-(39, 43, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Pending'),
-(40, 22, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Confirmed'),
-(41, 42, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Confirmed'),
-(42, 4, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Pending'),
-(43, 50, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed'),
-(44, 31, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Mandaluyong Convention Center', 'Confirmed'),
-(45, 41, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Alabang Convention Center', 'Pending'),
-(46, 8, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Taguig Convention Center', 'Confirmed'),
-(47, 23, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed'),
-(48, 39, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Pending'),
-(51, 51, 'Joco 99th Bday bash', '2026-06-28', 'Birthday', '2026-06-28 12:45:51', 'Makati City Hall', 'Pending'),
-(52, 51, 'Joco\'s 100th bday bash go home gramps', '2026-06-29', 'Birthday', '2026-06-28 17:08:50', 'Ayala Triangle', 'Confirmed');
+INSERT INTO `event_orders` (`id`, `customer_id`, `event_name`, `event_date`, `event_type`, `order_date`, `event_location`, `status`, `admin_notes`, `cancellation_reason`) VALUES
+(10, 23, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Pasig Convention Center', 'Confirmed', NULL, NULL),
+(11, 36, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Quezon City Convention Center', 'Confirmed', NULL, NULL),
+(12, 29, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Taguig Convention Center', 'Confirmed', NULL, NULL),
+(13, 48, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Quezon City Convention Center', 'Confirmed', NULL, NULL),
+(14, 34, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Pasig Convention Center', 'Confirmed', NULL, NULL),
+(15, 24, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Manila Convention Center', 'Pending', NULL, NULL),
+(16, 46, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Pasig Convention Center', 'Confirmed', NULL, NULL),
+(17, 50, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Taguig Convention Center', 'Confirmed', NULL, NULL),
+(18, 32, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed', NULL, NULL),
+(19, 23, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Mandaluyong Convention Center', 'Confirmed', NULL, NULL),
+(20, 20, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Taguig Convention Center', 'Confirmed', NULL, NULL),
+(21, 27, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Pending', NULL, NULL),
+(22, 4, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed', NULL, NULL),
+(23, 38, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Confirmed', NULL, NULL),
+(24, 6, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Confirmed', NULL, NULL),
+(25, 25, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Confirmed', NULL, NULL),
+(26, 33, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Mandaluyong Convention Center', 'Confirmed', NULL, NULL),
+(27, 40, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Pending', NULL, NULL),
+(28, 42, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Mandaluyong Convention Center', 'Confirmed', NULL, NULL),
+(29, 9, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Alabang Convention Center', 'Confirmed', NULL, NULL),
+(30, 33, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Confirmed', NULL, NULL),
+(31, 25, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Confirmed', NULL, NULL),
+(32, 27, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Alabang Convention Center', 'Confirmed', NULL, NULL),
+(33, 28, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Alabang Convention Center', 'Pending', NULL, NULL),
+(34, 26, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Confirmed', NULL, NULL),
+(35, 19, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Confirmed', NULL, NULL),
+(36, 32, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Confirmed', NULL, NULL),
+(37, 27, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Taguig Convention Center', 'Confirmed', NULL, NULL),
+(38, 32, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed', NULL, NULL),
+(39, 43, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Pending', NULL, NULL),
+(40, 22, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Confirmed', NULL, NULL),
+(41, 42, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Confirmed', NULL, NULL),
+(42, 4, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Pending', NULL, NULL),
+(43, 50, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed', NULL, NULL),
+(44, 31, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Mandaluyong Convention Center', 'Confirmed', NULL, NULL),
+(45, 41, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Alabang Convention Center', 'Pending', NULL, NULL),
+(46, 8, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Taguig Convention Center', 'Confirmed', NULL, NULL),
+(47, 23, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed', NULL, NULL),
+(48, 39, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Pending', NULL, NULL),
+(51, 51, 'Joco 99th Bday bash', '2026-06-28', 'Birthday', '2026-06-28 12:45:51', 'Makati City Hall', 'Pending', NULL, NULL),
+(52, 51, 'Joco\'s 100th bday bash go home gramps', '2026-06-29', 'Birthday', '2026-06-28 17:08:50', 'Ayala Triangle', 'Confirmed', 'Hello we have received your message thank you. we\'ll update you throughout the process and we will reach out to you', NULL);
 
 -- --------------------------------------------------------
 
@@ -451,19 +453,19 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `category`, `base_cost`, `description`, `is_active`, `stock_count`, `reorder_level`, `stock_status`, `force_out_of_stock`, `created_at`) VALUES
-(1, 'Premium Tumbler', 'General', 953.00, 'High-quality tumbler with customizable print design.', 1, 85, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(2, 'Classic Tote Bag', 'General', 1362.00, 'Durable tote bag perfect for personalized event giveaways.', 1, 120, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(3, 'Basic Jacket', 'General', 608.00, 'Comfortable jacket with heat-press customization.', 1, 44, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(4, 'Classic Jacket', 'General', 1392.00, 'Premium jacket with high-quality personalized printing.', 1, 29, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(5, 'Eco-friendly Tote Bag', 'General', 877.00, 'Sustainable tote bag made from eco-friendly materials.', 1, 95, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(6, 'Pro Cap', 'General', 1311.00, 'Professional-grade cap with embroidered or printed design.', 1, 60, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(7, 'Pro T-Shirt', 'General', 823.00, 'High-quality t-shirt with full-color custom print.', 1, 110, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(8, 'Basic Cap', 'General', 1457.00, 'Simple cap with your custom logo or text.', 1, 75, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(9, 'Premium Cap', 'General', 171.00, 'Top-tier cap with premium finish and print.', 1, 200, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(10, 'Eco-friendly Tumbler', 'General', 538.00, 'Eco-conscious tumbler with personalized design.', 1, 150, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(11, 'Classic Cap', 'General', 111.00, 'Everyday cap with clean custom branding.', 1, 180, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(12, 'Premium Tote Bag', 'General', 166.00, 'Deluxe tote with high-resolution custom artwork.', 1, 90, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(13, 'Classic Tote Bag', 'General', 724.00, 'Versatile tote bag for events and daily use.', 1, 55, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(1, 'Premium Tumbler', 'General', 953.00, 'High-quality tumbler with customizable print design.', 0, 85, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(2, 'Classic Tote Bag', 'General', 1362.00, 'Durable tote bag perfect for personalized event giveaways.', 0, 120, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(3, 'Basic Jacket', 'General', 608.00, 'Comfortable jacket with heat-press customization.', 0, 44, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(4, 'Classic Jacket', 'General', 1392.00, 'Premium jacket with high-quality personalized printing.', 0, 29, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(5, 'Eco-friendly Tote Bag', 'General', 877.00, 'Sustainable tote bag made from eco-friendly materials.', 0, 95, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(6, 'Pro Cap', 'General', 1311.00, 'Professional-grade cap with embroidered or printed design.', 0, 60, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(7, 'Pro T-Shirt', 'General', 823.00, 'High-quality t-shirt with full-color custom print.', 0, 110, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(8, 'Basic Cap', 'General', 1457.00, 'Simple cap with your custom logo or text.', 0, 75, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(9, 'Premium Cap', 'General', 171.00, 'Top-tier cap with premium finish and print.', 0, 200, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(10, 'Eco-friendly Tumbler', 'General', 538.00, 'Eco-conscious tumbler with personalized design.', 0, 150, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(11, 'Classic Cap', 'General', 111.00, 'Everyday cap with clean custom branding.', 0, 180, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(12, 'Premium Tote Bag', 'General', 166.00, 'Deluxe tote with high-resolution custom artwork.', 0, 90, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(13, 'Classic Tote Bag', 'General', 724.00, 'Versatile tote bag for events and daily use.', 0, 55, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
 (14, 'Custom Mug', 'General', 850.00, 'Ceramic mug with full-wrap personalized design.', 1, 100, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
 (15, 'Classic Lanyard', 'General', 431.00, 'Standard lanyard with custom print for events.', 1, 130, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
 (16, 'Classic Mug', 'General', 493.00, 'Everyday mug with your chosen design or text.', 1, 70, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
@@ -500,7 +502,8 @@ INSERT INTO `products` (`id`, `name`, `category`, `base_cost`, `description`, `i
 (47, 'Premium Tumbler', 'General', 799.00, 'Quality tumbler with precision printing.', 1, 65, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
 (48, 'Eco-friendly Cap', 'General', 1229.00, 'Eco cap with sustainable custom print.', 1, 40, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
 (49, 'Custom T-Shirt', 'General', 490.00, 'Affordable custom t-shirt for events.', 1, 100, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
-(50, 'Pro Tumbler', 'General', 817.00, 'Professional tumbler with premium finish.', 1, 70, 15, 'In Stock', 0, '2026-06-27 05:19:00');
+(50, 'Pro Tumbler', 'General', 817.00, 'Professional tumbler with premium finish.', 1, 70, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(51, 'Twinkle Headband', 'General', 456.00, 'test product cause me insane', 1, 4, 10, 'Low Stock', 0, '2026-06-28 10:30:58');
 
 -- --------------------------------------------------------
 
@@ -585,6 +588,14 @@ CREATE TABLE `product_images` (
   `is_primary` tinyint(1) DEFAULT 0,
   `sort_order` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `product_images`
+--
+
+INSERT INTO `product_images` (`id`, `product_id`, `image_url`, `media_type`, `is_primary`, `sort_order`) VALUES
+(4, 51, 'http://localhost/PrintokidsPH/uploads/media_6a412f5eb760b5.97069474.jpg', 'image', 1, 0),
+(5, 51, 'http://localhost/PrintokidsPH/uploads/media_6a412f65ba59c8.65434974.jpg', 'image', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -845,7 +856,7 @@ INSERT INTO `store_settings` (`key`, `value`) VALUES
 ('payment_card_enabled', '0'),
 ('payment_cod_enabled', '0'),
 ('payment_qr_enabled', '1'),
-('qr_code_url', 'http://localhost/PrintokidsPH/uploads/media_6a40e9a1f40719.63078784.jpg'),
+('qr_code_url', 'http://localhost/PrintokidsPH/uploads/media_6a412f9be433b8.07377837.jpg'),
 ('shipping_luzon', '150.00'),
 ('shipping_mindanao', '200.00'),
 ('shipping_ncr', '80.00'),
@@ -1026,7 +1037,7 @@ ALTER TABLE `order_services`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `products_attributes`
@@ -1038,7 +1049,7 @@ ALTER TABLE `products_attributes`
 -- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `product_orders`
