@@ -251,6 +251,7 @@
             <a href="javascript:void(0)" onclick="filterEventBookings('Pending')">[ Pending ]</a>
             <a href="javascript:void(0)" onclick="filterEventBookings('Confirmed')">[ Confirmed ]</a>
             <a href="javascript:void(0)" onclick="filterEventBookings('Completed')">[ Completed ]</a>
+            <a href="javascript:void(0)" onclick="loadEventBookings()" class="ms-2">[ Refresh ]</a>
             <a href="javascript:void(0)" onclick="exportEventBookings()" class="ms-2">[ Export ]</a>
         </div>
     </div>
@@ -548,6 +549,20 @@
                     <div class="pk-form-group">
                         <label>Client Name</label>
                         <input type="text" id="eventBookingClientName" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <div class="pk-form-group">
+                        <label>Event Name</label>
+                        <input type="text" id="eventBookingName" readonly>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="pk-form-group">
+                        <label>Event Date</label>
+                        <input type="text" id="eventBookingDate" readonly>
                     </div>
                 </div>
             </div>

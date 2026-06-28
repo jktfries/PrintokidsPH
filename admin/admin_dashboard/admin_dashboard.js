@@ -83,7 +83,7 @@ function setupTabListeners() {
             else if (id === '#products')      applyProductCatalogFilters();
             else if (id === '#inventory')     displayInventory(allProducts);
             else if (id === '#orders')        displayOrders(applyOrderFilter(allOrders));
-            else if (id === '#eventBookings') applyEventBookingFilters();
+            else if (id === '#eventBookings') loadEventBookings();
             else if (id === '#users')         { displayUsers(allUsers); displayStaff(allStaff); }
         });
     });
@@ -596,6 +596,10 @@ function viewEventBooking(id) {
     document.getElementById('eventBookingOrderId').value    = b.order_id;
     document.getElementById('eventBookingId').value         = `BKG-${pad(b.booking_id)}`;
     document.getElementById('eventBookingClientName').value = `${b.first_name || ''} ${b.last_name || ''}`.trim();
+    document.getElementById('eventBookingName').value       = b.event_name || '—';
+    document.getElementById('eventBookingDate').value       = b.event_date
+        ? new Date(b.event_date).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' })
+        : 'N/A';
     document.getElementById('eventBookingType').value       = b.event_type || '—';
     document.getElementById('eventBookingLocation').value   = b.event_location || 'N/A';
     document.getElementById('eventBookingService').value    = b.service_name || 'N/A';

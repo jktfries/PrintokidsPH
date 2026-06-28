@@ -8,24 +8,29 @@ $method = $_SERVER['REQUEST_METHOD'];
 // GET - List all event bookings with details
 if ($method === 'GET') {
     $stmt = $pdo->query("
-        SELECT 
-            os.id AS booking_id,
-            eo.id AS order_id,
+        SELECT
+            eo.id                                                      AS booking_id,
+            eo.id                                                      AS order_id,
+            eo.event_name,
+            eo.event_type,
+            eo.event_date,
             eo.event_location,
             eo.status,
             c.first_name,
             c.last_name,
-            s.service_name,
-            a.asset_name,
-            os.start_time,
-            os.end_time,
-            os.price_charged
-        FROM order_services os
-        INNER JOIN event_orders eo ON os.order_id = eo.id
-        INNER JOIN customers c ON eo.customer_id = c.id
-        INNER JOIN services s ON os.service_id = s.id
-        INNER JOIN assets a ON os.asset_id = a.id
-        ORDER BY os.start_time DESC
+            GROUP_CONCAT(s.service_name SEPARATOR ', ')                AS service_name,
+            GROUP_CONCAT(a.asset_name   SEPARATOR ', ')                AS asset_name,
+            MIN(os.start_time)                                         AS start_time,
+            MAX(os.end_time)                                           AS end_time,
+            COALESCE(SUM(os.price_charged), 0)                        AS price_charged
+        FROM event_orders eo
+        INNER JOIN customers c      ON eo.customer_id = c.id
+        LEFT  JOIN order_services os ON os.order_id   = eo.id
+        LEFT  JOIN services s        ON os.service_id  = s.id
+        LEFT  JOIN assets a          ON os.asset_id    = a.id
+        GROUP BY eo.id, eo.event_name, eo.event_type, eo.event_date,
+                 eo.event_location, eo.status, c.first_name, c.last_name
+        ORDER BY eo.id DESC
         LIMIT 100
     ");
     echo json_encode($stmt->fetchAll());
