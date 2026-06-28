@@ -114,19 +114,8 @@ if ($action === 'login') {
     }
 
     if ($user_type === 'admin') {
-        $stmt = $pdo->prepare(
-            'SELECT id, first_name, last_name, password_hash, is_admin, status
-             FROM staff WHERE id IN (
-                 SELECT staff_id FROM staff_roles
-             ) AND status = "Active"
-             -- allow login by contact_number treated as email is not set; match by id hack
-             -- staff login uses staff id (numeric) as username for simplicity
-             LIMIT 0'
-            // Replaced below — staff log in by first_name+last_name not email
-            // Using a simple approach: staff login by staff ID + password
-        );
-        // Staff login: use numeric staff ID as username
-        $staff_id_input = (int) $email; // re-using email field for staff ID
+        // Staff log in using their numeric staff ID (entered in the email field)
+        $staff_id_input = (int) $email;
         $stmt = $pdo->prepare(
             'SELECT id, first_name, last_name, password_hash, is_admin
              FROM staff WHERE id = ? AND status = "Active"'
@@ -137,6 +126,13 @@ if ($action === 'login') {
         if (!$user || !password_verify($password, $user['password_hash'] ?? '')) {
             http_response_code(401);
             echo json_encode(['error' => 'Invalid staff ID or password']);
+            exit;
+        }
+
+        // Only staff flagged as admin may access the admin panel
+        if (!$user['is_admin']) {
+            http_response_code(403);
+            echo json_encode(['error' => 'This account does not have admin access']);
             exit;
         }
 
