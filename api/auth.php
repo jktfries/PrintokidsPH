@@ -303,7 +303,7 @@ if ($action === 'forgot_password') {
     }
 
     $token  = bin2hex(random_bytes(32));
-    $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
+    $expiry = gmdate('Y-m-d H:i:s', time() + 3600);
     $found  = false;
     $reset_url = '';
 
@@ -365,12 +365,12 @@ if ($action === 'reset_password') {
 
     $table = $user_type === 'staff' ? 'staff' : 'customers';
     $stmt  = $pdo->prepare(
-        "SELECT id FROM {$table} WHERE reset_token = ? AND reset_token_expires > NOW()"
+        "SELECT id, reset_token_expires FROM {$table} WHERE reset_token = ?"
     );
     $stmt->execute([$token]);
     $user = $stmt->fetch();
 
-    if (!$user) {
+    if (!$user || strtotime($user['reset_token_expires'] . ' UTC') < time()) {
         http_response_code(400);
         echo json_encode(['error' => 'This reset link is invalid or has expired. Please request a new one.']);
         exit;
