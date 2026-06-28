@@ -6,7 +6,7 @@ $pdo    = getPDO();
 $action = $_GET['action'] ?? (json_decode(file_get_contents('php://input'), true)['action'] ?? '');
 $method = $_SERVER['REQUEST_METHOD'];
 
-// ── GET /api/auth.php?action=check-- ───────────────────────────────────────────
+// ── GET /api/auth.php?action=check ──────────────────────────────────────────
 if ($method === 'GET' && $action === 'check') {
     if (isset($_SESSION['customer_id'])) {
         echo json_encode([
@@ -42,7 +42,7 @@ if ($method !== 'POST') {
 $data   = json_decode(file_get_contents('php://input'), true) ?? [];
 $action = $data['action'] ?? $action;
 
-// ── register ──────────────────────────────────────────────────────────────────
+// ── register (customer) ───────────────────────────────────────────────────────
 if ($action === 'register') {
     $first_name = trim($data['first_name'] ?? '');
     $last_name  = trim($data['last_name'] ?? '');
@@ -68,7 +68,6 @@ if ($action === 'register') {
         exit;
     }
 
-    // Check duplicate email
     $check = $pdo->prepare('SELECT id FROM customers WHERE email = ?');
     $check->execute([$email]);
     if ($check->fetch()) {
@@ -101,38 +100,83 @@ if ($action === 'register') {
     exit;
 }
 
+// ── staff_register ────────────────────────────────────────────────────────────
+if ($action === 'staff_register') {
+    $first_name     = trim($data['first_name'] ?? '');
+    $last_name      = trim($data['last_name'] ?? '');
+    $email          = trim($data['email'] ?? '');
+    $contact_number = trim($data['contact_number'] ?? '');
+    $password       = $data['password'] ?? '';
+
+    if ($first_name === '' || $last_name === '' || $email === '' || $password === '') {
+        http_response_code(400);
+        echo json_encode(['error' => 'All fields are required']);
+        exit;
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid email address']);
+        exit;
+    }
+
+    if (strlen($password) < 8) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Password must be at least 8 characters']);
+        exit;
+    }
+
+    $check = $pdo->prepare('SELECT id FROM staff WHERE email = ?');
+    $check->execute([$email]);
+    if ($check->fetch()) {
+        http_response_code(409);
+        echo json_encode(['error' => 'An account with this email already exists']);
+        exit;
+    }
+
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+    $stmt = $pdo->prepare(
+        'INSERT INTO staff (first_name, last_name, email, contact_number, password_hash, status, is_admin)
+         VALUES (?, ?, ?, ?, ?, \'Active\', 0)'
+    );
+    $stmt->execute([$first_name, $last_name, $email, $contact_number, $hash]);
+
+    echo json_encode(['success' => true]);
+    exit;
+}
+
 // ── login ─────────────────────────────────────────────────────────────────────
 if ($action === 'login') {
-    $email     = trim($data['email'] ?? '');
-    $password  = $data['password'] ?? '';
-    $user_type = $data['user_type'] ?? 'customer'; // 'customer' or 'admin'
+    $identifier = trim($data['email'] ?? '');   // email field doubles as staff ID or email
+    $password   = $data['password'] ?? '';
+    $user_type  = $data['user_type'] ?? 'customer';
 
-    if ($email === '' || $password === '') {
+    if ($identifier === '' || $password === '') {
         http_response_code(400);
-        echo json_encode(['error' => 'Email and password are required']);
+        echo json_encode(['error' => 'Credentials are required']);
         exit;
     }
 
     if ($user_type === 'admin') {
-        // Staff log in using their numeric staff ID (entered in the email field)
-        $staff_id_input = (int) $email;
-        $stmt = $pdo->prepare(
-            'SELECT id, first_name, last_name, password_hash, is_admin
-             FROM staff WHERE id = ? AND status = "Active"'
-        );
-        $stmt->execute([$staff_id_input]);
+        // Accept numeric staff ID or email address
+        if (ctype_digit($identifier)) {
+            $stmt = $pdo->prepare(
+                'SELECT id, first_name, last_name, password_hash, is_admin
+                 FROM staff WHERE id = ? AND status = "Active"'
+            );
+            $stmt->execute([(int) $identifier]);
+        } else {
+            $stmt = $pdo->prepare(
+                'SELECT id, first_name, last_name, password_hash, is_admin
+                 FROM staff WHERE email = ? AND status = "Active"'
+            );
+            $stmt->execute([$identifier]);
+        }
         $user = $stmt->fetch();
 
         if (!$user || !password_verify($password, $user['password_hash'] ?? '')) {
             http_response_code(401);
-            echo json_encode(['error' => 'Invalid staff ID or password']);
-            exit;
-        }
-
-        // Only staff flagged as admin may access the admin panel
-        if (!$user['is_admin']) {
-            http_response_code(403);
-            echo json_encode(['error' => 'This account does not have admin access']);
+            echo json_encode(['error' => 'Invalid credentials']);
             exit;
         }
 
@@ -156,15 +200,22 @@ if ($action === 'login') {
 
     // Customer login
     $stmt = $pdo->prepare(
-        'SELECT id, first_name, last_name, email, password_hash
+        'SELECT id, first_name, last_name, email, password_hash, is_active
          FROM customers WHERE email = ?'
     );
-    $stmt->execute([$email]);
+    $stmt->execute([$identifier]);
     $user = $stmt->fetch();
 
     if (!$user || !password_verify($password, $user['password_hash'] ?? '')) {
         http_response_code(401);
         echo json_encode(['error' => 'Invalid email or password']);
+        exit;
+    }
+
+    // Block disabled accounts
+    if (isset($user['is_active']) && !$user['is_active']) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Your account has been disabled. Please contact PrintoKids for help.']);
         exit;
     }
 
@@ -183,6 +234,47 @@ if ($action === 'login') {
         'last_name'  => $user['last_name'],
         'email'      => $user['email'],
     ]);
+    exit;
+}
+
+// ── change_password (customer self-service) ───────────────────────────────────
+if ($action === 'change_password') {
+    if (empty($_SESSION['customer_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Not logged in']);
+        exit;
+    }
+
+    $current  = $data['current_password'] ?? '';
+    $new_pass = $data['new_password'] ?? '';
+
+    if ($current === '' || $new_pass === '') {
+        http_response_code(400);
+        echo json_encode(['error' => 'Both current and new password are required']);
+        exit;
+    }
+
+    if (strlen($new_pass) < 8) {
+        http_response_code(400);
+        echo json_encode(['error' => 'New password must be at least 8 characters']);
+        exit;
+    }
+
+    $stmt = $pdo->prepare('SELECT password_hash FROM customers WHERE id = ?');
+    $stmt->execute([$_SESSION['customer_id']]);
+    $row = $stmt->fetch();
+
+    if (!$row || !password_verify($current, $row['password_hash'] ?? '')) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Current password is incorrect']);
+        exit;
+    }
+
+    $newHash = password_hash($new_pass, PASSWORD_DEFAULT);
+    $upd = $pdo->prepare('UPDATE customers SET password_hash = ? WHERE id = ?');
+    $upd->execute([$newHash, $_SESSION['customer_id']]);
+
+    echo json_encode(['success' => true]);
     exit;
 }
 
