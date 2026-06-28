@@ -10,6 +10,7 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     $category = trim($_GET['category'] ?? '');
 
     $base_sql = 'SELECT p.id, p.name, p.category, p.base_cost, p.description, p.is_active,
+                        p.stock_status, p.force_out_of_stock,
                         pi.image_url AS primary_image
                  FROM products p
                  LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_primary = 1';
@@ -43,7 +44,9 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     $id = (int) $_GET['id'];
 
     $stmt = $pdo->prepare(
-        'SELECT id, name, category, base_cost, description, is_active FROM products WHERE id = ?'
+        'SELECT id, name, category, base_cost, description, is_active,
+                stock_status, stock_count, force_out_of_stock
+         FROM products WHERE id = ?'
     );
     $stmt->execute([$id]);
     $product = $stmt->fetch();
@@ -131,6 +134,27 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     if (isset($data['is_active'])) {
         $fields[] = 'is_active = ?';
         $params[] = (int) $data['is_active'];
+    }
+    if (isset($data['force_out_of_stock'])) {
+        $foos = (int) $data['force_out_of_stock'];
+        $fields[] = 'force_out_of_stock = ?';
+        $params[] = $foos;
+        if ($foos) {
+            $fields[] = 'stock_status = ?';
+            $params[] = 'Out of Stock';
+        } else {
+            // Recalculate from current stock counts (fetch them first)
+            $sc = $pdo->prepare('SELECT stock_count, reorder_level FROM products WHERE id = ?');
+            $sc->execute([$id]);
+            $row = $sc->fetch();
+            if ($row) {
+                $cnt = (int) $row['stock_count'];
+                $rl  = (int) $row['reorder_level'];
+                $ss  = $cnt <= 0 ? 'Out of Stock' : ($cnt <= $rl ? 'Low Stock' : 'In Stock');
+                $fields[] = 'stock_status = ?';
+                $params[] = $ss;
+            }
+        }
     }
 
     if (!empty($fields)) {
