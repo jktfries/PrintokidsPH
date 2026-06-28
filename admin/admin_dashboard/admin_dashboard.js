@@ -775,7 +775,7 @@ function displayEventBookings(bookings) {
     const tbody = document.querySelector('#eventBookingsTable tbody');
     if (!tbody) return;
     if (!bookings.length) {
-        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">No event bookings found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No event bookings found</td></tr>';
         return;
     }
     tbody.innerHTML = bookings.map(b => `
@@ -786,10 +786,10 @@ function displayEventBookings(bookings) {
             <td class="px-4">${esc(b.event_location || 'N/A')}</td>
             <td class="px-4">${esc(b.service_name || 'N/A')}</td>
             <td class="px-4">${formatSchedule(b.start_time, b.end_time)}</td>
-            <td class="px-4">₱${parseFloat(b.price_charged || 0).toFixed(2)}</td>
             <td class="px-4"><span class="badge ${statusBadge(b.status)}">${b.status || 'Pending'}</span></td>
             <td class="px-4 text-end">
-                <a href="javascript:void(0)" class="text-dark text-decoration-none" onclick="viewEventBooking(${Number(b.booking_id)})">[VIEW]</a>
+                <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="viewEventBooking(${Number(b.booking_id)})">[VIEW]</a>
+                <a href="javascript:void(0)" class="text-danger text-decoration-none" onclick="deleteEventBooking(${Number(b.booking_id)})">[DELETE]</a>
             </td>
         </tr>
     `).join('');
@@ -800,7 +800,7 @@ function viewEventBooking(id) {
     if (!b) { showAlert('Booking not found.', 'danger'); return; }
 
     document.getElementById('eventBookingOrderId').value    = b.order_id;
-    document.getElementById('eventBookingId').value         = `BKG-${pad(b.booking_id)}`;
+    document.getElementById('eventBookingId').textContent   = `BKG-${pad(b.booking_id)}`;
     document.getElementById('eventBookingClientName').value = `${b.first_name || ''} ${b.last_name || ''}`.trim();
     document.getElementById('eventBookingName').value       = b.event_name || '—';
     document.getElementById('eventBookingDate').value       = b.event_date
@@ -808,11 +808,38 @@ function viewEventBooking(id) {
         : 'N/A';
     document.getElementById('eventBookingType').value       = b.event_type || '—';
     document.getElementById('eventBookingLocation').value   = b.event_location || 'N/A';
-    document.getElementById('eventBookingService').value    = b.service_name || 'N/A';
-    document.getElementById('eventBookingAsset').value      = b.asset_name || 'N/A';
-    document.getElementById('eventBookingSchedule').value   = formatSchedule(b.start_time, b.end_time);
-    document.getElementById('eventBookingPrice').value      = `₱${parseFloat(b.price_charged || 0).toFixed(2)}`;
     document.getElementById('eventBookingStatus').value     = b.status || 'Pending';
+    document.getElementById('eventBookingAdminNotes').value = b.admin_notes || '';
+
+    // Clickable contact links
+    const emailEl = document.getElementById('eventBookingEmail');
+    const phoneEl = document.getElementById('eventBookingPhone');
+    emailEl.innerHTML = b.email
+        ? `<a href="mailto:${esc(b.email)}">${esc(b.email)}</a>`
+        : '<span class="text-muted">—</span>';
+    phoneEl.innerHTML = b.phone
+        ? `<a href="tel:${esc(b.phone)}">${esc(b.phone)}</a>`
+        : '<span class="text-muted">—</span>';
+
+    // Services row — only show if there are assigned services
+    const svcRow = document.getElementById('eventBookingServicesRow');
+    if (b.service_name || b.asset_name) {
+        document.getElementById('eventBookingService').value = b.service_name || 'N/A';
+        document.getElementById('eventBookingAsset').value   = b.asset_name   || 'N/A';
+        svcRow.style.display = '';
+    } else {
+        svcRow.style.display = 'none';
+    }
+
+    // Cancellation reason — shown only when present
+    const cancelRow = document.getElementById('eventBookingCancelReasonRow');
+    const cancelEl  = document.getElementById('eventBookingCancelReason');
+    if (b.cancellation_reason) {
+        cancelEl.textContent    = b.cancellation_reason;
+        cancelRow.style.display = '';
+    } else {
+        cancelRow.style.display = 'none';
+    }
 
     document.getElementById('eventBookingModal').classList.add('show');
 }
@@ -822,23 +849,50 @@ function closeEventBookingModal() {
 }
 
 function saveEventBookingStatus() {
-    const orderId = Number(document.getElementById('eventBookingOrderId').value);
-    const status  = document.getElementById('eventBookingStatus').value;
+    const orderId    = Number(document.getElementById('eventBookingOrderId').value);
+    const status     = document.getElementById('eventBookingStatus').value;
+    const adminNotes = document.getElementById('eventBookingAdminNotes').value;
     if (!orderId || !status) { showAlert('Missing order ID or status.', 'danger'); return; }
 
     fetch(`${API}/event_bookings.php`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: orderId, status })
+        body: JSON.stringify({ order_id: orderId, status, admin_notes: adminNotes })
     })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
             closeEventBookingModal();
-            showAlert('Booking status updated.', 'success');
+            showAlert('Booking saved.', 'success');
             loadEventBookings();
         } else {
             showAlert(data.error || 'Update failed.', 'danger');
+        }
+    })
+    .catch(() => showAlert('Request failed.', 'danger'));
+}
+
+function deleteEventBooking(idArg) {
+    // Called from table row (with id) or modal footer (without id — read from hidden input)
+    const id = idArg !== undefined
+        ? Number(idArg)
+        : Number(document.getElementById('eventBookingOrderId').value);
+    if (!id) return;
+    if (!confirm(`Delete booking BKG-${pad(id)}? This cannot be undone.`)) return;
+
+    fetch(`${API}/event_bookings.php`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: id })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            closeEventBookingModal();
+            showAlert('Booking deleted.', 'success');
+            loadEventBookings();
+        } else {
+            showAlert(data.error || 'Delete failed.', 'danger');
         }
     })
     .catch(() => showAlert('Request failed.', 'danger'));
@@ -848,14 +902,14 @@ function exportEventBookings() {
     let list = [...allEventBookings];
     if (currentEventFilter !== 'All') list = list.filter(b => b.status === currentEventFilter);
     if (!list.length) { showAlert('No bookings to export.', 'warning'); return; }
-    const headers = ['Booking ID','Order ID','Client','Event Type','Location','Service','Asset','Schedule','Price','Status'];
+    const headers = ['Booking ID','Order ID','Client','Event Type','Location','Service','Asset','Schedule','Status','Admin Notes'];
     const rows    = list.map(b => [
         `BKG-${pad(b.booking_id)}`, `ORD-${pad(b.order_id)}`,
         `${b.first_name||''} ${b.last_name||''}`.trim(),
         b.event_type || '',
         b.event_location || '', b.service_name || '', b.asset_name || '',
         formatSchedule(b.start_time, b.end_time),
-        parseFloat(b.price_charged||0).toFixed(2), b.status || ''
+        b.status || '', b.admin_notes || ''
     ]);
     downloadCSV('printokids_event_bookings.csv', headers, rows);
     showAlert('Event bookings exported.', 'success');

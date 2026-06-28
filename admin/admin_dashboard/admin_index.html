@@ -303,7 +303,6 @@
                     <th class="py-3 px-4">Location</th>
                     <th class="py-3 px-4">Service</th>
                     <th class="py-3 px-4">Schedule</th>
-                    <th class="py-3 px-4">Price</th>
                     <th class="py-3 px-4">Status</th>
                     <th class="py-3 px-4 text-end">Actions</th>
                 </tr>
@@ -727,96 +726,121 @@
 
 <!-- Event Booking Details Modal -->
 <div id="eventBookingModal" class="pk-modal">
-    <div class="pk-modal-content" style="max-width:560px">
+    <div class="pk-modal-content" style="max-width:640px;max-height:90vh;overflow-y:auto;">
         <div class="pk-modal-header">
-            <h3>Event Booking Details</h3>
+            <h3>Booth Booking Inquiry</h3>
             <button type="button" class="pk-modal-close" onclick="closeEventBookingModal()">×</button>
         </div>
         <form id="eventBookingForm">
             <input type="hidden" id="eventBookingOrderId">
-            <div class="row g-2">
-                <div class="col-md-6">
-                    <div class="pk-form-group">
-                        <label>Booking ID</label>
-                        <input type="text" id="eventBookingId" readonly>
-                    </div>
+
+            <!-- Reference + Status row -->
+            <div class="d-flex align-items-center gap-3 mb-4 p-3 border rounded bg-light">
+                <div>
+                    <p class="mb-0 small text-muted text-uppercase fw-bold" style="letter-spacing:.05em">Booking Reference</p>
+                    <p class="mb-0 fw-bold fs-5" id="eventBookingId">—</p>
                 </div>
-                <div class="col-md-6">
-                    <div class="pk-form-group">
-                        <label>Client Name</label>
-                        <input type="text" id="eventBookingClientName" readonly>
-                    </div>
+                <div class="ms-auto" style="min-width:200px">
+                    <label class="form-label small fw-bold mb-1">Booking Status</label>
+                    <select class="form-select form-select-sm" id="eventBookingStatus" required>
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="In Production">In Production</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
                 </div>
             </div>
-            <div class="row g-2">
+
+            <div class="row g-3 mb-3">
+                <!-- Event details column -->
                 <div class="col-md-6">
+                    <p class="fw-bold text-uppercase text-muted small mb-2" style="letter-spacing:.05em">Event Details</p>
                     <div class="pk-form-group">
                         <label>Event Name</label>
                         <input type="text" id="eventBookingName" readonly>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="pk-form-group">
-                        <label>Event Date</label>
-                        <input type="text" id="eventBookingDate" readonly>
-                    </div>
-                </div>
-            </div>
-            <div class="row g-2">
-                <div class="col-md-6">
                     <div class="pk-form-group">
                         <label>Event Type</label>
                         <input type="text" id="eventBookingType" readonly>
                     </div>
-                </div>
-                <div class="col-md-6">
                     <div class="pk-form-group">
-                        <label>Location</label>
+                        <label>Event Date</label>
+                        <input type="text" id="eventBookingDate" readonly>
+                    </div>
+                    <div class="pk-form-group">
+                        <label>Venue / Location</label>
                         <input type="text" id="eventBookingLocation" readonly>
                     </div>
                 </div>
-            </div>
-            <div class="row g-2">
+
+                <!-- Client contact column -->
                 <div class="col-md-6">
+                    <p class="fw-bold text-uppercase text-muted small mb-2" style="letter-spacing:.05em">Client Contact</p>
                     <div class="pk-form-group">
-                        <label>Service</label>
-                        <input type="text" id="eventBookingService" readonly>
+                        <label>Client Name</label>
+                        <input type="text" id="eventBookingClientName" readonly>
                     </div>
-                </div>
-                <div class="col-md-6">
                     <div class="pk-form-group">
-                        <label>Asset</label>
-                        <input type="text" id="eventBookingAsset" readonly>
+                        <label>Email</label>
+                        <div id="eventBookingEmail" class="form-control" style="background:#f9f9f9;font-size:14px;padding:8px 12px;min-height:38px">—</div>
                     </div>
-                </div>
-            </div>
-            <div class="row g-2">
-                <div class="col-md-6">
                     <div class="pk-form-group">
-                        <label>Schedule</label>
-                        <input type="text" id="eventBookingSchedule" readonly>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="pk-form-group">
-                        <label>Price</label>
-                        <input type="text" id="eventBookingPrice" readonly>
+                        <label>Phone</label>
+                        <div id="eventBookingPhone" class="form-control" style="background:#f9f9f9;font-size:14px;padding:8px 12px;min-height:38px">—</div>
                     </div>
                 </div>
             </div>
+
+            <!-- Services assigned (hidden if none) -->
+            <div id="eventBookingServicesRow" class="mb-3" style="display:none">
+                <p class="fw-bold text-uppercase text-muted small mb-2" style="letter-spacing:.05em">Services Assigned</p>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <div class="pk-form-group">
+                            <label>Service</label>
+                            <input type="text" id="eventBookingService" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="pk-form-group">
+                            <label>Equipment / Asset</label>
+                            <input type="text" id="eventBookingAsset" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin notes -->
             <div class="pk-form-group">
-                <label for="eventBookingStatus">Status *</label>
-                <select id="eventBookingStatus" required>
-                    <option value="Pending">Pending</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="In Production">In Production</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
+                <label for="eventBookingAdminNotes">
+                    Message to Client
+                    <span class="text-muted fw-normal" style="font-size:12px"> — visible to the client in their account</span>
+                </label>
+                <textarea id="eventBookingAdminNotes" rows="4"
+                    style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:14px;resize:vertical;"
+                    placeholder="e.g. Hi! We've reviewed your inquiry. Please contact us at +63 927 610 9655 to confirm details and pricing."></textarea>
             </div>
-            <div class="pk-modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeEventBookingModal()">Cancel</button>
-                <button type="submit" class="btn-save">Save Status</button>
+
+            <!-- Cancellation reason (read-only, shown only when cancelled by customer) -->
+            <div id="eventBookingCancelReasonRow" class="pk-form-group" style="display:none">
+                <label>
+                    Customer's Cancellation Reason
+                    <span class="text-muted fw-normal" style="font-size:12px"> — provided by the client</span>
+                </label>
+                <div id="eventBookingCancelReason"
+                    style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 12px;font-size:14px;color:#664d03;min-height:42px"></div>
+            </div>
+
+            <div class="pk-modal-actions" style="justify-content:space-between">
+                <button type="button" class="btn-cancel"
+                    onclick="deleteEventBooking()" style="background:#dc3545;color:#fff;border-color:#dc3545">
+                    Delete Booking
+                </button>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn-cancel" onclick="closeEventBookingModal()">Close</button>
+                    <button type="submit" class="btn-save">Save</button>
+                </div>
             </div>
         </form>
     </div>
