@@ -129,7 +129,7 @@ elseif ($method === 'PUT') {
     exit;
 }
 
-// DELETE - Remove an event booking (admin only)
+// DELETE - Remove event booking(s) (admin only)
 elseif ($method === 'DELETE') {
     if (empty($_SESSION['staff_id'])) {
         http_response_code(403);
@@ -137,18 +137,26 @@ elseif ($method === 'DELETE') {
         exit;
     }
 
-    $data     = json_decode(file_get_contents('php://input'), true);
-    $order_id = (int) ($data['order_id'] ?? 0);
+    $data = json_decode(file_get_contents('php://input'), true);
 
-    if ($order_id === 0) {
-        http_response_code(400);
-        echo json_encode(['error' => 'order_id is required']);
-        exit;
+    if (!empty($data['ids']) && is_array($data['ids'])) {
+        $ids = array_filter(array_map('intval', $data['ids']));
+        if (empty($ids)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'No valid IDs provided']);
+            exit;
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $pdo->prepare("DELETE FROM event_orders WHERE id IN ($placeholders)")->execute($ids);
+    } else {
+        $order_id = (int) ($data['order_id'] ?? $data['id'] ?? 0);
+        if ($order_id === 0) {
+            http_response_code(400);
+            echo json_encode(['error' => 'order_id is required']);
+            exit;
+        }
+        $pdo->prepare('DELETE FROM event_orders WHERE id = ?')->execute([$order_id]);
     }
-
-    // FK CASCADE handles order_services and event_staff_assignments
-    $stmt = $pdo->prepare('DELETE FROM event_orders WHERE id = ?');
-    $stmt->execute([$order_id]);
 
     echo json_encode(['success' => true]);
     exit;

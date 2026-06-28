@@ -197,16 +197,25 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     }
 
     $data = json_decode(file_get_contents('php://input'), true) ?? [];
-    $id   = (int) ($data['id'] ?? 0);
 
-    if ($id === 0) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Staff ID required']);
-        exit;
+    if (!empty($data['ids']) && is_array($data['ids'])) {
+        $ids = array_filter(array_map('intval', $data['ids']));
+        if (empty($ids)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'No valid IDs provided']);
+            exit;
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $pdo->prepare("DELETE FROM staff WHERE id IN ($placeholders)")->execute($ids);
+    } else {
+        $id = (int) ($data['id'] ?? 0);
+        if ($id === 0) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Staff ID required']);
+            exit;
+        }
+        $pdo->prepare('DELETE FROM staff WHERE id = ?')->execute([$id]);
     }
-
-    $stmt = $pdo->prepare('DELETE FROM staff WHERE id = ?');
-    $stmt->execute([$id]);
     echo json_encode(['success' => true]);
 
 } else {
