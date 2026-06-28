@@ -426,6 +426,18 @@ function openOrderModal(order) {
     document.getElementById('orderTotalAmount').value  = `₱${parseFloat(order.total_amount || 0).toFixed(2)}`;
     document.getElementById('orderProductsOrdered').value = order.products_ordered ||
         (order.items ? order.items.map(i => `${i.name} x${i.quantity}`).join(', ') : 'N/A');
+
+    // Shipping address
+    const addrRow = document.getElementById('shippingAddressRow');
+    if (order.shipping_address) {
+        const a = order.shipping_address;
+        const parts = [a.street_address, a.city, a.province, a.postal_code].filter(Boolean);
+        document.getElementById('orderShippingAddress').value =
+            (a.address_label ? `[${a.address_label}] ` : '') + parts.join(', ');
+        addrRow.style.display = '';
+    } else {
+        addrRow.style.display = 'none';
+    }
     document.getElementById('orderStatus').value       = order.status || 'Pending';
     document.getElementById('orderTrackingNumber').value = order.tracking_number || '';
 

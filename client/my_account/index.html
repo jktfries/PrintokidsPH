@@ -91,7 +91,47 @@
 
             <!-- Address book -->
             <div class="account-card">
-                <h5>Address Book</h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Address Book</h5>
+                    <button class="btn btn-success btn-sm" id="addAddressBtn" onclick="showAddressForm()">+ Add Address</button>
+                </div>
+
+                <!-- Add / Edit form (hidden by default) -->
+                <div id="addressFormWrap" style="display:none" class="border rounded p-3 mb-3 bg-light">
+                    <input type="hidden" id="addressId">
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Label <span class="text-muted fw-normal">(e.g. Home, Office)</span></label>
+                        <input type="text" class="form-control form-control-sm" id="addrLabel" placeholder="Home">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Street Address *</label>
+                        <input type="text" class="form-control form-control-sm" id="addrStreet" placeholder="123 Sampaguita St., Brgy. Holy Spirit">
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-7">
+                            <label class="form-label small fw-bold">City *</label>
+                            <input type="text" class="form-control form-control-sm" id="addrCity" placeholder="Quezon City">
+                        </div>
+                        <div class="col-5">
+                            <label class="form-label small fw-bold">Postal Code</label>
+                            <input type="text" class="form-control form-control-sm" id="addrPostal" placeholder="1127">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Province *</label>
+                        <input type="text" class="form-control form-control-sm" id="addrProvince" placeholder="Metro Manila">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="addrIsDefault">
+                        <label class="form-check-label small" for="addrIsDefault">Set as default address</label>
+                    </div>
+                    <div id="addressFormError" class="alert alert-danger py-2 small" style="display:none"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success btn-sm" onclick="saveAddress()">Save Address</button>
+                        <button class="btn btn-secondary btn-sm" onclick="cancelAddressForm()">Cancel</button>
+                    </div>
+                </div>
+
                 <div id="addressList">
                     <p class="text-muted small">Loading addresses…</p>
                 </div>
@@ -281,29 +321,163 @@ async function loadBookings() {
     }
 }
 
-// ── Load addresses ──────────────────────────────────────
+// ── Address management ──────────────────────────────────
+let addresses = [];
+
 async function loadAddresses() {
     const container = document.getElementById('addressList');
     try {
-        const res  = await fetch(`${API_BASE}/customers.php?id=${currentUser.id}`);
-        const data = await res.json();
-        const addrs = data.addresses || [];
+        const res = await fetch(`${API_BASE}/addresses.php`);
+        addresses = await res.json();
 
-        if (!addrs.length) {
-            container.innerHTML = '<p class="text-muted small">No saved addresses.</p>';
+        if (!addresses.length) {
+            container.innerHTML = '<p class="text-muted small">No saved addresses. Add one above!</p>';
             return;
         }
 
-        container.innerHTML = addrs.map(a => `
-            <div class="mb-2 p-2 border rounded small">
-                <strong>${esc(a.address_label || 'Address')}</strong>
-                ${a.is_default ? '<span class="badge bg-success ms-1">Default</span>' : ''}
-                <p class="mb-0 text-muted">${esc(a.street_address)}, ${esc(a.city)}, ${esc(a.province)} ${esc(a.postal_code || '')}</p>
+        container.innerHTML = addresses.map(a => `
+            <div class="mb-2 p-2 border rounded small" id="addr-${a.id}">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <div>
+                        <strong>${esc(a.address_label || 'Address')}</strong>
+                        ${Number(a.is_default) ? '<span class="badge bg-success ms-1" style="font-size:0.7rem">Default</span>' : ''}
+                    </div>
+                </div>
+                <p class="mb-2 text-muted" style="line-height:1.4">
+                    ${esc(a.street_address)}<br>
+                    ${esc(a.city)}, ${esc(a.province)}${a.postal_code ? ' ' + esc(a.postal_code) : ''}
+                </p>
+                <div class="d-flex gap-1 flex-wrap">
+                    <button class="btn btn-outline-secondary btn-sm" style="font-size:0.75rem;padding:2px 8px"
+                        onclick="showAddressForm(${a.id})">Edit</button>
+                    ${!Number(a.is_default) ? `
+                    <button class="btn btn-outline-success btn-sm" style="font-size:0.75rem;padding:2px 8px"
+                        onclick="setDefaultAddress(${a.id})">Set as Default</button>` : ''}
+                    <button class="btn btn-outline-danger btn-sm" style="font-size:0.75rem;padding:2px 8px"
+                        onclick="deleteAddress(${a.id})">Delete</button>
+                </div>
             </div>
         `).join('');
     } catch {
-        container.innerHTML = '<p class="text-muted small">No saved addresses.</p>';
+        container.innerHTML = '<p class="text-danger small">Could not load addresses.</p>';
     }
+}
+
+function showAddressForm(id = null) {
+    const errEl = document.getElementById('addressFormError');
+    errEl.style.display = 'none';
+
+    document.getElementById('addressId').value    = id || '';
+    document.getElementById('addrIsDefault').checked = false;
+
+    if (id) {
+        const a = addresses.find(x => Number(x.id) === Number(id));
+        if (a) {
+            document.getElementById('addrLabel').value    = a.address_label || '';
+            document.getElementById('addrStreet').value   = a.street_address || '';
+            document.getElementById('addrCity').value     = a.city || '';
+            document.getElementById('addrProvince').value = a.province || '';
+            document.getElementById('addrPostal').value   = a.postal_code || '';
+            document.getElementById('addrIsDefault').checked = Number(a.is_default) === 1;
+        }
+    } else {
+        document.getElementById('addrLabel').value    = '';
+        document.getElementById('addrStreet').value   = '';
+        document.getElementById('addrCity').value     = '';
+        document.getElementById('addrProvince').value = '';
+        document.getElementById('addrPostal').value   = '';
+    }
+
+    const wrap = document.getElementById('addressFormWrap');
+    wrap.style.display = '';
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function cancelAddressForm() {
+    document.getElementById('addressFormWrap').style.display = 'none';
+    document.getElementById('addressFormError').style.display = 'none';
+}
+
+async function saveAddress() {
+    const id       = document.getElementById('addressId').value;
+    const street   = document.getElementById('addrStreet').value.trim();
+    const city     = document.getElementById('addrCity').value.trim();
+    const province = document.getElementById('addrProvince').value.trim();
+    const postal   = document.getElementById('addrPostal').value.trim();
+    const label    = document.getElementById('addrLabel').value.trim();
+    const isDef    = document.getElementById('addrIsDefault').checked;
+    const errEl    = document.getElementById('addressFormError');
+    errEl.style.display = 'none';
+
+    if (!street || !city || !province) {
+        errEl.textContent   = 'Street address, city, and province are required.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    const payload = {
+        street_address: street,
+        city,
+        province,
+        postal_code:    postal,
+        address_label:  label,
+        is_default:     isDef ? 1 : 0,
+    };
+
+    try {
+        let res;
+        if (id) {
+            payload.id = Number(id);
+            res = await fetch(`${API_BASE}/addresses.php`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+        } else {
+            res = await fetch(`${API_BASE}/addresses.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+        }
+
+        const data = await res.json();
+        if (data.success) {
+            cancelAddressForm();
+            await loadAddresses();
+        } else {
+            errEl.textContent   = data.error || 'Could not save address.';
+            errEl.style.display = 'block';
+        }
+    } catch {
+        errEl.textContent   = 'Connection error.';
+        errEl.style.display = 'block';
+    }
+}
+
+async function setDefaultAddress(id) {
+    try {
+        const res  = await fetch(`${API_BASE}/addresses.php`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: Number(id), set_default: true }),
+        });
+        const data = await res.json();
+        if (data.success) await loadAddresses();
+    } catch { /* silent */ }
+}
+
+async function deleteAddress(id) {
+    if (!confirm('Remove this address?')) return;
+    try {
+        const res  = await fetch(`${API_BASE}/addresses.php`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: Number(id) }),
+        });
+        const data = await res.json();
+        if (data.success) await loadAddresses();
+    } catch { /* silent */ }
 }
 
 // ── Profile editing ─────────────────────────────────────
