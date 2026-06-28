@@ -168,6 +168,102 @@
     <a href="../index.html" class="btn btn-primary mt-3">Back to Homepage</a>
 </div>
 
+<!-- ── PRODUCT ORDER DETAIL MODAL ─────────────────────────────── -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <div>
+                    <p class="mb-0 small text-muted" id="odRef">ORD-000</p>
+                    <h5 class="modal-title fw-bold" id="odTitle">Order Details</h5>
+                    <p class="mb-0 small text-muted" id="odDate"></p>
+                </div>
+                <div class="ms-auto me-3" id="odStatusBadge"></div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-2" id="orderDetailBody">
+                <div class="text-center py-4 text-muted small">Loading…</div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── EVENT BOOKING DETAIL MODAL ─────────────────────────────── -->
+<div class="modal fade" id="bookingDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" style="max-width:580px">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <div>
+                    <p class="mb-0 small text-muted" id="bdRef">BKG-000</p>
+                    <h5 class="modal-title fw-bold" id="bdTitle">Booth Booking</h5>
+                </div>
+                <div class="ms-auto me-3" id="bdStatusBadge"></div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-2">
+                <input type="hidden" id="bdOrderId">
+
+                <!-- Event details -->
+                <p class="text-uppercase fw-bold text-muted small mb-2" style="letter-spacing:.05em">Event Details</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <p class="mb-0 small text-muted">Event Name</p>
+                        <p class="mb-0 fw-semibold" id="bdEventName">—</p>
+                    </div>
+                    <div class="col-6">
+                        <p class="mb-0 small text-muted">Event Type</p>
+                        <p class="mb-0 fw-semibold" id="bdEventType">—</p>
+                    </div>
+                    <div class="col-6">
+                        <p class="mb-0 small text-muted">Event Date</p>
+                        <p class="mb-0 fw-semibold" id="bdEventDate">—</p>
+                    </div>
+                    <div class="col-6">
+                        <p class="mb-0 small text-muted">Venue</p>
+                        <p class="mb-0 fw-semibold" id="bdEventVenue">—</p>
+                    </div>
+                </div>
+
+                <!-- Services (hidden if none) -->
+                <div id="bdServicesSection" style="display:none">
+                    <hr class="my-2">
+                    <p class="text-uppercase fw-bold text-muted small mb-2" style="letter-spacing:.05em">Services Assigned</p>
+                    <p class="mb-0 small" id="bdServices">—</p>
+                </div>
+
+                <!-- Admin message -->
+                <div id="bdAdminMessageSection" style="display:none">
+                    <hr class="my-2">
+                    <div id="bdAdminMessage"
+                        style="background:#e8f4ff;border-left:3px solid #0d6efd;border-radius:4px;padding:12px 14px;font-size:0.9rem">
+                    </div>
+                </div>
+
+                <!-- Cancel booking (Pending / Confirmed only) -->
+                <div id="bdCancelSection" style="display:none">
+                    <hr class="my-3">
+                    <p class="text-uppercase fw-bold text-muted small mb-2" style="letter-spacing:.05em">Cancel Booking</p>
+                    <p class="small text-muted mb-2">
+                        If you'd like to cancel, let us know why so we can improve our service.
+                    </p>
+                    <textarea id="cancelReason" class="form-control form-control-sm mb-2" rows="3"
+                        placeholder="Reason for cancellation (optional)…"></textarea>
+                    <div id="cancelError" class="alert alert-danger py-2 small" style="display:none"></div>
+                    <button class="btn btn-danger btn-sm" onclick="cancelBooking()">
+                        Cancel My Booking
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ── FOOTER ─────────────────────────────────────────────────── -->
 <footer>
     <div class="footer-bg">
@@ -265,20 +361,23 @@ async function loadOrders() {
         }
 
         container.innerHTML = orders.map(o => `
-            <div class="order-item">
+            <div class="order-item" style="align-items:flex-start;gap:12px">
                 <div style="flex:1;min-width:0">
-                    <strong>ORD-${String(o.id).padStart(3,'0')}</strong>
-                    <span class="text-muted small ms-2">${o.order_date ? new Date(o.order_date).toLocaleDateString('en-PH') : ''}</span>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                        <strong>ORD-${String(o.id).padStart(3,'0')}</strong>
+                        ${statusBadge(o.status)}
+                        <span class="text-muted small">${o.order_date ? new Date(o.order_date).toLocaleDateString('en-PH') : ''}</span>
+                    </div>
                     <p class="text-muted small mb-1" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
                         ${esc(o.products_ordered || 'Product order')}
                     </p>
                     <p class="mb-0 fw-bold text-success small">₱${parseFloat(o.total_amount || 0).toFixed(2)}</p>
                     ${o.tracking_number
-                        ? `<p class="mb-0 small text-muted">Tracking: <strong>${esc(o.tracking_number)}</strong></p>`
+                        ? `<p class="mb-1 small" style="color:#0d6efd">Tracking: <strong>${esc(o.tracking_number)}</strong></p>`
                         : ''}
                 </div>
-                <div class="flex-shrink-0 text-end">
-                    ${statusBadge(o.status)}
+                <div class="flex-shrink-0">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="openOrderDetail(${o.id})">View Details</button>
                 </div>
             </div>
         `).join('');
@@ -288,32 +387,44 @@ async function loadOrders() {
 }
 
 // ── Load event bookings ─────────────────────────────────
+let allBookings = [];
+
 async function loadBookings() {
     const container = document.getElementById('bookingsList');
     try {
-        const res      = await fetch(`${API_BASE}/orders.php?customer_id=${currentUser.id}`);
+        const res      = await fetch(`${API_BASE}/event_bookings.php`);
         const bookings = await res.json();
+        allBookings    = Array.isArray(bookings) ? bookings : [];
 
-        if (!bookings.length) {
+        if (!allBookings.length) {
             container.innerHTML = '<p class="text-muted small">No event bookings yet. <a href="../index.html">Book an event!</a></p>';
             return;
         }
 
-        container.innerHTML = bookings.map(b => `
-            <div class="order-item">
-                <div style="flex:1">
-                    <strong>${esc(b.event_name || 'Event Booking')}</strong>
-                    <p class="text-muted small mb-0">
-                        ${b.event_type ? esc(b.event_type) + ' · ' : ''}
-                        ${esc(b.event_location || '—')}
-                    </p>
-                    ${b.event_date
-                        ? `<p class="text-muted small mb-0">${new Date(b.event_date).toLocaleDateString('en-PH')}</p>`
-                        : ''}
+        container.innerHTML = allBookings.map((b, idx) => `
+            <div class="order-item" style="flex-direction:column;align-items:stretch;gap:8px">
+                <div class="d-flex align-items-start gap-3">
+                    <div style="flex:1">
+                        <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                            <span style="font-size:0.75rem;color:#888;font-weight:600">BKG-${String(b.booking_id).padStart(3,'0')}</span>
+                            ${statusBadge(b.status)}
+                        </div>
+                        <strong>${esc(b.event_name || 'Event Booking')}</strong>
+                        <p class="text-muted small mb-0">
+                            ${b.event_type ? esc(b.event_type) + ' · ' : ''}${esc(b.event_location || '—')}
+                        </p>
+                        ${b.event_date
+                            ? `<p class="text-muted small mb-0">${new Date(b.event_date).toLocaleDateString('en-PH')}</p>`
+                            : ''}
+                    </div>
+                    <div class="flex-shrink-0">
+                        <button class="btn btn-outline-secondary btn-sm" onclick="openBookingDetail(${idx})">View Details</button>
+                    </div>
                 </div>
-                <div class="flex-shrink-0 text-end">
-                    ${statusBadge(b.status)}
-                </div>
+                ${b.admin_notes ? `
+                <div style="background:#e8f4ff;border-left:3px solid #0d6efd;border-radius:4px;padding:8px 12px;font-size:0.85rem">
+                    <strong>Message from PrintoKids:</strong> ${esc(b.admin_notes)}
+                </div>` : ''}
             </div>
         `).join('');
     } catch {
@@ -522,6 +633,193 @@ async function saveProfile() {
         }
     } catch {
         errEl.textContent   = 'Connection error.';
+        errEl.style.display = 'block';
+    }
+}
+
+// ── Order Detail Modal ──────────────────────────────────
+const orderDetailModalEl = document.getElementById('orderDetailModal');
+const orderDetailModal   = orderDetailModalEl ? new bootstrap.Modal(orderDetailModalEl) : null;
+
+const PAYMENT_STATUS_CLASS = {
+    'Unpaid':   'bg-warning text-dark',
+    'Paid':     'bg-info text-dark',
+    'Verified': 'bg-success',
+};
+
+async function openOrderDetail(id) {
+    if (!orderDetailModal) return;
+
+    document.getElementById('odRef').textContent        = `ORD-${String(id).padStart(3,'0')}`;
+    document.getElementById('odTitle').textContent      = 'Order Details';
+    document.getElementById('odDate').textContent       = '';
+    document.getElementById('odStatusBadge').innerHTML  = '';
+    document.getElementById('orderDetailBody').innerHTML = '<div class="text-center py-4 text-muted small">Loading…</div>';
+    orderDetailModal.show();
+
+    try {
+        const res   = await fetch(`${API_BASE}/product_orders.php?id=${id}`);
+        const order = await res.json();
+        if (!order || order.error) throw new Error(order?.error || 'Not found');
+
+        document.getElementById('odDate').textContent =
+            order.order_date ? new Date(order.order_date).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' }) : '';
+        document.getElementById('odStatusBadge').innerHTML =
+            `<span class="badge ${statusBadge(order.status)}">${order.status || 'Pending'}</span>`;
+
+        const addr    = order.shipping_address || {};
+        const addrStr = addr.street_address
+            ? `${esc(addr.address_label ? addr.address_label + ' — ' : '')}${esc(addr.street_address)}, ${esc(addr.city)}, ${esc(addr.province)}${addr.postal_code ? ' ' + esc(addr.postal_code) : ''}`
+            : '<span class="text-muted">No address recorded</span>';
+
+        const items = Array.isArray(order.items) ? order.items : [];
+        const itemsHtml = items.length ? `
+            <table class="table table-sm table-borderless mb-0" style="font-size:0.875rem">
+                <thead class="table-light">
+                    <tr>
+                        <th>Product</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-end">Unit Price</th>
+                        <th class="text-end">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${items.map(item => `
+                    <tr>
+                        <td>
+                            <span class="fw-semibold">${esc(item.name)}</span>
+                            ${item.customization_notes ? `<br><span class="text-muted" style="font-size:0.8rem">Note: ${esc(item.customization_notes)}</span>` : ''}
+                            ${item.media_upload_url ? `<br><a href="${esc(item.media_upload_url)}" target="_blank" class="small">View attachment</a>` : ''}
+                        </td>
+                        <td class="text-center">${item.quantity}</td>
+                        <td class="text-end">₱${parseFloat(item.unit_price||0).toFixed(2)}</td>
+                        <td class="text-end">₱${parseFloat(item.subtotal||0).toFixed(2)}</td>
+                    </tr>`).join('')}
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <td colspan="3" class="text-end fw-bold">Shipping Fee</td>
+                        <td class="text-end">₱${parseFloat(order.shipping_fee||0).toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="text-end fw-bold text-success">Order Total</td>
+                        <td class="text-end fw-bold text-success">₱${parseFloat(order.total_amount||0).toFixed(2)}</td>
+                    </tr>
+                </tfoot>
+            </table>` : '<p class="text-muted small mb-0">No items recorded.</p>';
+
+        const pmtStatusCls  = PAYMENT_STATUS_CLASS[order.payment_status] || 'bg-secondary';
+        const proofHtml     = order.proof_of_payment_url
+            ? `<p class="mb-0 small mt-1"><a href="${esc(order.proof_of_payment_url)}" target="_blank">View proof of payment</a></p>`
+            : '';
+
+        const trackingHtml = order.tracking_number ? `
+            <div class="alert alert-info py-2 px-3 mt-3 mb-0 small" style="border-left:3px solid #0dcaf0">
+                Your order is on its way! Tracking number: <strong>${esc(order.tracking_number)}</strong>
+            </div>` : '';
+
+        document.getElementById('orderDetailBody').innerHTML = `
+            <p class="text-uppercase fw-bold text-muted small mb-2" style="letter-spacing:.05em">Items Ordered</p>
+            <div class="border rounded overflow-hidden mb-3">${itemsHtml}</div>
+
+            <div class="row g-3 mb-0">
+                <div class="col-md-6">
+                    <p class="text-uppercase fw-bold text-muted small mb-1" style="letter-spacing:.05em">Shipping Address</p>
+                    <p class="small mb-0">${addrStr}</p>
+                </div>
+                <div class="col-md-6">
+                    <p class="text-uppercase fw-bold text-muted small mb-1" style="letter-spacing:.05em">Payment</p>
+                    <p class="small mb-1">${esc(order.payment_method || 'Cash on Delivery')}</p>
+                    <span class="badge ${pmtStatusCls}">${order.payment_status || 'Unpaid'}</span>
+                    ${proofHtml}
+                </div>
+            </div>
+            ${trackingHtml}
+        `;
+    } catch (e) {
+        document.getElementById('orderDetailBody').innerHTML =
+            `<p class="text-danger small">Could not load order details: ${esc(e.message)}</p>`;
+    }
+}
+
+// ── Booking Detail Modal ────────────────────────────────
+const bookingDetailModalEl = document.getElementById('bookingDetailModal');
+const bookingDetailModal   = bookingDetailModalEl ? new bootstrap.Modal(bookingDetailModalEl) : null;
+
+function openBookingDetail(idx) {
+    if (!bookingDetailModal) return;
+    const b = allBookings[idx];
+    if (!b) return;
+
+    document.getElementById('bdRef').textContent         = `BKG-${String(b.booking_id).padStart(3,'0')}`;
+    document.getElementById('bdTitle').textContent       = b.event_name || 'Booth Booking';
+    document.getElementById('bdStatusBadge').innerHTML   = `<span class="badge ${statusBadge(b.status)}">${b.status || 'Pending'}</span>`;
+    document.getElementById('bdOrderId').value           = b.order_id;
+
+    document.getElementById('bdEventName').textContent  = b.event_name  || '—';
+    document.getElementById('bdEventType').textContent  = b.event_type  || '—';
+    document.getElementById('bdEventDate').textContent  = b.event_date
+        ? new Date(b.event_date).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' })
+        : '—';
+    document.getElementById('bdEventVenue').textContent = b.event_location || '—';
+
+    // Services
+    const svcSection = document.getElementById('bdServicesSection');
+    const svcEl      = document.getElementById('bdServices');
+    if (b.service_name || b.asset_name) {
+        let svcText = [b.service_name, b.asset_name].filter(Boolean).join(' · ');
+        if (b.start_time || b.end_time) {
+            const fmt = dt => dt ? new Date(dt).toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit' }) : '';
+            svcText += ` — ${fmt(b.start_time)} to ${fmt(b.end_time)}`;
+        }
+        svcEl.textContent      = svcText;
+        svcSection.style.display = '';
+    } else {
+        svcSection.style.display = 'none';
+    }
+
+    // Admin message
+    const msgSection = document.getElementById('bdAdminMessageSection');
+    const msgEl      = document.getElementById('bdAdminMessage');
+    if (b.admin_notes) {
+        msgEl.innerHTML        = `<strong>Message from PrintoKids:</strong> ${esc(b.admin_notes)}`;
+        msgSection.style.display = '';
+    } else {
+        msgSection.style.display = 'none';
+    }
+
+    // Cancel section — only for Pending or Confirmed
+    const cancelSection = document.getElementById('bdCancelSection');
+    cancelSection.style.display = ['Pending', 'Confirmed'].includes(b.status) ? '' : 'none';
+    document.getElementById('cancelReason').value  = '';
+    document.getElementById('cancelError').style.display = 'none';
+
+    bookingDetailModal.show();
+}
+
+async function cancelBooking() {
+    const orderId = Number(document.getElementById('bdOrderId').value);
+    const reason  = document.getElementById('cancelReason').value.trim();
+    const errEl   = document.getElementById('cancelError');
+    errEl.style.display = 'none';
+    if (!orderId) return;
+
+    try {
+        const res  = await fetch(`${API_BASE}/event_bookings.php`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_id: orderId, status: 'Cancelled', cancellation_reason: reason }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            bookingDetailModal.hide();
+            await loadBookings();
+        } else {
+            errEl.textContent   = data.error || 'Could not cancel booking. Please contact us directly.';
+            errEl.style.display = 'block';
+        }
+    } catch {
+        errEl.textContent   = 'Connection error. Please try again.';
         errEl.style.display = 'block';
     }
 }
