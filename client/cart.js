@@ -85,6 +85,9 @@ class CartManager {
 
         const product = window.productManager.products.find(p => Number(p.id) === Number(productId));
         if (!product)  { this.showAlert('Product not found.', 'danger'); return; }
+        if (product.stock_status === 'Out of Stock') {
+            this.showAlert(`${product.name} is currently out of stock.`, 'warning'); return;
+        }
 
         const existing = this.cart.find(i => Number(i.id) === Number(productId));
         if (existing) {
