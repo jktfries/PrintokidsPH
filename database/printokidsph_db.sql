@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 28, 2026 at 03:28 AM
+-- Generation Time: Jun 28, 2026 at 10:52 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -114,7 +114,8 @@ INSERT INTO `customers` (`id`, `first_name`, `last_name`, `email`, `phone`, `pas
 (47, 'John', 'Santos', 'john.santos47@example.com', '09445694324', NULL, NULL, NULL, '2026-06-27 05:19:00', '2026-06-27 05:19:00'),
 (48, 'Bea', 'Reyes', 'bea.reyes48@example.com', '09144913576', NULL, NULL, NULL, '2026-06-27 05:19:00', '2026-06-27 05:19:00'),
 (49, 'Mark', 'Cruz', 'mark.cruz49@example.com', '09793660646', NULL, NULL, NULL, '2026-06-27 05:19:00', '2026-06-27 05:19:00'),
-(50, 'Bea', 'Flores', 'bea.flores50@example.com', '09427710355', NULL, NULL, NULL, '2026-06-27 05:19:00', '2026-06-27 05:19:00');
+(50, 'Bea', 'Flores', 'bea.flores50@example.com', '09427710355', NULL, NULL, NULL, '2026-06-27 05:19:00', '2026-06-27 05:19:00'),
+(51, 'Joco', 'Caballero', 'joculet05@gmail.com', '09165130301', '$2y$10$OxlyV/gWucGnFfVONl7MO.9c/qPS9NS7SFW8uEzRW7Bn2qn1yIXNa', NULL, NULL, '2026-06-28 04:42:47', '2026-06-28 04:42:47');
 
 -- --------------------------------------------------------
 
@@ -211,42 +212,33 @@ CREATE TABLE `event_orders` (
 --
 
 INSERT INTO `event_orders` (`id`, `customer_id`, `event_name`, `event_date`, `event_type`, `order_date`, `event_location`, `status`) VALUES
-(1, 28, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Makati Convention Center', 'Confirmed'),
-(2, 22, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Alabang Convention Center', 'Confirmed'),
-(3, 34, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Taguig Convention Center', 'Pending'),
-(4, 13, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Pasig Convention Center', 'Confirmed'),
-(5, 43, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Mandaluyong Convention Center', 'Confirmed'),
-(6, 49, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Makati Convention Center', 'Pending'),
-(7, 21, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Alabang Convention Center', 'Confirmed'),
-(8, 31, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Pasig Convention Center', 'Confirmed'),
-(9, 32, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Mandaluyong Convention Center', 'Pending'),
 (10, 23, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Pasig Convention Center', 'Confirmed'),
 (11, 36, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Quezon City Convention Center', 'Confirmed'),
-(12, 29, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Taguig Convention Center', 'Pending'),
+(12, 29, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Taguig Convention Center', 'Confirmed'),
 (13, 48, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Quezon City Convention Center', 'Confirmed'),
 (14, 34, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Pasig Convention Center', 'Confirmed'),
 (15, 24, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Manila Convention Center', 'Pending'),
 (16, 46, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Pasig Convention Center', 'Confirmed'),
 (17, 50, NULL, NULL, NULL, '2026-06-18 23:51:36', 'Taguig Convention Center', 'Confirmed'),
-(18, 32, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Pending'),
+(18, 32, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed'),
 (19, 23, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Mandaluyong Convention Center', 'Confirmed'),
 (20, 20, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Taguig Convention Center', 'Confirmed'),
 (21, 27, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Pending'),
 (22, 4, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed'),
 (23, 38, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Confirmed'),
-(24, 6, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Pending'),
+(24, 6, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Confirmed'),
 (25, 25, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Confirmed'),
 (26, 33, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Mandaluyong Convention Center', 'Confirmed'),
 (27, 40, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Pending'),
 (28, 42, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Mandaluyong Convention Center', 'Confirmed'),
 (29, 9, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Alabang Convention Center', 'Confirmed'),
-(30, 33, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Pending'),
+(30, 33, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Confirmed'),
 (31, 25, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Confirmed'),
 (32, 27, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Alabang Convention Center', 'Confirmed'),
 (33, 28, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Alabang Convention Center', 'Pending'),
 (34, 26, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Confirmed'),
 (35, 19, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Confirmed'),
-(36, 32, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Pending'),
+(36, 32, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Makati Convention Center', 'Confirmed'),
 (37, 27, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Taguig Convention Center', 'Confirmed'),
 (38, 32, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed'),
 (39, 43, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Pending'),
@@ -259,8 +251,7 @@ INSERT INTO `event_orders` (`id`, `customer_id`, `event_name`, `event_date`, `ev
 (46, 8, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Taguig Convention Center', 'Confirmed'),
 (47, 23, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed'),
 (48, 39, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Pending'),
-(49, 13, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Confirmed'),
-(50, 7, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Manila Convention Center', 'Confirmed');
+(51, 51, 'Joco 99th Bday bash', '2026-06-28', 'Birthday', '2026-06-28 12:45:51', 'Makati City Hall', 'Pending');
 
 -- --------------------------------------------------------
 
@@ -280,24 +271,6 @@ CREATE TABLE `event_staff_assignments` (
 --
 
 INSERT INTO `event_staff_assignments` (`id`, `order_id`, `staff_id`, `role_id`) VALUES
-(1, 1, 8, 1),
-(2, 1, 43, 2),
-(3, 2, 1, 1),
-(4, 2, 49, 2),
-(5, 3, 9, 1),
-(6, 3, 46, 2),
-(7, 4, 21, 1),
-(8, 4, 38, 2),
-(9, 5, 3, 1),
-(10, 5, 30, 2),
-(11, 6, 19, 1),
-(12, 6, 34, 2),
-(13, 7, 24, 1),
-(14, 7, 36, 2),
-(15, 8, 20, 1),
-(16, 8, 39, 2),
-(17, 9, 9, 1),
-(18, 9, 28, 2),
 (19, 10, 1, 1),
 (20, 10, 29, 2),
 (21, 11, 15, 1),
@@ -375,11 +348,7 @@ INSERT INTO `event_staff_assignments` (`id`, `order_id`, `staff_id`, `role_id`) 
 (93, 47, 20, 1),
 (94, 47, 26, 2),
 (95, 48, 2, 1),
-(96, 48, 35, 2),
-(97, 49, 22, 1),
-(98, 49, 41, 2),
-(99, 50, 16, 1),
-(100, 50, 30, 2);
+(96, 48, 35, 2);
 
 -- --------------------------------------------------------
 
@@ -417,15 +386,6 @@ CREATE TABLE `order_services` (
 --
 
 INSERT INTO `order_services` (`id`, `order_id`, `service_id`, `asset_id`, `start_time`, `end_time`, `price_charged`) VALUES
-(1, 1, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
-(2, 2, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
-(3, 3, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
-(4, 4, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
-(5, 5, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
-(6, 6, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
-(7, 7, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
-(8, 8, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
-(9, 9, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
 (10, 10, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
 (11, 11, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
 (12, 12, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
@@ -464,9 +424,7 @@ INSERT INTO `order_services` (`id`, `order_id`, `service_id`, `asset_id`, `start
 (45, 45, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
 (46, 46, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
 (47, 47, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
-(48, 48, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
-(49, 49, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00),
-(50, 50, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00);
+(48, 48, 1, 1, '2026-08-01 08:00:00', '2026-08-01 17:00:00', 8000.00);
 
 -- --------------------------------------------------------
 
@@ -495,7 +453,7 @@ INSERT INTO `products` (`id`, `name`, `category`, `base_cost`, `description`, `i
 (1, 'Premium Tumbler', 'General', 953.00, 'High-quality tumbler with customizable print design.', 1, 85, 15, 'In Stock', '2026-06-27 05:19:00'),
 (2, 'Classic Tote Bag', 'General', 1362.00, 'Durable tote bag perfect for personalized event giveaways.', 1, 120, 15, 'In Stock', '2026-06-27 05:19:00'),
 (3, 'Basic Jacket', 'General', 608.00, 'Comfortable jacket with heat-press customization.', 1, 45, 15, 'In Stock', '2026-06-27 05:19:00'),
-(4, 'Classic Jacket', 'General', 1392.00, 'Premium jacket with high-quality personalized printing.', 1, 30, 15, 'In Stock', '2026-06-27 05:19:00'),
+(4, 'Classic Jacket', 'General', 1392.00, 'Premium jacket with high-quality personalized printing.', 1, 29, 15, 'In Stock', '2026-06-27 05:19:00'),
 (5, 'Eco-friendly Tote Bag', 'General', 877.00, 'Sustainable tote bag made from eco-friendly materials.', 1, 95, 15, 'In Stock', '2026-06-27 05:19:00'),
 (6, 'Pro Cap', 'General', 1311.00, 'Professional-grade cap with embroidered or printed design.', 1, 60, 15, 'In Stock', '2026-06-27 05:19:00'),
 (7, 'Pro T-Shirt', 'General', 823.00, 'High-quality t-shirt with full-color custom print.', 1, 110, 15, 'In Stock', '2026-06-27 05:19:00'),
@@ -639,8 +597,19 @@ CREATE TABLE `product_orders` (
   `order_date` datetime DEFAULT current_timestamp(),
   `status` varchar(50) NOT NULL DEFAULT 'Pending',
   `total_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `payment_method` varchar(30) NOT NULL DEFAULT 'Cash on Delivery',
+  `payment_status` varchar(20) NOT NULL DEFAULT 'Unpaid',
+  `proof_of_payment_url` varchar(255) DEFAULT NULL,
+  `shipping_fee` decimal(10,2) NOT NULL DEFAULT 0.00,
   `tracking_number` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `product_orders`
+--
+
+INSERT INTO `product_orders` (`id`, `customer_id`, `employee_id`, `shipping_address_id`, `order_date`, `status`, `total_amount`, `payment_method`, `payment_status`, `proof_of_payment_url`, `shipping_fee`, `tracking_number`) VALUES
+(1, 51, 17, NULL, '2026-06-28 12:44:57', 'In Production', 1392.00, 'Cash on Delivery', 'Unpaid', NULL, 0.00, '102929-92293934954-000');
 
 -- --------------------------------------------------------
 
@@ -658,6 +627,13 @@ CREATE TABLE `product_order_items` (
   `customization_notes` text DEFAULT NULL,
   `media_upload_url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `product_order_items`
+--
+
+INSERT INTO `product_order_items` (`id`, `order_id`, `product_id`, `quantity`, `unit_price`, `subtotal`, `customization_notes`, `media_upload_url`) VALUES
+(1, 1, 4, 1, 1392.00, 1392.00, 'i love joco', 'http://localhost/PrintokidsPH/uploads/media_6a40a6a0b4b6a5.29597877.jpg');
 
 -- --------------------------------------------------------
 
@@ -839,6 +815,31 @@ INSERT INTO `staff_roles` (`staff_id`, `role_id`) VALUES
 (49, 1),
 (50, 2);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `store_settings`
+--
+
+CREATE TABLE `store_settings` (
+  `key` varchar(100) NOT NULL,
+  `value` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `store_settings`
+--
+
+INSERT INTO `store_settings` (`key`, `value`) VALUES
+('payment_card_enabled', '0'),
+('payment_cod_enabled', '1'),
+('payment_qr_enabled', '1'),
+('qr_code_url', NULL),
+('shipping_luzon', '150.00'),
+('shipping_mindanao', '200.00'),
+('shipping_ncr', '80.00'),
+('shipping_visayas', '200.00');
+
 --
 -- Indexes for dumped tables
 --
@@ -959,6 +960,12 @@ ALTER TABLE `staff_roles`
   ADD KEY `role_id` (`role_id`);
 
 --
+-- Indexes for table `store_settings`
+--
+ALTER TABLE `store_settings`
+  ADD PRIMARY KEY (`key`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -972,7 +979,7 @@ ALTER TABLE `assets`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `customer_addresses`
@@ -984,7 +991,7 @@ ALTER TABLE `customer_addresses`
 -- AUTO_INCREMENT for table `event_orders`
 --
 ALTER TABLE `event_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `event_staff_assignments`
@@ -1026,13 +1033,13 @@ ALTER TABLE `product_images`
 -- AUTO_INCREMENT for table `product_orders`
 --
 ALTER TABLE `product_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `product_order_items`
 --
 ALTER TABLE `product_order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `roles`
