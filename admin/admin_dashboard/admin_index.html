@@ -187,6 +187,7 @@
         <table class="table table-striped table-hover mb-0" id="inventoryTable">
             <thead class="bg-light text-dark">
                 <tr>
+                    <th class="py-3 px-2" style="width:52px"></th>
                     <th class="py-3 px-4">Product Name</th>
                     <th class="py-3 px-4">Description</th>
                     <th class="py-3 px-4">Stock Count</th>
@@ -482,30 +483,72 @@
      MODALS
 ═══════════════════════════════════════════════════════ -->
 
-<!-- Inventory / Product Modal -->
+<!-- Rich Product Edit Modal -->
 <div id="inventoryModal" class="pk-modal">
-    <div class="pk-modal-content">
+    <div class="pk-modal-content" style="max-width:820px;max-height:90vh;overflow-y:auto;">
         <div class="pk-modal-header">
             <h3 id="inventoryModalTitle">Add Product</h3>
             <button type="button" class="pk-modal-close" onclick="closeInventoryModal()">×</button>
         </div>
         <form id="inventoryForm">
             <input type="hidden" id="inventoryProductId">
-            <div class="pk-form-group">
-                <label for="inventoryProductName">Product Name *</label>
-                <input type="text" id="inventoryProductName" required>
-            </div>
-            <div class="pk-form-group">
-                <label for="inventoryBaseCost">Base Price (₱) *</label>
-                <input type="number" id="inventoryBaseCost" step="0.01" min="0" required>
+
+            <!-- ── Section 1: Basic Info ─────────────────── -->
+            <p class="fw-bold text-uppercase text-muted small mb-2" style="letter-spacing:.05em">Basic Information</p>
+            <div class="row g-2">
+                <div class="col-md-8">
+                    <div class="pk-form-group">
+                        <label for="inventoryProductName">Product Name *</label>
+                        <input type="text" id="inventoryProductName" required placeholder="e.g. Custom Printed Tote Bag">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="pk-form-group">
+                        <label for="inventoryBaseCost">Base Price (₱) *</label>
+                        <input type="number" id="inventoryBaseCost" step="0.01" min="0" required placeholder="0.00">
+                    </div>
+                </div>
             </div>
             <div class="pk-form-group">
                 <label for="inventoryCategory">Category</label>
-                <input type="text" id="inventoryCategory" value="General">
+                <input type="text" id="inventoryCategory" value="General" placeholder="e.g. Bags, Shirts, Accessories">
             </div>
             <div class="pk-form-group">
                 <label for="inventoryDescription">Description</label>
-                <textarea id="inventoryDescription" rows="3" style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:15px;resize:vertical;" placeholder="Describe the product..."></textarea>
+                <textarea id="inventoryDescription" rows="4"
+                    style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:15px;resize:vertical;"
+                    placeholder="Describe the product, available options, materials, etc."></textarea>
+            </div>
+
+            <hr class="my-3">
+
+            <!-- ── Section 2: Visibility & Stock ────────── -->
+            <p class="fw-bold text-uppercase text-muted small mb-2" style="letter-spacing:.05em">Visibility &amp; Stock</p>
+            <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                    <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+                        <div>
+                            <strong>Active / Visible</strong>
+                            <p class="mb-0 small text-muted">Show this product in the client store</p>
+                        </div>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" role="switch"
+                                   id="inventoryIsActive" style="width:2.5rem;height:1.3rem">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="d-flex justify-content-between align-items-center p-3 border rounded border-danger">
+                        <div>
+                            <strong class="text-danger">Force Out of Stock</strong>
+                            <p class="mb-0 small text-muted">Grays out card, disables ordering</p>
+                        </div>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" role="switch"
+                                   id="inventoryForceOOS" style="width:2.5rem;height:1.3rem">
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="row g-2">
                 <div class="col">
@@ -518,18 +561,29 @@
                     <div class="pk-form-group">
                         <label for="inventoryReorderLevel">Reorder Level *</label>
                         <input type="number" id="inventoryReorderLevel" min="0" required>
-                        <small>Stock below this = Low Stock warning</small>
+                        <small>Below this = Low Stock warning</small>
                     </div>
                 </div>
             </div>
-            <div class="pk-form-group">
-                <label for="inventoryIsActive">Visibility</label>
-                <select id="inventoryIsActive">
-                    <option value="1">Active (visible to clients)</option>
-                    <option value="0">Archived (hidden from clients)</option>
-                </select>
+
+            <hr class="my-3">
+
+            <!-- ── Section 3: Product Media ──────────────── -->
+            <div id="productMediaSection">
+                <p class="fw-bold text-uppercase text-muted small mb-1" style="letter-spacing:.05em">Product Media <span class="text-muted fw-normal">(up to 15 images or videos)</span></p>
+                <p class="small text-muted mb-2">The image marked with ★ is shown as the primary thumbnail in the store catalog. Click ★ on any item to set it as primary.</p>
+                <div id="adminMediaGrid" class="d-flex flex-wrap gap-2 mb-3" style="min-height:80px"></div>
+                <div class="d-flex gap-2 align-items-center flex-wrap">
+                    <input type="file" id="mediaUploadInput" class="form-control" style="max-width:300px"
+                           accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime">
+                    <button type="button" class="btn btn-dark btn-sm" onclick="uploadProductImage()">
+                        Upload &amp; Add
+                    </button>
+                    <span id="mediaUploadStatus" class="small text-muted"></span>
+                </div>
             </div>
-            <div class="pk-modal-actions">
+
+            <div class="pk-modal-actions mt-3">
                 <button type="button" class="btn-cancel" onclick="closeInventoryModal()">Cancel</button>
                 <button type="submit" class="btn-save">Save Product</button>
             </div>
