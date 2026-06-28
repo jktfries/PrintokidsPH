@@ -202,27 +202,29 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="signInEmail" placeholder="your@email.com">
+                <!-- Normal sign-in fields -->
+                <div id="signInFields">
+                    <div class="mb-3">
+                        <label class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="signInEmail" placeholder="your@email.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="signInPassword" placeholder="Your password">
+                    </div>
+                    <p class="mb-1 text-end">
+                        <a href="#" class="text-warning small" id="forgotPasswordLink">Forgot your password?</a>
+                    </p>
+                    <p class="mb-0">Don't have an account?
+                        <a href="#" class="text-warning"
+                           data-bs-toggle="modal" data-bs-target="#signUpModal" data-bs-dismiss="modal">
+                            Sign up here!
+                        </a>
+                    </p>
                 </div>
-                <div class="mb-2">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-control" id="signInPassword" placeholder="Your password">
-                </div>
-                <p class="mb-2 text-end">
-                    <a href="#" class="text-warning small" onclick="showForgotPassword(); return false;">Forgot your password?</a>
-                </p>
-                <p class="mt-0">Don't have an account?
-                    <a href="#" class="text-warning"
-                       data-bs-toggle="modal" data-bs-target="#signUpModal" data-bs-dismiss="modal">
-                        Sign up here!
-                    </a>
-                </p>
 
-                <!-- Forgot Password Section (hidden by default) -->
+                <!-- Forgot Password Section -->
                 <div id="forgotSection" style="display:none">
-                    <hr class="border-secondary">
                     <p class="small text-muted mb-2">Enter your email and we'll generate a reset link for you.</p>
                     <input type="email" class="form-control mb-2" id="forgotEmail" placeholder="your@email.com">
                     <div id="forgotError" class="alert alert-danger py-2 small mb-2" style="display:none"></div>
@@ -232,9 +234,9 @@
                            class="btn btn-outline-warning btn-sm w-100 mb-1">Open Password Reset Page</a>
                         <p class="small text-muted mb-0">Link expires in 1 hour.</p>
                     </div>
-                    <div id="forgotBtns" class="d-flex gap-2">
-                        <button type="button" class="btn btn-warning btn-sm flex-grow-1" onclick="submitForgotPassword()">Generate Reset Link</button>
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="hideForgotPassword()">Back</button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-warning btn-sm flex-grow-1" id="forgotSubmitBtn">Generate Reset Link</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="forgotBackBtn">Back</button>
                     </div>
                 </div>
             </div>

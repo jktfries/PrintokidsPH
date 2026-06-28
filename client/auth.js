@@ -52,6 +52,80 @@ class AuthManager {
             ?.addEventListener('keydown', e => { if (e.key === 'Enter') this.handleSignIn(); });
         document.getElementById('signUpModal')
             ?.addEventListener('keydown', e => { if (e.key === 'Enter') this.handleSignUp(); });
+
+        // Forgot password wiring
+        document.getElementById('forgotPasswordLink')
+            ?.addEventListener('click', e => { e.preventDefault(); this.showForgotPassword(); });
+        document.getElementById('forgotBackBtn')
+            ?.addEventListener('click', () => this.hideForgotPassword());
+        document.getElementById('forgotSubmitBtn')
+            ?.addEventListener('click', () => this.submitForgotPassword());
+        document.getElementById('signInModal')
+            ?.addEventListener('hidden.bs.modal', () => this.hideForgotPassword());
+    }
+
+    showForgotPassword() {
+        document.getElementById('signInFields').style.display   = 'none';
+        document.getElementById('signInFooter').style.display   = 'none';
+        document.getElementById('forgotSection').style.display  = 'block';
+        document.getElementById('forgotError').style.display    = 'none';
+        document.getElementById('forgotSuccess').style.display  = 'none';
+        document.getElementById('forgotEmail').value =
+            document.getElementById('signInEmail')?.value || '';
+    }
+
+    hideForgotPassword() {
+        document.getElementById('signInFields').style.display   = '';
+        document.getElementById('signInFooter').style.display   = '';
+        document.getElementById('forgotSection').style.display  = 'none';
+        document.getElementById('forgotError').style.display    = 'none';
+        document.getElementById('forgotSuccess').style.display  = 'none';
+        const btn = document.getElementById('forgotSubmitBtn');
+        if (btn) { btn.disabled = false; btn.style.display = ''; }
+    }
+
+    async submitForgotPassword() {
+        const email  = document.getElementById('forgotEmail').value.trim();
+        const errEl  = document.getElementById('forgotError');
+        const okEl   = document.getElementById('forgotSuccess');
+        const btn    = document.getElementById('forgotSubmitBtn');
+        errEl.style.display = 'none';
+        okEl.style.display  = 'none';
+
+        if (!email) {
+            errEl.textContent   = 'Please enter your email address.';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        btn.disabled = true;
+
+        try {
+            const res  = await fetch(`${API}/auth.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'forgot_password', email, user_type: 'customer' }),
+            });
+            const data = await res.json();
+
+            if (data.success && data.reset_url) {
+                document.getElementById('forgotResetLink').href = data.reset_url;
+                okEl.style.display   = 'block';
+                btn.style.display    = 'none';
+            } else if (data.success) {
+                errEl.textContent   = 'No account found with that email address.';
+                errEl.style.display = 'block';
+                btn.disabled = false;
+            } else {
+                errEl.textContent   = data.error || 'Something went wrong. Please try again.';
+                errEl.style.display = 'block';
+                btn.disabled = false;
+            }
+        } catch {
+            errEl.textContent   = 'Connection error. Make sure XAMPP is running.';
+            errEl.style.display = 'block';
+            btn.disabled = false;
+        }
     }
 
     // ── Sign in ────────────────────────────────────────────
@@ -241,70 +315,3 @@ document.addEventListener('DOMContentLoaded', () => {
     window.authManager = new AuthManager();
 });
 
-// ── Forgot Password (global functions called from inline onclick) ──────────────
-function showForgotPassword() {
-    document.getElementById('signInEmail').closest('.mb-3')?.style.setProperty('display', 'none');
-    document.getElementById('signInPassword').closest('.mb-2')?.style.setProperty('display', 'none');
-    document.querySelector('#signInModal .mt-0')?.style.setProperty('display', 'none');
-    document.querySelector('#signInModal .mb-2.text-end')?.style.setProperty('display', 'none');
-    document.getElementById('signInFooter')?.style.setProperty('display', 'none');
-    document.getElementById('forgotSection').style.display = '';
-    document.getElementById('forgotEmail').value = document.getElementById('signInEmail')?.value || '';
-    document.getElementById('forgotError').style.display = 'none';
-    document.getElementById('forgotSuccess').style.display = 'none';
-}
-
-function hideForgotPassword() {
-    document.getElementById('forgotSection').style.display = 'none';
-    document.getElementById('forgotError').style.display = 'none';
-    document.getElementById('forgotSuccess').style.display = 'none';
-    document.getElementById('signInEmail').closest('.mb-3')?.style.removeProperty('display');
-    document.getElementById('signInPassword').closest('.mb-2')?.style.removeProperty('display');
-    document.querySelector('#signInModal .mt-0')?.style.removeProperty('display');
-    document.querySelector('#signInModal .mb-2.text-end')?.style.removeProperty('display');
-    document.getElementById('signInFooter')?.style.removeProperty('display');
-}
-
-async function submitForgotPassword() {
-    const email  = document.getElementById('forgotEmail').value.trim();
-    const errEl  = document.getElementById('forgotError');
-    const okEl   = document.getElementById('forgotSuccess');
-    const btnBox = document.getElementById('forgotBtns');
-    errEl.style.display = 'none';
-    okEl.style.display  = 'none';
-
-    if (!email) {
-        errEl.textContent   = 'Please enter your email address.';
-        errEl.style.display = 'block';
-        return;
-    }
-
-    btnBox.querySelector('button').disabled = true;
-
-    try {
-        const res  = await fetch(`${API}/auth.php`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'forgot_password', email, user_type: 'customer' }),
-        });
-        const data = await res.json();
-
-        if (data.success && data.reset_url) {
-            document.getElementById('forgotResetLink').href = data.reset_url;
-            okEl.style.display  = 'block';
-            btnBox.style.display = 'none';
-        } else if (data.success) {
-            // Email not in system — don't reveal that, show a neutral message
-            errEl.textContent   = 'If that email is registered, a reset link will appear here. Please check your email is correct.';
-            errEl.style.display = 'block';
-        } else {
-            errEl.textContent   = data.error || 'Something went wrong. Please try again.';
-            errEl.style.display = 'block';
-        }
-    } catch {
-        errEl.textContent   = 'Connection error. Make sure XAMPP is running.';
-        errEl.style.display = 'block';
-    }
-
-    btnBox.querySelector('button').disabled = false;
-}
