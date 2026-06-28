@@ -1223,3 +1223,49 @@ function showAlert(message, type = 'info') {
     document.body.appendChild(div);
     setTimeout(() => div.remove(), 4000);
 }
+
+function exportRawXML(type) {
+    //point to existing data array n stuff
+    const dataList = (type === 'inventory') ? allProducts : allOrders;
+    
+    if (!dataList || dataList.length === 0) {
+        showAlert('No data available to export.', 'warning');
+        return;
+    }
+
+    const rootTag = (type === 'inventory') ? 'InventoryData' : 'OrdersData';
+    const entryTag = (type === 'inventory') ? 'Product' : 'Order';
+
+    //building the xml string
+    let xmlString = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xmlString += `<${rootTag}>\n`;
+
+    dataList.forEach(entry => {
+        xmlString += `  <${entryTag}>\n`;
+        for (let key in entry) {
+            let safeKey = key.replace(/[^a-zA-Z0-9_]/g, '');
+            if (/^[0-9]/.test(safeKey)) safeKey = '_' + safeKey;
+            
+            let val = (entry[key] !== null && entry[key] !== undefined) ? String(entry[key]) : '';
+            val = val.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            
+            xmlString += `    <${safeKey}>${val}</${safeKey}>\n`;
+        }
+        xmlString += `  </${entryTag}>\n`;
+    });
+
+    xmlString += `</${rootTag}>`;
+
+    //make sure user gets dl on broswer
+    const blob = new Blob([xmlString], { type: 'text/xml;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `printokids_${type}_export.xml`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showAlert(`${type.toUpperCase()} XML exported successfully.`, 'success');
+}

@@ -181,6 +181,9 @@
         </div>
         <a href="javascript:void(0)" onclick="openInventoryModal()" class="text-decoration-none text-dark fw-bold">
             [ + Add Product ]
+		<a href="javascript:void(0)" onclick="exportRawXML('inventory')" class="btn btn-outline-primary btn-sm">
+			Export XML
+		</a>
         </a>
     </div>
     <div class="table-container bg-white border border-2 border-light">
@@ -219,6 +222,9 @@
             </div>
             <a href="javascript:void(0)" onclick="exportSalesHistory()" class="text-decoration-none text-dark fw-bold ms-3">
                 [ Export Sales ]
+			<a href="javascript:void(0)" onclick="exportRawXML('orders')" class="btn btn-outline-primary btn-sm ms-2">
+				Export XML
+			</a>
             </a>
         </div>
     </div>
