@@ -24,13 +24,23 @@ let currentEventSearch        = '';
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', async () => {
-    // Session guard — redirect to login if not an admin
+    // Session guard — redirect to login if not a staff member
+    let isAdminUser = false;
     try {
         const res  = await fetch(`${API}/auth.php?action=check`);
         const data = await res.json();
         if (!data.logged_in || data.user_type !== 'admin') {
             window.location.href = '../admin_login/index.html';
             return;
+        }
+        isAdminUser = !!data.is_admin;
+
+        // Hide admin-only tabs for non-admin staff
+        if (!isAdminUser) {
+            ['#products', '#inventory', '#users', '#settings'].forEach(sel => {
+                document.querySelector(`.tab-trigger[data-bs-target="${sel}"]`)
+                    ?.closest('li')?.style.setProperty('display', 'none');
+            });
         }
     } catch {
         window.location.href = '../admin_login/index.html';
@@ -99,6 +109,7 @@ function setupFormListeners() {
     document.getElementById('inventoryForm')?.addEventListener('submit', e => { e.preventDefault(); saveInventoryForm(); });
     document.getElementById('orderForm')?.addEventListener('submit', e => { e.preventDefault(); saveOrderForm(); });
     document.getElementById('userForm')?.addEventListener('submit', e => { e.preventDefault(); saveUserForm(); });
+    document.getElementById('staffForm')?.addEventListener('submit', e => { e.preventDefault(); saveStaffForm(); });
     document.getElementById('eventBookingForm')?.addEventListener('submit', e => { e.preventDefault(); saveEventBookingStatus(); });
 }
 
@@ -949,40 +960,60 @@ function displayUsers(users) {
     const tbody = document.querySelector('#usersTable tbody');
     if (!tbody) return;
     if (!users.length) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No clients found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No clients found</td></tr>';
         return;
     }
-    tbody.innerHTML = users.map(u => `
+    tbody.innerHTML = users.map(u => {
+        const active     = Number(u.is_active) !== 0;
+        const statusBadge = active
+            ? '<span class="badge bg-success">Active</span>'
+            : '<span class="badge bg-danger">Disabled</span>';
+        const joinedDate = u.created_at
+            ? new Date(u.created_at).toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' })
+            : '—';
+        return `
         <tr>
             <td class="px-4">USR-${pad(u.id)}</td>
             <td class="px-4">${esc(u.first_name)} ${esc(u.last_name)}</td>
             <td class="px-4">${esc(u.email || 'N/A')}</td>
             <td class="px-4">${esc(u.phone || 'N/A')}</td>
+            <td class="px-4">${statusBadge}</td>
+            <td class="px-4 text-center">${u.order_count || 0}</td>
+            <td class="px-4">${joinedDate}</td>
             <td class="px-4 text-end">
                 <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="editUser(${Number(u.id)})">[EDIT]</a>
+                <a href="javascript:void(0)" class="${active ? 'text-warning' : 'text-success'} text-decoration-none me-2"
+                   onclick="toggleUserActive(${Number(u.id)}, ${active ? 1 : 0})">[${active ? 'DISABLE' : 'ENABLE'}]</a>
                 <a href="javascript:void(0)" class="text-danger text-decoration-none" onclick="deleteUser(${Number(u.id)})">[DELETE]</a>
             </td>
-        </tr>
-    `).join('');
+        </tr>`;
+    }).join('');
 }
 
 function displayStaff(staff) {
     const tbody = document.querySelector('#staffTable tbody');
     if (!tbody) return;
     if (!staff.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No staff found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No staff found</td></tr>';
         return;
     }
-    tbody.innerHTML = staff.map(s => `
+    tbody.innerHTML = staff.map(s => {
+        const statusCls = s.status === 'Active' ? 'bg-success' : s.status === 'On Leave' ? 'bg-warning text-dark' : 'bg-secondary';
+        return `
         <tr>
             <td class="px-4">STF-${pad(s.id)}</td>
             <td class="px-4">${esc(s.first_name)} ${esc(s.last_name)}</td>
+            <td class="px-4">${esc(s.email || '—')}</td>
             <td class="px-4">${esc(s.role_title || '—')}</td>
             <td class="px-4">${esc(s.contact_number || 'N/A')}</td>
-            <td class="px-4"><span class="badge ${s.status === 'Active' ? 'bg-success' : s.status === 'On Leave' ? 'bg-warning text-dark' : 'bg-secondary'}">${s.status}</span></td>
-            <td class="px-4">${Number(s.is_admin) === 1 ? '<span class="badge bg-danger">Admin</span>' : '—'}</td>
-        </tr>
-    `).join('');
+            <td class="px-4"><span class="badge ${statusCls}">${s.status}</span></td>
+            <td class="px-4">${Number(s.is_admin) === 1 ? '<span class="badge bg-danger">Admin</span>' : '<span class="badge bg-secondary">Staff</span>'}</td>
+            <td class="px-4 text-end">
+                <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="openStaffModal(${Number(s.id)})">[EDIT]</a>
+                <a href="javascript:void(0)" class="text-danger text-decoration-none" onclick="deleteStaff(${Number(s.id)})">[DELETE]</a>
+            </td>
+        </tr>`;
+    }).join('');
 }
 
 function editUser(id) {
@@ -992,11 +1023,15 @@ function editUser(id) {
 }
 
 function openUserModal(user) {
-    document.getElementById('userId').value        = user.id;
-    document.getElementById('userFirstName').value = user.first_name || '';
-    document.getElementById('userLastName').value  = user.last_name  || '';
-    document.getElementById('userEmail').value     = user.email      || '';
-    document.getElementById('userPhone').value     = user.phone      || '';
+    document.getElementById('userId').value           = user.id;
+    document.getElementById('userFirstName').value    = user.first_name || '';
+    document.getElementById('userLastName').value     = user.last_name  || '';
+    document.getElementById('userEmail').value        = user.email      || '';
+    document.getElementById('userPhone').value        = user.phone      || '';
+    document.getElementById('userIsActive').checked   = Number(user.is_active) !== 0;
+    document.getElementById('userNewPassword').value  = '';
+    document.getElementById('userConfirmPassword').value = '';
+    document.getElementById('userFormError').style.display = 'none';
     document.getElementById('userModal').classList.add('show');
 }
 
@@ -1008,16 +1043,37 @@ function saveUserForm() {
     const id = document.getElementById('userId').value;
     if (!id) return;
 
+    const newPw  = document.getElementById('userNewPassword').value;
+    const confPw = document.getElementById('userConfirmPassword').value;
+    const errEl  = document.getElementById('userFormError');
+    errEl.style.display = 'none';
+
+    if (newPw || confPw) {
+        if (newPw !== confPw) {
+            errEl.textContent   = 'Passwords do not match.';
+            errEl.style.display = 'block';
+            return;
+        }
+        if (newPw.length < 8) {
+            errEl.textContent   = 'New password must be at least 8 characters.';
+            errEl.style.display = 'block';
+            return;
+        }
+    }
+
     const payload = {
         id:         Number(id),
         first_name: document.getElementById('userFirstName').value.trim(),
         last_name:  document.getElementById('userLastName').value.trim(),
         email:      document.getElementById('userEmail').value.trim(),
         phone:      document.getElementById('userPhone').value.trim(),
+        is_active:  document.getElementById('userIsActive').checked ? 1 : 0,
     };
+    if (newPw) payload.new_password = newPw;
 
     if (!payload.first_name || !payload.last_name || !payload.email) {
-        showAlert('First name, last name, and email are required.', 'danger');
+        errEl.textContent   = 'First name, last name, and email are required.';
+        errEl.style.display = 'block';
         return;
     }
 
@@ -1031,6 +1087,28 @@ function saveUserForm() {
         if (data.success) {
             closeUserModal();
             showAlert('Client updated successfully.', 'success');
+            loadUsers();
+        } else {
+            errEl.textContent   = data.error || 'Update failed.';
+            errEl.style.display = 'block';
+        }
+    })
+    .catch(() => { errEl.textContent = 'Request failed.'; errEl.style.display = 'block'; });
+}
+
+function toggleUserActive(id, currentState) {
+    const newState = currentState === 1 ? 0 : 1;
+    const action   = newState === 0 ? 'disable' : 'enable';
+    if (!confirm(`${action.charAt(0).toUpperCase() + action.slice(1)} this account?`)) return;
+    fetch(`${API}/customers.php`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: Number(id), is_active: newState })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`Account ${action}d.`, 'success');
             loadUsers();
         } else {
             showAlert(data.error || 'Update failed.', 'danger');
@@ -1051,6 +1129,118 @@ function deleteUser(id) {
         if (data.success) {
             showAlert('Client deleted.', 'success');
             loadUsers();
+        } else {
+            showAlert(data.error || 'Delete failed.', 'danger');
+        }
+    })
+    .catch(() => showAlert('Request failed.', 'danger'));
+}
+
+// ── Staff modal ──────────────────────────────────────────
+function openStaffModal(idOrNull) {
+    const s = idOrNull !== null ? allStaff.find(x => Number(x.id) === Number(idOrNull)) : null;
+
+    document.getElementById('staffId').value              = s ? s.id : '';
+    document.getElementById('staffFirstName').value       = s ? s.first_name      || '' : '';
+    document.getElementById('staffLastName').value        = s ? s.last_name       || '' : '';
+    document.getElementById('staffEmail').value           = s ? s.email           || '' : '';
+    document.getElementById('staffContact').value         = s ? s.contact_number  || '' : '';
+    document.getElementById('staffStatus').value          = s ? s.status          || 'Active' : 'Active';
+    document.getElementById('staffIsAdmin').checked       = s ? Number(s.is_admin) === 1 : false;
+    document.getElementById('staffNewPassword').value     = '';
+    document.getElementById('staffConfirmPassword').value = '';
+    document.getElementById('staffFormError').style.display = 'none';
+
+    const isNew = !s;
+    document.getElementById('staffModalTitle').textContent = isNew ? 'New Staff Member' : 'Edit Staff Member';
+    document.getElementById('staffPasswordLabel').innerHTML = isNew
+        ? 'Set Password <span class="text-danger">*</span>'
+        : 'Reset Password <span class="text-muted fw-normal">(leave blank to keep current)</span>';
+
+    document.getElementById('staffModal').classList.add('show');
+}
+
+function closeStaffModal() {
+    document.getElementById('staffModal').classList.remove('show');
+}
+
+function saveStaffForm() {
+    const id     = document.getElementById('staffId').value;
+    const isNew  = !id;
+    const newPw  = document.getElementById('staffNewPassword').value;
+    const confPw = document.getElementById('staffConfirmPassword').value;
+    const errEl  = document.getElementById('staffFormError');
+    errEl.style.display = 'none';
+
+    if (isNew && !newPw) {
+        errEl.textContent   = 'Password is required for new staff members.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    if (newPw || confPw) {
+        if (newPw !== confPw) {
+            errEl.textContent   = 'Passwords do not match.';
+            errEl.style.display = 'block';
+            return;
+        }
+        if (newPw.length < 8) {
+            errEl.textContent   = 'Password must be at least 8 characters.';
+            errEl.style.display = 'block';
+            return;
+        }
+    }
+
+    const payload = {
+        first_name:     document.getElementById('staffFirstName').value.trim(),
+        last_name:      document.getElementById('staffLastName').value.trim(),
+        email:          document.getElementById('staffEmail').value.trim(),
+        contact_number: document.getElementById('staffContact').value.trim(),
+        status:         document.getElementById('staffStatus').value,
+        is_admin:       document.getElementById('staffIsAdmin').checked ? 1 : 0,
+    };
+    if (!payload.first_name || !payload.last_name) {
+        errEl.textContent   = 'First and last name are required.';
+        errEl.style.display = 'block';
+        return;
+    }
+    if (newPw) payload.new_password = newPw;
+    if (isNew) payload.password = newPw;
+
+    const method = isNew ? 'POST' : 'PUT';
+    if (!isNew) payload.id = Number(id);
+
+    fetch(`${API}/staff.php`, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success || data.id) {
+            closeStaffModal();
+            showAlert(isNew ? 'Staff member created.' : 'Staff member updated.', 'success');
+            loadStaff();
+        } else {
+            errEl.textContent   = data.error || 'Save failed.';
+            errEl.style.display = 'block';
+        }
+    })
+    .catch(() => { errEl.textContent = 'Request failed.'; errEl.style.display = 'block'; });
+}
+
+function deleteStaff(id) {
+    if (!confirm('Delete this staff member? This cannot be undone.')) return;
+    fetch(`${API}/staff.php`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: Number(id) })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Staff member deleted.', 'success');
+            loadStaff();
         } else {
             showAlert(data.error || 'Delete failed.', 'danger');
         }
