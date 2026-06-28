@@ -248,16 +248,24 @@ function displayInventory(products) {
     const tbody = document.querySelector('#inventoryTable tbody');
     if (!tbody) return;
     if (!products.length) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No products found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No products found</td></tr>';
         return;
     }
     tbody.innerHTML = products.map(p => `
         <tr data-id="${p.id}">
+            <td class="px-2 text-center">
+                ${p.primary_image
+                    ? `<img src="${esc(p.primary_image)}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ddd" onerror="this.style.display='none'">`
+                    : '<span class="text-muted small">—</span>'}
+            </td>
             <td class="px-4">${esc(p.name)}</td>
             <td class="px-4" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(p.description||'')}">${esc(p.description || '—')}</td>
             <td class="px-4">${p.stock_count ?? 0}</td>
             <td class="px-4">${p.reorder_level ?? 0}</td>
-            <td class="px-4"><span class="badge ${stockBadge(p.stock_status)}">${p.stock_status || 'In Stock'}</span></td>
+            <td class="px-4">
+                <span class="badge ${stockBadge(p.stock_status)}">${p.stock_status || 'In Stock'}</span>
+                ${Number(p.force_out_of_stock) ? '<span class="badge bg-secondary ms-1" style="font-size:0.65rem">Forced</span>' : ''}
+            </td>
             <td class="px-4">${Number(p.is_active) === 1
                 ? '<span class="badge bg-success">Active</span>'
                 : '<span class="badge bg-secondary">Archived</span>'}</td>
@@ -296,7 +304,7 @@ function archiveProduct(id, currentActive) {
     .catch(() => showAlert('Request failed.', 'danger'));
 }
 
-function openInventoryModal(product = null) {
+async function openInventoryModal(product = null) {
     const modal = document.getElementById('inventoryModal');
     document.getElementById('inventoryModalTitle').textContent = product ? 'Edit Product' : 'Add Product';
     document.getElementById('inventoryProductId').value    = product?.id || '';
@@ -306,8 +314,28 @@ function openInventoryModal(product = null) {
     document.getElementById('inventoryDescription').value  = product?.description || '';
     document.getElementById('inventoryStockCount').value   = product?.stock_count ?? 0;
     document.getElementById('inventoryReorderLevel').value = product?.reorder_level ?? 10;
-    document.getElementById('inventoryIsActive').value     = product ? String(product.is_active ?? 1) : '1';
+    document.getElementById('inventoryIsActive').checked   = product ? Number(product.is_active) === 1 : true;
+    document.getElementById('inventoryForceOOS').checked   = product ? Number(product.force_out_of_stock) === 1 : false;
+
+    // Clear media grid for new products; load for existing
+    const grid   = document.getElementById('adminMediaGrid');
+    const status = document.getElementById('mediaUploadStatus');
+    if (grid)   grid.innerHTML = '<span class="text-muted small">Loading media…</span>';
+    if (status) status.textContent = '';
+
     modal.classList.add('show');
+
+    if (product?.id) {
+        try {
+            const res  = await fetch(`${API}/product_images.php?product_id=${product.id}`);
+            const imgs = await res.json();
+            renderAdminMediaGrid(imgs, product.id);
+        } catch {
+            if (grid) grid.innerHTML = '<span class="text-muted small">Could not load media.</span>';
+        }
+    } else {
+        if (grid) grid.innerHTML = '<span class="text-muted small">Save the product first to add media.</span>';
+    }
 }
 
 function closeInventoryModal() {
@@ -317,13 +345,14 @@ function closeInventoryModal() {
 function saveInventoryForm() {
     const id = document.getElementById('inventoryProductId').value;
     const payload = {
-        name:          document.getElementById('inventoryProductName').value.trim(),
-        base_cost:     parseFloat(document.getElementById('inventoryBaseCost').value),
-        category:      document.getElementById('inventoryCategory').value.trim() || 'General',
-        description:   document.getElementById('inventoryDescription').value.trim(),
-        stock_count:   parseInt(document.getElementById('inventoryStockCount').value),
-        reorder_level: parseInt(document.getElementById('inventoryReorderLevel').value),
-        is_active:     parseInt(document.getElementById('inventoryIsActive').value),
+        name:               document.getElementById('inventoryProductName').value.trim(),
+        base_cost:          parseFloat(document.getElementById('inventoryBaseCost').value),
+        category:           document.getElementById('inventoryCategory').value.trim() || 'General',
+        description:        document.getElementById('inventoryDescription').value.trim(),
+        stock_count:        parseInt(document.getElementById('inventoryStockCount').value),
+        reorder_level:      parseInt(document.getElementById('inventoryReorderLevel').value),
+        is_active:          document.getElementById('inventoryIsActive').checked ? 1 : 0,
+        force_out_of_stock: document.getElementById('inventoryForceOOS').checked ? 1 : 0,
     };
 
     if (!payload.name || isNaN(payload.base_cost) || isNaN(payload.stock_count) || isNaN(payload.reorder_level)) {
@@ -340,16 +369,153 @@ function saveInventoryForm() {
         body: JSON.stringify(payload)
     })
     .then(r => r.json())
-    .then(data => {
+    .then(async data => {
         if (data.success) {
-            closeInventoryModal();
             showAlert(id ? 'Product updated.' : 'Product added.', 'success');
-            loadInventory().then(() => applyProductCatalogFilters());
+            await loadInventory();
+            applyProductCatalogFilters();
+            if (!id && data.id) {
+                // New product saved — re-open modal so admin can add media
+                const newProduct = allProducts.find(p => Number(p.id) === Number(data.id));
+                if (newProduct) {
+                    openInventoryModal(newProduct);
+                } else {
+                    closeInventoryModal();
+                }
+            } else {
+                closeInventoryModal();
+            }
         } else {
             showAlert(data.error || 'Save failed.', 'danger');
         }
     })
     .catch(() => showAlert('Request failed.', 'danger'));
+}
+
+// ── Product Media ──────────────────────────────────────────
+
+function renderAdminMediaGrid(images, productId) {
+    const grid = document.getElementById('adminMediaGrid');
+    if (!grid) return;
+    if (!images.length) {
+        grid.innerHTML = '<span class="text-muted small">No media yet. Upload below.</span>';
+        return;
+    }
+    grid.innerHTML = images.map(img => {
+        const thumb = img.media_type === 'video'
+            ? `<video src="${esc(img.image_url)}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;background:#000"></video>`
+            : `<img src="${esc(img.image_url)}" alt="media" style="width:80px;height:80px;object-fit:cover;border-radius:6px;" onerror="this.src='../../client/images/Product_TEMP.png'">`;
+        const primaryBorder = Number(img.is_primary) ? 'border:2.5px solid #f0a500;' : 'border:2px solid #ddd;';
+        return `
+            <div style="position:relative;${primaryBorder}border-radius:8px;overflow:hidden;background:#f5f5f5;" title="${img.media_type}">
+                ${thumb}
+                <div style="position:absolute;bottom:0;left:0;right:0;display:flex;gap:2px;background:rgba(0,0,0,0.55);padding:2px 3px;">
+                    ${Number(img.is_primary)
+                        ? `<span style="color:#f0a500;font-size:11px;flex:1;text-align:center">★ Primary</span>`
+                        : `<button onclick="setPrimaryImage(${img.id},${productId})" title="Set as primary"
+                               style="background:none;border:none;color:#fff;font-size:11px;cursor:pointer;flex:1">★</button>`}
+                    <button onclick="deleteProductImage(${img.id},${productId})" title="Delete"
+                        style="background:none;border:none;color:#ff6b6b;font-size:13px;cursor:pointer;padding:0 4px;">✕</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function uploadProductImage() {
+    const productId = Number(document.getElementById('inventoryProductId').value);
+    if (!productId) { showAlert('Save the product first, then upload media.', 'warning'); return; }
+
+    const input    = document.getElementById('mediaUploadInput');
+    const file     = input?.files?.[0];
+    const statusEl = document.getElementById('mediaUploadStatus');
+    if (!file) { showAlert('Select a file to upload.', 'warning'); return; }
+
+    if (statusEl) statusEl.textContent = 'Uploading…';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const upRes  = await fetch(`${API}/upload.php`, { method: 'POST', body: formData });
+        const upData = await upRes.json();
+        if (!upData.url) {
+            if (statusEl) statusEl.textContent = upData.error || 'Upload failed.';
+            return;
+        }
+
+        // Check how many images already exist
+        const countRes  = await fetch(`${API}/product_images.php?product_id=${productId}`);
+        const existing  = await countRes.json();
+        const isPrimary = existing.length === 0 ? 1 : 0; // First image auto-primary
+
+        const addRes  = await fetch(`${API}/product_images.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_id: productId,
+                image_url:  upData.url,
+                media_type: upData.media_type || 'image',
+                is_primary: isPrimary,
+                sort_order: existing.length,
+            }),
+        });
+        const addData = await addRes.json();
+        if (addData.success) {
+            if (statusEl) statusEl.textContent = '';
+            if (input) input.value = '';
+            // Refresh grid
+            const refreshRes = await fetch(`${API}/product_images.php?product_id=${productId}`);
+            renderAdminMediaGrid(await refreshRes.json(), productId);
+            // Refresh inventory thumbnail in table
+            loadInventory().then(() => applyProductCatalogFilters());
+        } else {
+            if (statusEl) statusEl.textContent = addData.error || 'Could not attach image.';
+        }
+    } catch {
+        if (statusEl) statusEl.textContent = 'Request failed.';
+    }
+}
+
+async function deleteProductImage(imageId, productId) {
+    if (!confirm('Delete this image?')) return;
+    try {
+        const res  = await fetch(`${API}/product_images.php`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: imageId }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            const refreshRes = await fetch(`${API}/product_images.php?product_id=${productId}`);
+            renderAdminMediaGrid(await refreshRes.json(), productId);
+            loadInventory().then(() => applyProductCatalogFilters());
+        } else {
+            showAlert(data.error || 'Delete failed.', 'danger');
+        }
+    } catch {
+        showAlert('Request failed.', 'danger');
+    }
+}
+
+async function setPrimaryImage(imageId, productId) {
+    try {
+        const res  = await fetch(`${API}/product_images.php`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: imageId, is_primary: 1 }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            const refreshRes = await fetch(`${API}/product_images.php?product_id=${productId}`);
+            renderAdminMediaGrid(await refreshRes.json(), productId);
+            loadInventory().then(() => applyProductCatalogFilters());
+        } else {
+            showAlert(data.error || 'Update failed.', 'danger');
+        }
+    } catch {
+        showAlert('Request failed.', 'danger');
+    }
 }
 
 // ============================================================
