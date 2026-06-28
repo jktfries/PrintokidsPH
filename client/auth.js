@@ -11,6 +11,7 @@
 // ============================================================
 
 const API = window.API_ROOT || '../api';
+const MY_ACCOUNT = window.MY_ACCOUNT_URL || 'my_account/index.html';
 
 class AuthManager {
     constructor() {
@@ -175,7 +176,7 @@ class AuthManager {
         if (this.currentUser) {
             if (accountBtn) {
                 accountBtn.textContent = `${this.currentUser.first_name || 'Account'}`;
-                accountBtn.setAttribute('href', 'my_account/index.html');
+                accountBtn.setAttribute('href', MY_ACCOUNT);
                 accountBtn.removeAttribute('data-bs-toggle');
                 accountBtn.removeAttribute('data-bs-target');
             }

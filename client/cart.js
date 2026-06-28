@@ -3,7 +3,8 @@
 // localStorage for persistence; checkout POSTs to API
 // ============================================================
 
-const ORDERS_API = (window.API_ROOT || '../api') + '/product_orders.php';
+const ORDERS_API    = (window.API_ROOT || '../api') + '/product_orders.php';
+const MY_ACCOUNT    = window.MY_ACCOUNT_URL || 'my_account/index.html';
 
 class CartManager {
     constructor() {
@@ -197,7 +198,7 @@ class CartManager {
                 bootstrap.Modal.getInstance(document.getElementById('cartModal'))?.hide();
                 this.showAlert('Order placed successfully! Check My Account for status updates.', 'success');
                 // Redirect to My Account after a short delay
-                setTimeout(() => { window.location.href = 'my_account/index.html'; }, 2000);
+                setTimeout(() => { window.location.href = MY_ACCOUNT; }, 2000);
             } else {
                 this.showAlert(data.error || 'Could not place order. Please try again.', 'danger');
                 if (btn) { btn.disabled = false; btn.textContent = 'Proceed to Checkout'; }
