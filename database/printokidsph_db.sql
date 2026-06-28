@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
--- NEW version
+--
 -- Host: 127.0.0.1
--- Generation Time: Jun 27, 2026 at 07:20 AM
+-- Generation Time: Jun 28, 2026 at 03:28 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -721,7 +721,7 @@ CREATE TABLE `staff` (
 --
 
 INSERT INTO `staff` (`id`, `first_name`, `last_name`, `contact_number`, `status`, `password_hash`, `is_admin`) VALUES
-(1, 'John', 'Bautista', '09443881739', 'Active', '$2y$12$5GVQFqFb2Z3k9Y1Oy7mS8.T2BtnzaFqj5R9Pq1Yw3Kz6VmXuNpKi', 1),
+(1, 'John', 'Bautista', '09443881739', 'Active', '$2y$12$s57nmmSHX5clvyZnuynV8uKuttMuj0lXFCudOFcEzBGYSJDHM7GYy', 1),
 (2, 'John', 'Reyes', '09740760606', 'Active', NULL, 0),
 (3, 'Mark', 'Mendoza', '09930324760', 'Active', NULL, 0),
 (4, 'Michael', 'Reyes', '09311953270', 'Active', NULL, 0),
