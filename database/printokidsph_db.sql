@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 28, 2026 at 10:52 AM
+-- Generation Time: Jun 28, 2026 at 12:23 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -65,7 +65,6 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `first_name`, `last_name`, `email`, `phone`, `password_hash`, `reset_token`, `reset_token_expires`, `created_at`, `updated_at`) VALUES
-(1, 'Chris', 'Bautista', 'chris.bautista1@example.com', '09307489039', NULL, NULL, NULL, '2026-06-27 05:19:00', '2026-06-27 05:19:00'),
 (2, 'David', 'Cruz', 'david.cruz2@example.com', '09954874906', NULL, NULL, NULL, '2026-06-27 05:19:00', '2026-06-27 05:19:00'),
 (3, 'Chris', 'Mendoza', 'chris.mendoza3@example.com', '09336697535', NULL, NULL, NULL, '2026-06-27 05:19:00', '2026-06-27 05:19:00'),
 (4, 'Chris', 'Cruz', 'chris.cruz4@example.com', '09496031707', NULL, NULL, NULL, '2026-06-27 05:19:00', '2026-06-27 05:19:00'),
@@ -139,7 +138,6 @@ CREATE TABLE `customer_addresses` (
 --
 
 INSERT INTO `customer_addresses` (`id`, `customer_id`, `address_label`, `street_address`, `city`, `province`, `postal_code`, `is_default`) VALUES
-(1, 1, 'Home', 'Block 1 Lot 1 Main St', 'Quezon City', 'Metro Manila', '1000', 1),
 (2, 2, 'Home', 'Block 2 Lot 2 Main St', 'Manila', 'Metro Manila', '1000', 1),
 (3, 3, 'Home', 'Block 3 Lot 3 Main St', 'Alabang', 'Metro Manila', '1000', 1),
 (4, 4, 'Home', 'Block 4 Lot 4 Main St', 'Makati', 'Metro Manila', '1000', 1),
@@ -188,7 +186,8 @@ INSERT INTO `customer_addresses` (`id`, `customer_id`, `address_label`, `street_
 (47, 47, 'Home', 'Block 47 Lot 47 Main St', 'Manila', 'Metro Manila', '1000', 1),
 (48, 48, 'Home', 'Block 48 Lot 48 Main St', 'Makati', 'Metro Manila', '1000', 1),
 (49, 49, 'Home', 'Block 49 Lot 49 Main St', 'Taguig', 'Metro Manila', '1000', 1),
-(50, 50, 'Home', 'Block 50 Lot 50 Main St', 'Manila', 'Metro Manila', '1000', 1);
+(50, 50, 'Home', 'Block 50 Lot 50 Main St', 'Manila', 'Metro Manila', '1000', 1),
+(51, 51, 'Home', 'Park Terraces, Ayala Paseo', 'Makati', 'Metro Manila', '1125', 1);
 
 -- --------------------------------------------------------
 
@@ -251,7 +250,8 @@ INSERT INTO `event_orders` (`id`, `customer_id`, `event_name`, `event_date`, `ev
 (46, 8, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Taguig Convention Center', 'Confirmed'),
 (47, 23, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Pasig Convention Center', 'Confirmed'),
 (48, 39, NULL, NULL, NULL, '2026-06-18 23:51:37', 'Quezon City Convention Center', 'Pending'),
-(51, 51, 'Joco 99th Bday bash', '2026-06-28', 'Birthday', '2026-06-28 12:45:51', 'Makati City Hall', 'Pending');
+(51, 51, 'Joco 99th Bday bash', '2026-06-28', 'Birthday', '2026-06-28 12:45:51', 'Makati City Hall', 'Pending'),
+(52, 51, 'Joco\'s 100th bday bash go home gramps', '2026-06-29', 'Birthday', '2026-06-28 17:08:50', 'Ayala Triangle', 'Confirmed');
 
 -- --------------------------------------------------------
 
@@ -442,6 +442,7 @@ CREATE TABLE `products` (
   `stock_count` int(11) NOT NULL DEFAULT 0,
   `reorder_level` int(11) NOT NULL DEFAULT 10,
   `stock_status` varchar(50) NOT NULL DEFAULT 'In Stock',
+  `force_out_of_stock` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -449,57 +450,57 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `name`, `category`, `base_cost`, `description`, `is_active`, `stock_count`, `reorder_level`, `stock_status`, `created_at`) VALUES
-(1, 'Premium Tumbler', 'General', 953.00, 'High-quality tumbler with customizable print design.', 1, 85, 15, 'In Stock', '2026-06-27 05:19:00'),
-(2, 'Classic Tote Bag', 'General', 1362.00, 'Durable tote bag perfect for personalized event giveaways.', 1, 120, 15, 'In Stock', '2026-06-27 05:19:00'),
-(3, 'Basic Jacket', 'General', 608.00, 'Comfortable jacket with heat-press customization.', 1, 45, 15, 'In Stock', '2026-06-27 05:19:00'),
-(4, 'Classic Jacket', 'General', 1392.00, 'Premium jacket with high-quality personalized printing.', 1, 29, 15, 'In Stock', '2026-06-27 05:19:00'),
-(5, 'Eco-friendly Tote Bag', 'General', 877.00, 'Sustainable tote bag made from eco-friendly materials.', 1, 95, 15, 'In Stock', '2026-06-27 05:19:00'),
-(6, 'Pro Cap', 'General', 1311.00, 'Professional-grade cap with embroidered or printed design.', 1, 60, 15, 'In Stock', '2026-06-27 05:19:00'),
-(7, 'Pro T-Shirt', 'General', 823.00, 'High-quality t-shirt with full-color custom print.', 1, 110, 15, 'In Stock', '2026-06-27 05:19:00'),
-(8, 'Basic Cap', 'General', 1457.00, 'Simple cap with your custom logo or text.', 1, 75, 15, 'In Stock', '2026-06-27 05:19:00'),
-(9, 'Premium Cap', 'General', 171.00, 'Top-tier cap with premium finish and print.', 1, 200, 15, 'In Stock', '2026-06-27 05:19:00'),
-(10, 'Eco-friendly Tumbler', 'General', 538.00, 'Eco-conscious tumbler with personalized design.', 1, 150, 15, 'In Stock', '2026-06-27 05:19:00'),
-(11, 'Classic Cap', 'General', 111.00, 'Everyday cap with clean custom branding.', 1, 180, 15, 'In Stock', '2026-06-27 05:19:00'),
-(12, 'Premium Tote Bag', 'General', 166.00, 'Deluxe tote with high-resolution custom artwork.', 1, 90, 15, 'In Stock', '2026-06-27 05:19:00'),
-(13, 'Classic Tote Bag', 'General', 724.00, 'Versatile tote bag for events and daily use.', 1, 55, 15, 'In Stock', '2026-06-27 05:19:00'),
-(14, 'Custom Mug', 'General', 850.00, 'Ceramic mug with full-wrap personalized design.', 1, 100, 15, 'In Stock', '2026-06-27 05:19:00'),
-(15, 'Classic Lanyard', 'General', 431.00, 'Standard lanyard with custom print for events.', 1, 130, 15, 'In Stock', '2026-06-27 05:19:00'),
-(16, 'Classic Mug', 'General', 493.00, 'Everyday mug with your chosen design or text.', 1, 70, 15, 'In Stock', '2026-06-27 05:19:00'),
-(17, 'Basic Tote Bag', 'General', 943.00, 'Affordable tote for bulk event giveaways.', 1, 65, 15, 'In Stock', '2026-06-27 05:19:00'),
-(18, 'Custom T-Shirt', 'General', 1048.00, 'Fully customizable t-shirt with your own artwork.', 1, 80, 15, 'In Stock', '2026-06-27 05:19:00'),
-(19, 'Basic T-Shirt', 'General', 384.00, 'Budget-friendly t-shirt with simple custom print.', 1, 140, 15, 'In Stock', '2026-06-27 05:19:00'),
-(20, 'Classic Cap', 'General', 598.00, 'Reliable cap with durable custom printing.', 1, 50, 15, 'In Stock', '2026-06-27 05:19:00'),
-(21, 'Custom Lanyard', 'General', 1212.00, 'Personalized lanyard with your logo and colors.', 1, 40, 15, 'In Stock', '2026-06-27 05:19:00'),
-(22, 'Premium Mug', 'General', 974.00, 'High-end mug with vivid color printing.', 1, 90, 15, 'In Stock', '2026-06-27 05:19:00'),
-(23, 'Pro Lanyard', 'General', 1325.00, 'Professional lanyard with premium materials.', 1, 35, 15, 'In Stock', '2026-06-27 05:19:00'),
-(24, 'Pro Tumbler', 'General', 457.00, 'Professional-grade tumbler with custom branding.', 1, 110, 15, 'In Stock', '2026-06-27 05:19:00'),
-(25, 'Eco-friendly Lanyard', 'General', 281.00, 'Sustainable lanyard with eco-conscious materials.', 1, 160, 15, 'In Stock', '2026-06-27 05:19:00'),
-(26, 'Basic Mug', 'General', 240.00, 'Simple ceramic mug with basic custom print.', 1, 100, 15, 'In Stock', '2026-06-27 05:19:00'),
-(27, 'Basic Mug', 'General', 321.00, 'Affordable mug for bulk orders and giveaways.', 1, 95, 15, 'In Stock', '2026-06-27 05:19:00'),
-(28, 'Basic Cap', 'General', 344.00, 'Lightweight cap with simple personalization.', 1, 120, 15, 'In Stock', '2026-06-27 05:19:00'),
-(29, 'Classic Jacket', 'General', 150.00, 'Comfortable jacket for casual custom wear.', 1, 70, 15, 'In Stock', '2026-06-27 05:19:00'),
-(30, 'Classic Lanyard', 'General', 153.00, 'Standard event lanyard with printed design.', 1, 145, 15, 'In Stock', '2026-06-27 05:19:00'),
-(31, 'Eco-friendly Mug', 'General', 885.00, 'Sustainable mug with eco-friendly printing.', 1, 55, 15, 'In Stock', '2026-06-27 05:19:00'),
-(32, 'Classic T-Shirt', 'General', 383.00, 'Comfortable t-shirt with classic custom print.', 1, 130, 15, 'In Stock', '2026-06-27 05:19:00'),
-(33, 'Basic Tumbler', 'General', 339.00, 'Entry-level tumbler with custom design.', 1, 85, 15, 'In Stock', '2026-06-27 05:19:00'),
-(34, 'Premium Lanyard', 'General', 1351.00, 'Luxury lanyard with high-quality finishing.', 1, 25, 15, 'In Stock', '2026-06-27 05:19:00'),
-(35, 'Premium Mug', 'General', 1426.00, 'Top-quality mug with detailed custom artwork.', 1, 45, 15, 'In Stock', '2026-06-27 05:19:00'),
-(36, 'Custom Lanyard', 'General', 738.00, 'Fully personalized lanyard for corporate events.', 1, 60, 15, 'In Stock', '2026-06-27 05:19:00'),
-(37, 'Eco-friendly Lanyard', 'General', 948.00, 'Green lanyard with sustainable printing.', 1, 75, 15, 'In Stock', '2026-06-27 05:19:00'),
-(38, 'Premium Mug', 'General', 963.00, 'Premium ceramic with vibrant custom design.', 1, 50, 15, 'In Stock', '2026-06-27 05:19:00'),
-(39, 'Eco-friendly Cap', 'General', 1035.00, 'Sustainable cap with eco-conscious production.', 1, 40, 15, 'In Stock', '2026-06-27 05:19:00'),
-(40, 'Premium Lanyard', 'General', 1260.00, 'Deluxe lanyard with premium print quality.', 1, 30, 15, 'In Stock', '2026-06-27 05:19:00'),
-(41, 'Classic Jacket', 'General', 1429.00, 'Premium classic jacket with custom embroidery.', 1, 20, 15, 'In Stock', '2026-06-27 05:19:00'),
-(42, 'Premium Tumbler', 'General', 1227.00, 'High-end tumbler with detailed personalization.', 1, 35, 15, 'In Stock', '2026-06-27 05:19:00'),
-(43, 'Pro Lanyard', 'General', 1492.00, 'Top-tier professional lanyard.', 1, 28, 15, 'In Stock', '2026-06-27 05:19:00'),
-(44, 'Classic Tote Bag', 'General', 737.00, 'All-purpose tote with clean custom print.', 1, 90, 15, 'In Stock', '2026-06-27 05:19:00'),
-(45, 'Basic Lanyard', 'General', 1490.00, 'Simple lanyard for basic custom branding.', 1, 22, 15, 'In Stock', '2026-06-27 05:19:00'),
-(46, 'Custom Jacket', 'General', 892.00, 'Fully customizable jacket with your design.', 1, 55, 15, 'In Stock', '2026-06-27 05:19:00'),
-(47, 'Premium Tumbler', 'General', 799.00, 'Quality tumbler with precision printing.', 1, 65, 15, 'In Stock', '2026-06-27 05:19:00'),
-(48, 'Eco-friendly Cap', 'General', 1229.00, 'Eco cap with sustainable custom print.', 1, 40, 15, 'In Stock', '2026-06-27 05:19:00'),
-(49, 'Custom T-Shirt', 'General', 490.00, 'Affordable custom t-shirt for events.', 1, 100, 15, 'In Stock', '2026-06-27 05:19:00'),
-(50, 'Pro Tumbler', 'General', 817.00, 'Professional tumbler with premium finish.', 1, 70, 15, 'In Stock', '2026-06-27 05:19:00');
+INSERT INTO `products` (`id`, `name`, `category`, `base_cost`, `description`, `is_active`, `stock_count`, `reorder_level`, `stock_status`, `force_out_of_stock`, `created_at`) VALUES
+(1, 'Premium Tumbler', 'General', 953.00, 'High-quality tumbler with customizable print design.', 1, 85, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(2, 'Classic Tote Bag', 'General', 1362.00, 'Durable tote bag perfect for personalized event giveaways.', 1, 120, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(3, 'Basic Jacket', 'General', 608.00, 'Comfortable jacket with heat-press customization.', 1, 44, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(4, 'Classic Jacket', 'General', 1392.00, 'Premium jacket with high-quality personalized printing.', 1, 29, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(5, 'Eco-friendly Tote Bag', 'General', 877.00, 'Sustainable tote bag made from eco-friendly materials.', 1, 95, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(6, 'Pro Cap', 'General', 1311.00, 'Professional-grade cap with embroidered or printed design.', 1, 60, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(7, 'Pro T-Shirt', 'General', 823.00, 'High-quality t-shirt with full-color custom print.', 1, 110, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(8, 'Basic Cap', 'General', 1457.00, 'Simple cap with your custom logo or text.', 1, 75, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(9, 'Premium Cap', 'General', 171.00, 'Top-tier cap with premium finish and print.', 1, 200, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(10, 'Eco-friendly Tumbler', 'General', 538.00, 'Eco-conscious tumbler with personalized design.', 1, 150, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(11, 'Classic Cap', 'General', 111.00, 'Everyday cap with clean custom branding.', 1, 180, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(12, 'Premium Tote Bag', 'General', 166.00, 'Deluxe tote with high-resolution custom artwork.', 1, 90, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(13, 'Classic Tote Bag', 'General', 724.00, 'Versatile tote bag for events and daily use.', 1, 55, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(14, 'Custom Mug', 'General', 850.00, 'Ceramic mug with full-wrap personalized design.', 1, 100, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(15, 'Classic Lanyard', 'General', 431.00, 'Standard lanyard with custom print for events.', 1, 130, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(16, 'Classic Mug', 'General', 493.00, 'Everyday mug with your chosen design or text.', 1, 70, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(17, 'Basic Tote Bag', 'General', 943.00, 'Affordable tote for bulk event giveaways.', 1, 65, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(18, 'Custom T-Shirt', 'General', 1048.00, 'Fully customizable t-shirt with your own artwork.', 1, 80, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(19, 'Basic T-Shirt', 'General', 384.00, 'Budget-friendly t-shirt with simple custom print.', 1, 139, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(20, 'Classic Cap', 'General', 598.00, 'Reliable cap with durable custom printing.', 1, 50, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(21, 'Custom Lanyard', 'General', 1212.00, 'Personalized lanyard with your logo and colors.', 1, 40, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(22, 'Premium Mug', 'General', 974.00, 'High-end mug with vivid color printing.', 1, 90, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(23, 'Pro Lanyard', 'General', 1325.00, 'Professional lanyard with premium materials.', 1, 35, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(24, 'Pro Tumbler', 'General', 457.00, 'Professional-grade tumbler with custom branding.', 1, 110, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(25, 'Eco-friendly Lanyard', 'General', 281.00, 'Sustainable lanyard with eco-conscious materials.', 1, 160, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(26, 'Basic Mug', 'General', 240.00, 'Simple ceramic mug with basic custom print.', 1, 100, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(27, 'Basic Mug', 'General', 321.00, 'Affordable mug for bulk orders and giveaways.', 1, 95, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(28, 'Basic Cap', 'General', 344.00, 'Lightweight cap with simple personalization.', 1, 119, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(29, 'Classic Jacket', 'General', 150.00, 'Comfortable jacket for casual custom wear.', 1, 70, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(30, 'Classic Lanyard', 'General', 153.00, 'Standard event lanyard with printed design.', 1, 145, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(31, 'Eco-friendly Mug', 'General', 885.00, 'Sustainable mug with eco-friendly printing.', 1, 55, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(32, 'Classic T-Shirt', 'General', 383.00, 'Comfortable t-shirt with classic custom print.', 1, 130, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(33, 'Basic Tumbler', 'General', 339.00, 'Entry-level tumbler with custom design.', 1, 85, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(34, 'Premium Lanyard', 'General', 1351.00, 'Luxury lanyard with high-quality finishing.', 1, 25, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(35, 'Premium Mug', 'General', 1426.00, 'Top-quality mug with detailed custom artwork.', 1, 45, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(36, 'Custom Lanyard', 'General', 738.00, 'Fully personalized lanyard for corporate events.', 1, 60, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(37, 'Eco-friendly Lanyard', 'General', 948.00, 'Green lanyard with sustainable printing.', 1, 75, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(38, 'Premium Mug', 'General', 963.00, 'Premium ceramic with vibrant custom design.', 1, 50, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(39, 'Eco-friendly Cap', 'General', 1035.00, 'Sustainable cap with eco-conscious production.', 1, 40, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(40, 'Premium Lanyard', 'General', 1260.00, 'Deluxe lanyard with premium print quality.', 1, 30, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(41, 'Classic Jacket', 'General', 1429.00, 'Premium classic jacket with custom embroidery.', 1, 20, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(42, 'Premium Tumbler', 'General', 1227.00, 'High-end tumbler with detailed personalization.', 1, 35, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(43, 'Pro Lanyard', 'General', 1492.00, 'Top-tier professional lanyard.', 1, 28, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(44, 'Classic Tote Bag', 'General', 737.00, 'All-purpose tote with clean custom print.', 1, 90, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(45, 'Basic Lanyard', 'General', 1490.00, 'Simple lanyard for basic custom branding.', 1, 22, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(46, 'Custom Jacket', 'General', 892.00, 'Fully customizable jacket with your design.', 1, 54, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(47, 'Premium Tumbler', 'General', 799.00, 'Quality tumbler with precision printing.', 1, 65, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(48, 'Eco-friendly Cap', 'General', 1229.00, 'Eco cap with sustainable custom print.', 1, 40, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(49, 'Custom T-Shirt', 'General', 490.00, 'Affordable custom t-shirt for events.', 1, 100, 15, 'In Stock', 0, '2026-06-27 05:19:00'),
+(50, 'Pro Tumbler', 'General', 817.00, 'Professional tumbler with premium finish.', 1, 70, 15, 'In Stock', 0, '2026-06-27 05:19:00');
 
 -- --------------------------------------------------------
 
@@ -580,7 +581,9 @@ CREATE TABLE `product_images` (
   `id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   `image_url` varchar(255) NOT NULL,
-  `is_primary` tinyint(1) DEFAULT 0
+  `media_type` varchar(10) NOT NULL DEFAULT 'image',
+  `is_primary` tinyint(1) DEFAULT 0,
+  `sort_order` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -609,7 +612,11 @@ CREATE TABLE `product_orders` (
 --
 
 INSERT INTO `product_orders` (`id`, `customer_id`, `employee_id`, `shipping_address_id`, `order_date`, `status`, `total_amount`, `payment_method`, `payment_status`, `proof_of_payment_url`, `shipping_fee`, `tracking_number`) VALUES
-(1, 51, 17, NULL, '2026-06-28 12:44:57', 'In Production', 1392.00, 'Cash on Delivery', 'Unpaid', NULL, 0.00, '102929-92293934954-000');
+(1, 51, 17, NULL, '2026-06-28 12:44:57', 'In Production', 1392.00, 'Cash on Delivery', 'Unpaid', NULL, 0.00, '102929-92293934954-000'),
+(2, 51, NULL, 51, '2026-06-28 17:07:43', 'Confirmed', 344.00, 'QR Pay', 'Verified', 'http://localhost/PrintokidsPH/uploads/media_6a40e45c97e912.54825453.jpg', 80.00, NULL),
+(3, 51, NULL, 51, '2026-06-28 17:34:01', 'Pending', 892.00, 'QR Pay', 'Verified', 'http://localhost/PrintokidsPH/uploads/media_6a40ea824d6c31.56339600.jpg', 80.00, NULL),
+(4, 51, NULL, 51, '2026-06-28 17:36:17', 'Pending', 608.00, 'Cash on Delivery', 'Unpaid', NULL, 80.00, NULL),
+(5, 51, 47, 51, '2026-06-28 17:39:30', 'In Production', 384.00, 'QR Pay', 'Verified', 'http://localhost/PrintokidsPH/uploads/media_6a40ebcf414bc7.19591056.jpg', 80.00, NULL);
 
 -- --------------------------------------------------------
 
@@ -633,7 +640,11 @@ CREATE TABLE `product_order_items` (
 --
 
 INSERT INTO `product_order_items` (`id`, `order_id`, `product_id`, `quantity`, `unit_price`, `subtotal`, `customization_notes`, `media_upload_url`) VALUES
-(1, 1, 4, 1, 1392.00, 1392.00, 'i love joco', 'http://localhost/PrintokidsPH/uploads/media_6a40a6a0b4b6a5.29597877.jpg');
+(1, 1, 4, 1, 1392.00, 1392.00, 'i love joco', 'http://localhost/PrintokidsPH/uploads/media_6a40a6a0b4b6a5.29597877.jpg'),
+(2, 2, 28, 1, 344.00, 344.00, NULL, NULL),
+(3, 3, 46, 1, 892.00, 892.00, NULL, NULL),
+(4, 4, 3, 1, 608.00, 608.00, NULL, NULL),
+(5, 5, 19, 1, 384.00, 384.00, 'Please make the image as the print with big text infront: GO HOME DAWG', 'http://localhost/PrintokidsPH/uploads/media_6a40eba7680f37.62043336.jpg');
 
 -- --------------------------------------------------------
 
@@ -832,9 +843,9 @@ CREATE TABLE `store_settings` (
 
 INSERT INTO `store_settings` (`key`, `value`) VALUES
 ('payment_card_enabled', '0'),
-('payment_cod_enabled', '1'),
+('payment_cod_enabled', '0'),
 ('payment_qr_enabled', '1'),
-('qr_code_url', NULL),
+('qr_code_url', 'http://localhost/PrintokidsPH/uploads/media_6a40e9a1f40719.63078784.jpg'),
 ('shipping_luzon', '150.00'),
 ('shipping_mindanao', '200.00'),
 ('shipping_ncr', '80.00'),
@@ -985,13 +996,13 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `customer_addresses`
 --
 ALTER TABLE `customer_addresses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `event_orders`
 --
 ALTER TABLE `event_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `event_staff_assignments`
@@ -1033,13 +1044,13 @@ ALTER TABLE `product_images`
 -- AUTO_INCREMENT for table `product_orders`
 --
 ALTER TABLE `product_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `product_order_items`
 --
 ALTER TABLE `product_order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `roles`
