@@ -291,5 +291,99 @@ if ($action === 'logout') {
     exit;
 }
 
+// ── forgot_password ───────────────────────────────────────────────────────────
+if ($action === 'forgot_password') {
+    $identifier = trim($data['email'] ?? '');
+    $user_type  = $data['user_type'] ?? 'customer';
+
+    if ($identifier === '') {
+        http_response_code(400);
+        echo json_encode(['error' => 'Email or ID is required']);
+        exit;
+    }
+
+    $token  = bin2hex(random_bytes(32));
+    $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
+    $found  = false;
+    $reset_url = '';
+
+    if ($user_type === 'customer') {
+        if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+            $stmt = $pdo->prepare('SELECT id FROM customers WHERE email = ?');
+            $stmt->execute([$identifier]);
+            $user = $stmt->fetch();
+            if ($user) {
+                $pdo->prepare(
+                    'UPDATE customers SET reset_token = ?, reset_token_expires = ? WHERE id = ?'
+                )->execute([$token, $expiry, $user['id']]);
+                $found     = true;
+                $reset_url = 'http://localhost/PrintokidsPH/client/reset_password/?token=' . $token;
+            }
+        }
+    } else {
+        // Staff: accept numeric ID or email
+        if (ctype_digit($identifier)) {
+            $stmt = $pdo->prepare('SELECT id FROM staff WHERE id = ?');
+            $stmt->execute([(int) $identifier]);
+        } else {
+            $stmt = $pdo->prepare('SELECT id FROM staff WHERE email = ?');
+            $stmt->execute([$identifier]);
+        }
+        $user = $stmt->fetch();
+        if ($user) {
+            $pdo->prepare(
+                'UPDATE staff SET reset_token = ?, reset_token_expires = ? WHERE id = ?'
+            )->execute([$token, $expiry, $user['id']]);
+            $found     = true;
+            $reset_url = 'http://localhost/PrintokidsPH/admin/reset_password/?token=' . $token;
+        }
+    }
+
+    $response = ['success' => true];
+    if ($found) $response['reset_url'] = $reset_url;
+    echo json_encode($response);
+    exit;
+}
+
+// ── reset_password ────────────────────────────────────────────────────────────
+if ($action === 'reset_password') {
+    $token     = trim($data['token'] ?? '');
+    $new_pass  = $data['new_password'] ?? '';
+    $user_type = $data['user_type'] ?? 'customer';
+
+    if ($token === '' || $new_pass === '') {
+        http_response_code(400);
+        echo json_encode(['error' => 'Token and new password are required']);
+        exit;
+    }
+
+    if (strlen($new_pass) < 8) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Password must be at least 8 characters']);
+        exit;
+    }
+
+    $table = $user_type === 'staff' ? 'staff' : 'customers';
+    $stmt  = $pdo->prepare(
+        "SELECT id FROM {$table} WHERE reset_token = ? AND reset_token_expires > NOW()"
+    );
+    $stmt->execute([$token]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        http_response_code(400);
+        echo json_encode(['error' => 'This reset link is invalid or has expired. Please request a new one.']);
+        exit;
+    }
+
+    $hash = password_hash($new_pass, PASSWORD_DEFAULT);
+    $pdo->prepare(
+        "UPDATE {$table} SET password_hash = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?"
+    )->execute([$hash, $user['id']]);
+
+    echo json_encode(['success' => true]);
+    exit;
+}
+
 http_response_code(400);
 echo json_encode(['error' => 'Unknown action']);

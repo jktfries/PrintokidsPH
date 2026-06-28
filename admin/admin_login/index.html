@@ -39,6 +39,7 @@
         }
         .btn-login:hover { background: #b8893a; }
         #loginAlert { display: none; }
+        #forgotAdminSection { display: none; }
     </style>
 </head>
 <body>
@@ -57,11 +58,32 @@
             <input type="password" class="form-control" id="staffPassword" placeholder="Enter your password">
         </div>
         <button class="btn-login" onclick="handleAdminLogin()">Sign In</button>
-        <!--<p class="text-center text-muted mt-3 mb-0" style="font-size:13px;">
-            Default: Staff ID <strong>1</strong> / Password <strong>admin1234</strong>
+        <p class="text-center mt-3 mb-0" style="font-size:13px;">
+            <a href="#" onclick="showForgotAdmin(); return false;" style="color:#d4a362;text-decoration:none;">Forgot your password?</a>
         </p>
-    -->
-        
+
+        <!-- Forgot Password Section -->
+        <div id="forgotAdminSection">
+            <hr style="margin:20px 0 16px">
+            <p style="font-size:13px;color:#555;margin-bottom:12px;">Enter your email address or Staff ID to generate a reset link.</p>
+            <div class="mb-3">
+                <label class="form-label">Email or Staff ID</label>
+                <input type="text" class="form-control" id="forgotAdminIdentifier" placeholder="Email or numeric Staff ID">
+            </div>
+            <div id="forgotAdminError" class="alert alert-danger py-2 small" style="display:none"></div>
+            <div id="forgotAdminSuccess" style="display:none" class="mb-3">
+                <p class="small text-success mb-1">Reset link generated! Click below:</p>
+                <a id="forgotAdminResetLink" href="#" target="_blank"
+                   class="btn btn-warning btn-sm w-100 mb-1" style="font-weight:700;">Open Password Reset Page</a>
+                <p class="small text-muted mb-0">Link expires in 1 hour.</p>
+            </div>
+            <div id="forgotAdminBtns">
+                <button class="btn-login" onclick="submitForgotAdmin()" style="margin-top:0;">Generate Reset Link</button>
+                <p class="text-center mt-2 mb-0" style="font-size:13px;">
+                    <a href="#" onclick="hideForgotAdmin(); return false;" style="color:#d4a362;">&larr; Back to sign in</a>
+                </p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -84,6 +106,60 @@
             const el = document.getElementById('loginAlert');
             el.textContent = msg;
             el.style.display = 'block';
+        }
+
+        function showForgotAdmin() {
+            document.getElementById('forgotAdminSection').style.display = 'block';
+            document.getElementById('forgotAdminError').style.display = 'none';
+            document.getElementById('forgotAdminSuccess').style.display = 'none';
+        }
+
+        function hideForgotAdmin() {
+            document.getElementById('forgotAdminSection').style.display = 'none';
+            document.getElementById('forgotAdminIdentifier').value = '';
+        }
+
+        async function submitForgotAdmin() {
+            const identifier = document.getElementById('forgotAdminIdentifier').value.trim();
+            const errEl  = document.getElementById('forgotAdminError');
+            const okEl   = document.getElementById('forgotAdminSuccess');
+            const btns   = document.getElementById('forgotAdminBtns');
+            errEl.style.display = 'none';
+            okEl.style.display  = 'none';
+
+            if (!identifier) {
+                errEl.textContent   = 'Please enter your email or Staff ID.';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            btns.querySelector('button').disabled = true;
+
+            try {
+                const res  = await fetch(`${API}/auth.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'forgot_password', email: identifier, user_type: 'staff' }),
+                });
+                const data = await res.json();
+
+                if (data.success && data.reset_url) {
+                    document.getElementById('forgotAdminResetLink').href = data.reset_url;
+                    okEl.style.display  = 'block';
+                    btns.querySelector('button').style.display = 'none';
+                } else if (data.success) {
+                    errEl.textContent   = 'No account found with that email or Staff ID.';
+                    errEl.style.display = 'block';
+                } else {
+                    errEl.textContent   = data.error || 'Something went wrong.';
+                    errEl.style.display = 'block';
+                }
+            } catch {
+                errEl.textContent   = 'Connection error. Make sure XAMPP is running.';
+                errEl.style.display = 'block';
+            }
+
+            btns.querySelector('button').disabled = false;
         }
 
         function handleAdminLogin() {
