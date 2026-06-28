@@ -307,13 +307,16 @@ function renderProduct(p) {
         ? p.images
         : [{ image_url: '../images/Product_TEMP.png', is_primary: 1 }];
 
-    inner.innerHTML = images.map((img, i) => `
-        <div class="carousel-item ${i === 0 ? 'active' : ''}">
-            <img src="${img.image_url}" class="d-block w-100 product-photo-box"
-                 alt="${p.name}"
-                 onerror="this.src='../images/Product_TEMP.png'">
-        </div>
-    `).join('');
+    inner.innerHTML = images.map((img, i) => {
+        const mediaEl = img.media_type === 'video'
+            ? `<video controls class="d-block w-100 product-photo-box" style="background:#000">
+                   <source src="${img.image_url}">
+                   Your browser does not support video.
+               </video>`
+            : `<img src="${img.image_url}" class="d-block w-100 product-photo-box"
+                    alt="${p.name}" onerror="this.src='../images/Product_TEMP.png'">`;
+        return `<div class="carousel-item ${i === 0 ? 'active' : ''}">${mediaEl}</div>`;
+    }).join('');
 }
 
 // ── Image upload preview + server upload ───────────────
