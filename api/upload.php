@@ -2,8 +2,8 @@
 header('Content-Type: application/json');
 require_once '../includes/config.php';
 
-// ── Session guard — must be logged-in customer ──────────────
-if (empty($_SESSION["customer_id"])) {
+// ── Session guard — must be logged-in customer or admin staff ──
+if (empty($_SESSION['customer_id']) && empty($_SESSION['staff_id'])) {
     http_response_code(401);
     echo json_encode(['error' => 'You must be signed in to upload files.']);
     exit;
