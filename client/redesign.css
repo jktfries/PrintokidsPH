@@ -1004,3 +1004,79 @@ html.pk-dark .pk-toast.alert-warning {
     border: 1px solid rgba(245, 158, 11, 0.55) !important;
     color: #FCD34D !important;
 }
+
+/* Bootstrap utility overrides — bg-light and table-light render white on dark pages */
+html.pk-dark .bg-light {
+    background-color: #1A1A2E !important;
+    color: #F3F4F6 !important;
+}
+
+/* table-light (used in order detail thead/tfoot) sets its own --bs-table-bg */
+html.pk-dark .table-light,
+html.pk-dark .table-light > :not(caption) > * > * {
+    --bs-table-bg: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #F3F4F6 !important;
+    border-color: rgba(255, 255, 255, 0.07) !important;
+}
+html.pk-dark .table {
+    color: #F3F4F6 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+html.pk-dark .table td,
+html.pk-dark .table th {
+    border-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Cancellation reason display has a hardcoded inline background */
+html.pk-dark #odCancelReasonText {
+    background: rgba(38, 28, 4, 0.90) !important;
+    border-color: rgba(245, 158, 11, 0.45) !important;
+    color: #FCD34D !important;
+}
+
+/* Tracking number alert (has inline border-left style) */
+html.pk-dark .alert-info {
+    background: rgba(13, 202, 240, 0.12) !important;
+    border: 1px solid rgba(13, 202, 240, 0.35) !important;
+    color: #67E8F9 !important;
+}
+
+/* Status badges (my_account uses same Bootstrap bg-* classes as admin) */
+html.pk-dark .badge.bg-warning,
+html.pk-dark .badge.bg-warning.text-dark {
+    background: rgba(245, 158, 11, 0.18) !important;
+    color: #FCD34D !important;
+    border: 1px solid rgba(245, 158, 11, 0.42) !important;
+}
+
+html.pk-dark .badge.bg-info,
+html.pk-dark .badge.bg-info.text-dark {
+    background: rgba(13, 202, 240, 0.18) !important;
+    color: #67E8F9 !important;
+    border: 1px solid rgba(13, 202, 240, 0.42) !important;
+}
+
+html.pk-dark .badge.bg-success {
+    background: rgba(25, 135, 84, 0.18) !important;
+    color: #6EE7B7 !important;
+    border: 1px solid rgba(25, 135, 84, 0.42) !important;
+}
+
+html.pk-dark .badge.bg-danger {
+    background: rgba(220, 53, 69, 0.18) !important;
+    color: #FCA5A5 !important;
+    border: 1px solid rgba(220, 53, 69, 0.42) !important;
+}
+
+html.pk-dark .badge.bg-primary {
+    background: rgba(13, 110, 253, 0.18) !important;
+    color: #93C5FD !important;
+    border: 1px solid rgba(13, 110, 253, 0.42) !important;
+}
+
+html.pk-dark .badge.bg-secondary {
+    background: rgba(108, 117, 125, 0.18) !important;
+    color: #D1D5DB !important;
+    border: 1px solid rgba(108, 117, 125, 0.42) !important;
+}

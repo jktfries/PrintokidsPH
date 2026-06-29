@@ -861,47 +861,44 @@ html.pk-dark .alert-danger  { background: rgba(220,38,38,0.18) !important; borde
 html.pk-dark .alert-warning { background: rgba(245,158,11,0.18) !important; border: 1px solid rgba(245,158,11,0.40) !important; color: #FCD34D !important; }
 html.pk-dark .alert-success { background: rgba(5,150,105,0.18) !important; border: 1px solid rgba(5,150,105,0.40) !important; color: #6EE7B7 !important; }
 
-/* Status badges — swap bright solid fills for translucent tints in dark mode */
-html.pk-dark .badge-status-pending,
-html.pk-dark .badge-pending,
-html.pk-dark .badge-status-low-stock,
-html.pk-dark .badge-low-stock {
+/* Status badges — JS uses Bootstrap bg-* classes; swap bright fills for tinted glass in dark mode.
+   text-dark badges also need explicit color because html.pk-dark .text-dark flips it to light. */
+html.pk-dark .badge.bg-warning,
+html.pk-dark .badge.bg-warning.text-dark {
     background: rgba(245, 158, 11, 0.18) !important;
     color: #FCD34D !important;
     border: 1px solid rgba(245, 158, 11, 0.42) !important;
 }
 
-html.pk-dark .badge-status-active,
-html.pk-dark .badge-active,
-html.pk-dark .badge-confirmed,
-html.pk-dark .badge-status-in-stock,
-html.pk-dark .badge-in-stock {
-    background: rgba(5, 150, 105, 0.18) !important;
+html.pk-dark .badge.bg-info,
+html.pk-dark .badge.bg-info.text-dark {
+    background: rgba(13, 202, 240, 0.18) !important;
+    color: #67E8F9 !important;
+    border: 1px solid rgba(13, 202, 240, 0.42) !important;
+}
+
+html.pk-dark .badge.bg-success {
+    background: rgba(25, 135, 84, 0.18) !important;
     color: #6EE7B7 !important;
-    border: 1px solid rgba(5, 150, 105, 0.42) !important;
+    border: 1px solid rgba(25, 135, 84, 0.42) !important;
 }
 
-html.pk-dark .badge-status-fulfilled,
-html.pk-dark .badge-fulfilled,
-html.pk-dark .badge-completed {
-    background: rgba(139, 92, 246, 0.18) !important;
-    color: #C4B5FD !important;
-    border: 1px solid rgba(139, 92, 246, 0.42) !important;
-}
-
-html.pk-dark .badge-status-out-of-stock,
-html.pk-dark .badge-out-of-stock {
-    background: rgba(220, 38, 38, 0.18) !important;
+html.pk-dark .badge.bg-danger {
+    background: rgba(220, 53, 69, 0.18) !important;
     color: #FCA5A5 !important;
-    border: 1px solid rgba(220, 38, 38, 0.42) !important;
+    border: 1px solid rgba(220, 53, 69, 0.42) !important;
 }
 
-html.pk-dark .badge-status-inactive,
-html.pk-dark .badge-inactive,
-html.pk-dark .badge-cancelled {
-    background: rgba(107, 114, 128, 0.18) !important;
+html.pk-dark .badge.bg-primary {
+    background: rgba(13, 110, 253, 0.18) !important;
+    color: #93C5FD !important;
+    border: 1px solid rgba(13, 110, 253, 0.42) !important;
+}
+
+html.pk-dark .badge.bg-secondary {
+    background: rgba(108, 117, 125, 0.18) !important;
     color: #D1D5DB !important;
-    border: 1px solid rgba(107, 114, 128, 0.42) !important;
+    border: 1px solid rgba(108, 117, 125, 0.42) !important;
 }
 
 html.pk-dark .tab-pane h4.fw-bold { color: #F3F4F6 !important; }
