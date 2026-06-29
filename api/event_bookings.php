@@ -15,9 +15,7 @@ if ($method === 'GET') {
         $customerFilter = (int) $_GET['customer_id'];
     }
 
-    $where = $customerFilter ? "WHERE eo.customer_id = $customerFilter" : '';
-
-    $stmt = $pdo->query("
+    $baseSql = "
         SELECT
             eo.id                                                      AS booking_id,
             eo.id                                                      AS order_id,
@@ -41,13 +39,20 @@ if ($method === 'GET') {
         LEFT  JOIN order_services os ON os.order_id    = eo.id
         LEFT  JOIN services s        ON os.service_id  = s.id
         LEFT  JOIN assets a          ON os.asset_id    = a.id
-        $where
+    ";
+    $groupOrder = "
         GROUP BY eo.id, eo.event_name, eo.event_type, eo.event_date,
                  eo.event_location, eo.status, eo.admin_notes, eo.cancellation_reason,
                  c.first_name, c.last_name, c.email, c.phone
         ORDER BY eo.id DESC
         LIMIT 100
-    ");
+    ";
+    if ($customerFilter) {
+        $stmt = $pdo->prepare($baseSql . " WHERE eo.customer_id = ? " . $groupOrder);
+        $stmt->execute([$customerFilter]);
+    } else {
+        $stmt = $pdo->query($baseSql . $groupOrder);
+    }
     echo json_encode($stmt->fetchAll());
     exit;
 }

@@ -50,6 +50,11 @@ elseif ($method === 'GET' && isset($_GET['id'])) {
 
 // POST - Create new product
 elseif ($method === 'POST') {
+    if (empty($_SESSION['staff_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Admin access required']);
+        exit;
+    }
     $data = json_decode(file_get_contents('php://input'), true);
 
     $name              = trim($data['name'] ?? '');
@@ -89,6 +94,11 @@ elseif ($method === 'POST') {
 
 // PUT - Update product
 elseif ($method === 'PUT') {
+    if (empty($_SESSION['staff_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Admin access required']);
+        exit;
+    }
     $data = json_decode(file_get_contents('php://input'), true);
     $id   = (int) ($data['id'] ?? 0);
 
@@ -207,6 +217,11 @@ elseif ($method === 'PUT') {
 
 // DELETE
 elseif ($method === 'DELETE') {
+    if (empty($_SESSION['staff_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Admin access required']);
+        exit;
+    }
     $data = json_decode(file_get_contents('php://input'), true);
     $id   = (int) ($data['id'] ?? 0);
 
