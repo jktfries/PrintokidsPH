@@ -47,11 +47,7 @@
 
     /* ── Glassmorphism tokens ─────────────────────────────── */
     --glass-blur:       blur(24px) saturate(180%);
-<<<<<<< Updated upstream
-    --glass-violet:     rgba(45, 27, 105, 0.52);
-=======
     --glass-violet:     rgba(20, 10, 58, 0.80);
->>>>>>> Stashed changes
     --glass-white:      rgba(255, 255, 255, 0.62);
     --glass-border:     rgba(255, 255, 255, 0.22);
     --glass-inset-top:  rgba(255, 255, 255, 0.28);
@@ -120,12 +116,8 @@ h1, h2, h3, h4, h5, h6 {
 .admin-brand-logo {
     height: 44px;
     width: auto;
-<<<<<<< Updated upstream
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
-=======
     filter: drop-shadow(0 1px 8px rgba(0, 0, 0, 0.45));
     transition: filter var(--transition);
->>>>>>> Stashed changes
 }
 
 .admin-brand-label {
@@ -804,8 +796,6 @@ html.pk-dark body {
 }
 
 html.pk-dark .admin-brand-bar { background: rgba(15,15,24,0.78); border-color: rgba(255,255,255,0.08); }
-<<<<<<< Updated upstream
-=======
 
 /* Logo illuminates in dark mode — mirrors client navbar behaviour */
 html.pk-dark .admin-brand-logo {
@@ -813,7 +803,6 @@ html.pk-dark .admin-brand-logo {
         drop-shadow(0 0 12px rgba(255, 255, 255, 0.28))
         drop-shadow(0 0 5px rgba(200, 245, 82, 0.22));
 }
->>>>>>> Stashed changes
 html.pk-dark .admin-tab-nav { background: rgba(15,15,24,0.55); border-color: rgba(255,255,255,0.08); }
 html.pk-dark .admin-tab { background: rgba(200,245,82,0.06); color: #C8F552; }
 html.pk-dark .admin-tab:hover { background: rgba(255,87,51,0.15); color: var(--color-coral); }
@@ -868,9 +857,52 @@ html.pk-dark .btn-secondary {
     color: #E5E7EB !important;
 }
 
-html.pk-dark .alert-danger  { background: rgba(220,38,38,0.2) !important; color: #FCA5A5 !important; }
-html.pk-dark .alert-warning { background: rgba(245,158,11,0.2) !important; color: #FCD34D !important; }
-html.pk-dark .alert-success { background: rgba(5,150,105,0.2) !important; color: #6EE7B7 !important; }
+html.pk-dark .alert-danger  { background: rgba(220,38,38,0.18) !important; border: 1px solid rgba(220,38,38,0.40) !important; color: #FCA5A5 !important; }
+html.pk-dark .alert-warning { background: rgba(245,158,11,0.18) !important; border: 1px solid rgba(245,158,11,0.40) !important; color: #FCD34D !important; }
+html.pk-dark .alert-success { background: rgba(5,150,105,0.18) !important; border: 1px solid rgba(5,150,105,0.40) !important; color: #6EE7B7 !important; }
+
+/* Status badges — swap bright solid fills for translucent tints in dark mode */
+html.pk-dark .badge-status-pending,
+html.pk-dark .badge-pending,
+html.pk-dark .badge-status-low-stock,
+html.pk-dark .badge-low-stock {
+    background: rgba(245, 158, 11, 0.18) !important;
+    color: #FCD34D !important;
+    border: 1px solid rgba(245, 158, 11, 0.42) !important;
+}
+
+html.pk-dark .badge-status-active,
+html.pk-dark .badge-active,
+html.pk-dark .badge-confirmed,
+html.pk-dark .badge-status-in-stock,
+html.pk-dark .badge-in-stock {
+    background: rgba(5, 150, 105, 0.18) !important;
+    color: #6EE7B7 !important;
+    border: 1px solid rgba(5, 150, 105, 0.42) !important;
+}
+
+html.pk-dark .badge-status-fulfilled,
+html.pk-dark .badge-fulfilled,
+html.pk-dark .badge-completed {
+    background: rgba(139, 92, 246, 0.18) !important;
+    color: #C4B5FD !important;
+    border: 1px solid rgba(139, 92, 246, 0.42) !important;
+}
+
+html.pk-dark .badge-status-out-of-stock,
+html.pk-dark .badge-out-of-stock {
+    background: rgba(220, 38, 38, 0.18) !important;
+    color: #FCA5A5 !important;
+    border: 1px solid rgba(220, 38, 38, 0.42) !important;
+}
+
+html.pk-dark .badge-status-inactive,
+html.pk-dark .badge-inactive,
+html.pk-dark .badge-cancelled {
+    background: rgba(107, 114, 128, 0.18) !important;
+    color: #D1D5DB !important;
+    border: 1px solid rgba(107, 114, 128, 0.42) !important;
+}
 
 html.pk-dark .tab-pane h4.fw-bold { color: #F3F4F6 !important; }
 html.pk-dark .text-muted,
