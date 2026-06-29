@@ -5,57 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="admin_styles.css">
     <title>PrintoKids — Admin Dashboard</title>
 </head>
 
-<body class="bg-light">
+<body>
 
 <!-- ── SESSION GUARD ─────────────────────────────────────────────── -->
 <!-- Handled in admin_dashboard.js DOMContentLoaded; redirect if not admin -->
 
-<!-- ── HEADER ─────────────────────────────────────────────────────── -->
-<header class="admin-header shadow-sm bg-white">
-    <nav class="navbar navbar-expand-md navbar-light py-2">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <img src="images/printokids_logo_transparent.png" alt="PrintoKids PH" width="160" height="55" class="me-3">
-                <span class="fs-6 fw-bold text-secondary border-start border-2 ps-3 py-1 d-none d-sm-block">ADMIN DASHBOARD</span>
-            </a>
+<!-- ── HEADER STRIP ───────────────────────────────────────────────── -->
+<header class="admin-header">
+    <!-- Brand gradient bar -->
+    <div class="admin-brand-bar">
+        <div class="admin-brand-bar__left">
+            <img src="images/printokids_logo_transparent.png" alt="PrintoKids PH" class="admin-brand-logo">
+            <span class="admin-brand-label">Admin Dashboard</span>
+        </div>
+        <div class="admin-brand-bar__right">
+            <button class="pk-theme-toggle-admin btn btn-sm" id="adminThemeToggleBtn" title="Toggle dark mode">🌙</button>
+            <button class="btn admin-btn-logout" onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar"
-                aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+    <!-- Tab navigation strip -->
+    <nav class="admin-tab-nav" aria-label="Admin sections">
+        <div class="admin-tab-nav__inner" id="dashboardTabs" role="tablist">
+            <button class="admin-tab active tab-trigger" data-bs-target="#dashboard" type="button" role="tab">
+                <span class="admin-tab__icon">📊</span> Dashboard
             </button>
-
-            <div class="collapse navbar-collapse" id="adminNavbar">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-bold" id="dashboardTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active border-0 bg-transparent tab-trigger" data-bs-target="#dashboard" type="button">Dashboard</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link border-0 bg-transparent tab-trigger" data-bs-target="#products" type="button">Products</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link border-0 bg-transparent tab-trigger" data-bs-target="#inventory" type="button">Inventory</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link border-0 bg-transparent tab-trigger" data-bs-target="#orders" type="button">Orders</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link border-0 bg-transparent tab-trigger" data-bs-target="#eventBookings" type="button">Event Bookings</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link border-0 bg-transparent tab-trigger" data-bs-target="#users" type="button">Users</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link border-0 bg-transparent tab-trigger" data-bs-target="#settings" type="button">Settings</button>
-                    </li>
-                    <li class="nav-item ms-3">
-                        <button class="btn btn-sm btn-outline-danger mt-1" onclick="handleLogout()">Logout</button>
-                    </li>
-                </ul>
-            </div>
+            <button class="admin-tab tab-trigger" data-bs-target="#products" type="button" role="tab">
+                <span class="admin-tab__icon">📦</span> Products
+            </button>
+            <button class="admin-tab tab-trigger" data-bs-target="#inventory" type="button" role="tab">
+                <span class="admin-tab__icon">🗃️</span> Inventory
+            </button>
+            <button class="admin-tab tab-trigger" data-bs-target="#orders" type="button" role="tab">
+                <span class="admin-tab__icon">🛒</span> Orders
+            </button>
+            <button class="admin-tab tab-trigger" data-bs-target="#eventBookings" type="button" role="tab">
+                <span class="admin-tab__icon">🎉</span> Event Bookings
+            </button>
+            <button class="admin-tab tab-trigger" data-bs-target="#users" type="button" role="tab">
+                <span class="admin-tab__icon">👥</span> Users
+            </button>
+            <button class="admin-tab tab-trigger" data-bs-target="#settings" type="button" role="tab">
+                <span class="admin-tab__icon">⚙️</span> Settings
+            </button>
         </div>
     </nav>
 </header>
@@ -71,38 +68,44 @@
     </div>
 
     <div class="row g-3 mb-4">
-        <div class="col-md">
-            <div class="summary-card">
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="summary-card summary-card--violet">
+                <div class="summary-card__icon">📦</div>
                 <span>Total Products</span>
                 <strong id="dashboardTotalProducts">—</strong>
             </div>
         </div>
-        <div class="col-md">
-            <div class="summary-card">
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="summary-card summary-card--amber">
+                <div class="summary-card__icon">⚠️</div>
                 <span>Low Stock Items</span>
                 <strong id="dashboardLowStock">—</strong>
             </div>
         </div>
-        <div class="col-md">
-            <div class="summary-card">
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="summary-card summary-card--coral">
+                <div class="summary-card__icon">🛒</div>
                 <span>Product Orders</span>
                 <strong id="dashboardProductOrders">—</strong>
             </div>
         </div>
-        <div class="col-md">
-            <div class="summary-card">
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="summary-card summary-card--lime">
+                <div class="summary-card__icon">🎉</div>
                 <span>Event Bookings</span>
                 <strong id="dashboardEventBookings">—</strong>
             </div>
         </div>
-        <div class="col-md">
-            <div class="summary-card">
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="summary-card summary-card--violet-mid">
+                <div class="summary-card__icon">👥</div>
                 <span>Registered Clients</span>
                 <strong id="dashboardUsers">—</strong>
             </div>
         </div>
-        <div class="col-md">
-            <div class="summary-card">
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="summary-card summary-card--emerald">
+                <div class="summary-card__icon">💰</div>
                 <span>Total Revenue</span>
                 <strong id="dashboardRevenue">—</strong>
             </div>
@@ -111,20 +114,20 @@
 
     <div class="row g-4">
         <div class="col-lg-4">
-            <div class="dashboard-panel">
-                <h5 class="fw-bold mb-3">Low Stock Alerts</h5>
+            <div class="dashboard-panel dashboard-panel--amber">
+                <h5>Low Stock Alerts</h5>
                 <div id="dashboardLowStockList"><p class="text-muted">Loading...</p></div>
             </div>
         </div>
         <div class="col-lg-4">
-            <div class="dashboard-panel">
-                <h5 class="fw-bold mb-3">Recent Product Orders</h5>
+            <div class="dashboard-panel dashboard-panel--coral">
+                <h5>Recent Product Orders</h5>
                 <div id="dashboardRecentProductOrders"><p class="text-muted">Loading...</p></div>
             </div>
         </div>
         <div class="col-lg-4">
-            <div class="dashboard-panel">
-                <h5 class="fw-bold mb-3">Recent Event Bookings</h5>
+            <div class="dashboard-panel dashboard-panel--violet">
+                <h5>Recent Event Bookings</h5>
                 <div id="dashboardRecentBookings"><p class="text-muted">Loading...</p></div>
             </div>
         </div>
@@ -534,8 +537,7 @@
             </div>
             <div class="pk-form-group">
                 <label for="inventoryDescription">Description</label>
-                <textarea id="inventoryDescription" rows="4"
-                    style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:15px;resize:vertical;"
+                <textarea id="inventoryDescription" rows="4" style="resize:vertical;"
                     placeholder="Describe the product, available options, materials, etc."></textarea>
             </div>
 
@@ -674,8 +676,7 @@
             <!-- Customization notes (read-only, pulled from items) -->
             <div class="pk-form-group" id="customizationNotesRow" style="display:none">
                 <label>Customization Notes</label>
-                <textarea id="orderCustomizationNotes" rows="3" readonly
-                    style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:14px;background:#f9f9f9;"></textarea>
+                <textarea id="orderCustomizationNotes" rows="3" readonly style="resize:none;"></textarea>
             </div>
             <div class="pk-form-group" id="mediaUploadRow" style="display:none">
                 <label>Client Media Upload</label>
@@ -962,8 +963,7 @@
                     Message to Client
                     <span class="text-muted fw-normal" style="font-size:12px"> — visible to the client in their account</span>
                 </label>
-                <textarea id="eventBookingAdminNotes" rows="4"
-                    style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:14px;resize:vertical;"
+                <textarea id="eventBookingAdminNotes" rows="4" style="resize:vertical;"
                     placeholder="e.g. Hi! We've reviewed your inquiry. Please contact us at +63 927 610 9655 to confirm details and pricing."></textarea>
             </div>
 
@@ -978,9 +978,9 @@
             </div>
 
             <div class="pk-modal-actions" style="justify-content:space-between">
-                <button type="button" class="btn-cancel"
-                    onclick="deleteEventBooking()" style="background:#dc3545;color:#fff;border-color:#dc3545">
-                    Delete Booking
+                <button type="button" class="btn-admin-danger"
+                    onclick="deleteEventBooking()">
+                    🗑️ Delete Booking
                 </button>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn-cancel" onclick="closeEventBookingModal()">Close</button>
@@ -992,18 +992,19 @@
 </div>
 
 <!-- Bulk action bar (shown when rows are selected) -->
-<div id="bulkBar" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
-     background:#1a1a2e;color:#fff;padding:14px 24px;
-     box-shadow:0 -2px 12px rgba(0,0,0,0.35);align-items:center;gap:16px;">
-    <span id="bulkBarCount" style="font-weight:600;font-size:15px"></span>
-    <button onclick="executeBulkDelete()"
-        style="background:#dc3545;color:#fff;border:none;padding:8px 22px;border-radius:6px;font-weight:700;cursor:pointer;font-size:14px;">
-        Delete Selected
-    </button>
-    <button onclick="currentBulkSelect?.clearAll()"
-        style="background:transparent;color:#aaa;border:1px solid #555;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px;">
-        Clear
-    </button>
+<div id="bulkBar" class="admin-bulk-bar" style="display:none;">
+    <div class="admin-bulk-bar__count">
+        <span class="admin-bulk-count-badge" id="bulkBarCount"></span>
+        <span class="admin-bulk-label">selected</span>
+    </div>
+    <div class="admin-bulk-bar__actions">
+        <button class="btn admin-bulk-btn-danger" onclick="executeBulkDelete()">
+            🗑️ Delete Selected
+        </button>
+        <button class="btn admin-bulk-btn-clear" onclick="currentBulkSelect?.clearAll()">
+            Clear
+        </button>
+    </div>
 </div>
 
 <!-- Bootstrap JS -->
@@ -1011,5 +1012,6 @@
     integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous">
 </script>
 <script src="admin_dashboard.js"></script>
+<script src="theme-admin.js"></script>
 </body>
 </html>

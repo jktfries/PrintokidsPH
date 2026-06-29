@@ -60,19 +60,19 @@ class ProductManager {
             ? this.filteredProducts.slice(0, this.displayLimit)
             : this.filteredProducts;
 
-        container.innerHTML = toShow.map(p => {
+        container.innerHTML = toShow.map((p, i) => {
             const oos = p.stock_status === 'Out of Stock';
+            const delay = (i % 4) * 80;
             return `
-            <div class="col">
+            <div class="col" data-aos="fade-up" data-aos-delay="${delay}">
                 <div class="card h-100 text-center product-card${oos ? ' oos-card' : ''}"
-                     style="${oos ? 'opacity:0.55;' : ''}"
                      onclick="window.location.href='${PRODUCTS_DETAIL_URL}?id=${p.id}'">
                     <div class="position-relative">
                         <img src="${p.primary_image || PRODUCTS_IMG_FALLBACK}"
                              class="card-img-top"
                              alt="${this.esc(p.name)}"
                              onerror="this.src='${PRODUCTS_IMG_FALLBACK}'">
-                        ${oos ? `<span class="position-absolute top-0 start-0 w-100 text-center py-1 small fw-bold text-white" style="background:rgba(220,53,69,0.85);">Out of Stock</span>` : ''}
+                        ${oos ? `<span class="position-absolute top-0 start-0 w-100 text-center py-1 small fw-bold text-white" style="background:rgba(220,38,38,0.88);letter-spacing:0.05em;">Out of Stock</span>` : ''}
                     </div>
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title mb-1">${this.esc(p.name)}</h5>
