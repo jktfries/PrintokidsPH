@@ -188,7 +188,7 @@
         </div>
         <div class="filter-status">
             <a href="javascript:void(0)" onclick="openInventoryModal()" class="admin-tab">
-            Add Product
+                Add Product
             </a>
             <a href="../../api/exportXML.php?table=products" class="admin-tab">
                 Generate Generic XML
@@ -239,12 +239,6 @@
                 <a href="javascript:void(0)" onclick="filterOrders('In Production')">[ In Production ]</a>
                 <a href="javascript:void(0)" onclick="filterOrders('Completed')">[ Completed ]</a>
             </div>
-            <a href="javascript:void(0)" onclick="exportSalesHistory()" class="text-decoration-none text-dark fw-bold ms-3">
-                [ Export Sales ]
-			<a href="javascript:void(0)" onclick="exportRawXML('orders')" class="btn btn-outline-primary btn-sm ms-2">
-				Export XML
-			</a>
-            </a>
         </div>
     </div>
     <div class="d-flex justify-content-end align-items-center mb-3">  
@@ -298,7 +292,6 @@
             <a href="javascript:void(0)" onclick="filterEventBookings('Confirmed')">[ Confirmed ]</a>
             <a href="javascript:void(0)" onclick="filterEventBookings('Completed')">[ Completed ]</a>
             <a href="javascript:void(0)" onclick="loadEventBookings()" class="ms-2">[ Refresh ]</a>
-            <a href="javascript:void(0)" onclick="exportEventBookings()" class="ms-2">[ Export ]</a>
         </div>
     </div>
 
@@ -337,8 +330,8 @@
 
     <div class="d-flex justify-content-end align-items-center mb-3">  
             <div class="filter-status">
-                <a href="javascript:void(0)" onclick="exportSalesHistory()" class="admin-tab">
-                    Export Sales
+                <a href="javascript:void(0)" onclick="exportEventBookings()" class="admin-tab">
+                    Export
                 </a>
                 <a href="../../api/exportXML.php?table=event_orders" class="admin-tab">
                     Generate Generic XML
