@@ -24,8 +24,7 @@ try {
             $customer_id_filter = (int) $_GET['customer_id'];
         }
 
-        $where = $customer_id_filter ? 'WHERE po.customer_id = ' . $customer_id_filter : '';
-        $stmt  = $pdo->query("
+        $baseSql = "
             SELECT
                 po.id,
                 po.customer_id,
@@ -51,7 +50,8 @@ try {
             LEFT  JOIN staff s       ON po.employee_id  = s.id
             LEFT  JOIN product_order_items poi ON po.id = poi.order_id
             LEFT  JOIN products p    ON poi.product_id  = p.id
-            $where
+        ";
+        $groupOrder = "
             GROUP BY po.id, po.customer_id, po.employee_id, po.shipping_address_id,
                      po.order_date, po.status, po.total_amount, po.shipping_fee,
                      po.payment_method, po.payment_status, po.proof_of_payment_url,
@@ -59,7 +59,13 @@ try {
                      c.first_name, c.last_name, s.first_name, s.last_name
             ORDER BY po.order_date DESC
             LIMIT 100
-        ");
+        ";
+        if ($customer_id_filter) {
+            $stmt = $pdo->prepare($baseSql . " WHERE po.customer_id = ? " . $groupOrder);
+            $stmt->execute([$customer_id_filter]);
+        } else {
+            $stmt = $pdo->query($baseSql . $groupOrder);
+        }
         echo json_encode($stmt->fetchAll());
     }
 

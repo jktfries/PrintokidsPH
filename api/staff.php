@@ -6,6 +6,11 @@ $pdo    = getPDO();
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET' && !isset($_GET['id'])) {
+    if (empty($_SESSION['staff_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Admin access required']);
+        exit;
+    }
     $status_filter  = trim($_GET['status'] ?? '');
     $allowed_status = ['Active', 'On Leave', 'Terminated'];
 
@@ -35,6 +40,11 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     echo json_encode($stmt->fetchAll());
 
 } elseif ($method === 'GET' && isset($_GET['id'])) {
+    if (empty($_SESSION['staff_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Admin access required']);
+        exit;
+    }
     $id   = (int) $_GET['id'];
     $stmt = $pdo->prepare(
         'SELECT s.id, s.first_name, s.last_name, s.email, s.contact_number,

@@ -75,6 +75,11 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     echo json_encode($product);
 
 } elseif ($method === 'POST') {
+    if (empty($_SESSION['staff_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Admin access required']);
+        exit;
+    }
     $data        = json_decode(file_get_contents('php://input'), true) ?? [];
     $name        = trim($data['name'] ?? '');
     $category    = trim($data['category'] ?? 'General');
@@ -110,6 +115,11 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     echo json_encode(['id' => $new_id, 'success' => true]);
 
 } elseif ($method === 'PUT') {
+    if (empty($_SESSION['staff_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Admin access required']);
+        exit;
+    }
     $data = json_decode(file_get_contents('php://input'), true) ?? [];
     $id   = (int) ($data['id'] ?? 0);
 
@@ -166,6 +176,11 @@ if ($method === 'GET' && !isset($_GET['id'])) {
     echo json_encode(['success' => true]);
 
 } elseif ($method === 'DELETE') {
+    if (empty($_SESSION['staff_id'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Admin access required']);
+        exit;
+    }
     $data = json_decode(file_get_contents('php://input'), true) ?? [];
 
     if (!empty($data['ids']) && is_array($data['ids'])) {

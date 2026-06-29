@@ -1,0 +1,1092 @@
+/* ============================================================
+   PrintoKids PH — Bold Craft Redesign
+   Layer on top of Bootstrap 5 + styles.css
+   Do NOT remove Bootstrap or styles.css — this overrides them.
+   ============================================================ */
+
+/* ── Design Tokens ────────────────────────────────────────── */
+:root {
+    --font-base: 'Anthropic Sans', 'DM Sans', system-ui, sans-serif;
+
+    --color-coral:       #FF5733;
+    --color-coral-dark:  #e04a28;
+    --color-lime:        #C8F552;
+    --color-violet:      #2D1B69;
+    --color-violet-pale: #EDE9FE;
+    --color-violet-mid:  #6B4FA0;
+    --color-ink:         #0D0D0D;
+    --color-cream:       #FFF8EE;
+    --color-gold:        #eab66d;
+    --color-amber:       #F59E0B;
+    --color-danger:      #DC2626;
+    --color-muted:       #6B7280;
+
+    --shadow-1: 0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.06);
+    --shadow-2: 0 4px 6px rgba(0,0,0,.10), 0 12px 28px rgba(0,0,0,.12);
+    --shadow-3: 0 24px 48px rgba(0,0,0,.18), 0 8px 16px rgba(0,0,0,.12);
+    --shadow-4: 0 32px 64px rgba(0,0,0,.22);
+
+    --radius-sm:   8px;
+    --radius-md:   14px;
+    --radius-lg:   24px;
+    --radius-pill: 999px;
+    --radius-btn:  10px;
+
+    --transition-base: 0.22s cubic-bezier(0.4,0,0.2,1);
+
+    /* ── Glassmorphism tokens ─────────────────────────────── */
+    --glass-blur:       blur(24px) saturate(180%);
+    --glass-violet:     rgba(20, 10, 58, 0.80);
+    --glass-white:      rgba(255, 255, 255, 0.62);
+    --glass-border:     rgba(255, 255, 255, 0.22);
+    --glass-inset-top:  rgba(255, 255, 255, 0.28);
+    --glass-inset-bot:  rgba(0,   0,   0,   0.08);
+}
+
+/* ── Base ─────────────────────────────────────────────────── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--font-base) !important;
+    background-color: var(--color-cream) !important;
+    color: var(--color-ink) !important;
+    -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; }
+
+/* ── Typography ───────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6,
+.pk-heading {
+    font-family: var(--font-base) !important;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+/* ── Navbar ───────────────────────────────────────────────── */
+.navbar {
+    background: var(--glass-violet) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    -webkit-backdrop-filter: var(--glass-blur) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-pill) !important;
+    margin: 8px 16px !important;
+    box-shadow:
+        var(--shadow-2),
+        inset 0 1px 0 var(--glass-inset-top),
+        inset 0 -1px 0 var(--glass-inset-bot) !important;
+}
+
+/* Logo depth — drop-shadow follows PNG silhouette, not bounding box */
+.navbar-brand .logo {
+    filter: drop-shadow(0 1px 8px rgba(0, 0, 0, 0.45));
+    transition: filter var(--transition-base);
+}
+
+/* Refraction highlight — diagonal light sweep across the glass */
+.navbar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.18) 0%,
+        rgba(255,255,255,0.05) 38%,
+        transparent 65%
+    );
+    z-index: 0;
+}
+.navbar .container-fluid,
+.navbar .navbar-brand,
+.navbar .navbar-nav,
+.navbar .navbar-toggler,
+.navbar .collapse { position: relative; z-index: 1; }
+
+.navbar-nav .nav-link,
+.navbar-nav .btn {
+    font-family: var(--font-base) !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.01em;
+}
+
+/* Nav buttons — frosted glass on deep violet */
+.navbar-nav .btn-outline-light {
+    background: rgba(255,255,255,0.10) !important;
+    border: 1px solid rgba(255,255,255,0.22) !important;
+    color: #fff !important;
+    border-radius: var(--radius-btn) !important;
+    padding: 5px 14px !important;
+    transition: background var(--transition-base), border-color var(--transition-base) !important;
+}
+.navbar-nav .btn-outline-light:hover {
+    background: rgba(255,255,255,0.20) !important;
+    border-color: rgba(255,255,255,0.45) !important;
+}
+
+/* Cart → coral fill, the one loud CTA in the nav */
+#cartBtn {
+    background: var(--color-coral) !important;
+    border-color: var(--color-coral) !important;
+    color: #fff !important;
+    border-radius: var(--radius-btn) !important;
+    font-weight: 700 !important;
+    padding: 5px 16px !important;
+    transition: background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base) !important;
+}
+#cartBtn:hover {
+    background: var(--color-coral-dark) !important;
+    border-color: var(--color-coral-dark) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(255,87,51,0.4) !important;
+}
+
+/* Logout → muted danger (visible but not screaming) */
+#logoutBtn {
+    background: rgba(220,38,38,0.18) !important;
+    border: 1px solid rgba(220,38,38,0.45) !important;
+    color: #FCA5A5 !important;
+    border-radius: var(--radius-btn) !important;
+    font-weight: 700 !important;
+    padding: 5px 14px !important;
+    transition: background var(--transition-base), border-color var(--transition-base) !important;
+}
+#logoutBtn:hover {
+    background: var(--color-danger) !important;
+    border-color: var(--color-danger) !important;
+    color: #fff !important;
+}
+
+/* Theme toggle */
+.pk-theme-toggle {
+    background: rgba(255,255,255,0.10) !important;
+    border: 1px solid rgba(255,255,255,0.22) !important;
+    color: #fff !important;
+    border-radius: var(--radius-btn) !important;
+    padding: 4px 10px !important;
+    font-size: 1rem !important;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: background var(--transition-base) !important;
+}
+.pk-theme-toggle:hover {
+    background: rgba(255,255,255,0.20) !important;
+}
+
+/* ── Hero Section ─────────────────────────────────────────── */
+
+/* Hide old carousel */
+#heroCarousel { display: none !important; }
+
+.pk-hero {
+    min-height: 100vh;
+    margin-top: -88px;        /* pull up to cover body padding gap behind navbar */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 128px 8vw 80px; /* 128px top = 88px offset + 40px breathing room */
+    background: linear-gradient(135deg, var(--color-coral) 0%, #8B44CC 55%, var(--color-violet) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle noise texture for depth */
+.pk-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+/* Floating gradient orbs for visual depth */
+.pk-hero::after {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(200,245,82,0.15) 0%, transparent 70%);
+    top: -100px;
+    right: -150px;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.pk-hero__eyebrow {
+    font-family: var(--font-base);
+    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-lime);
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.pk-hero__heading {
+    font-family: var(--font-base) !important;
+    font-size: clamp(3.5rem, 10vw, 9rem) !important;
+    font-weight: 700 !important;
+    line-height: 0.95 !important;
+    letter-spacing: -0.04em !important;
+    color: #fff !important;
+    margin-bottom: 28px !important;
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+}
+
+.pk-highlight {
+    color: var(--color-lime);
+    display: inline-block;
+    position: relative;
+}
+
+.pk-hero__sub {
+    font-family: var(--font-base);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: rgba(255,255,255,0.82);
+    margin-bottom: 44px;
+    max-width: 520px;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+}
+
+.pk-hero__cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.pk-btn-primary {
+    background: #fff !important;
+    color: var(--color-violet) !important;
+    border: none !important;
+    border-radius: var(--radius-btn) !important;
+    padding: 16px 40px !important;
+    font-family: var(--font-base) !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    letter-spacing: 0.01em;
+    box-shadow: var(--shadow-2) !important;
+    transition: transform var(--transition-base), box-shadow var(--transition-base), background var(--transition-base) !important;
+}
+.pk-btn-primary:hover {
+    background: var(--color-lime) !important;
+    color: var(--color-violet) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: var(--shadow-3) !important;
+}
+
+.pk-btn-outline {
+    background: transparent !important;
+    color: #fff !important;
+    border: 2px solid rgba(255,255,255,0.5) !important;
+    border-radius: var(--radius-btn) !important;
+    padding: 14px 36px !important;
+    font-family: var(--font-base) !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    transition: border-color var(--transition-base), background var(--transition-base), transform var(--transition-base) !important;
+}
+.pk-btn-outline:hover {
+    background: rgba(255,255,255,0.15) !important;
+    border-color: #fff !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Global Bootstrap button overrides */
+.btn-success,
+.btn-primary {
+    background: var(--color-coral) !important;
+    border-color: var(--color-coral) !important;
+    color: #fff !important;
+    border-radius: var(--radius-btn) !important;
+    font-family: var(--font-base) !important;
+    font-weight: 600 !important;
+    transition: background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base) !important;
+}
+.btn-success:hover,
+.btn-primary:hover {
+    background: var(--color-coral-dark) !important;
+    border-color: var(--color-coral-dark) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 18px rgba(255,87,51,0.35) !important;
+}
+
+.btn-outline-success {
+    border-color: var(--color-coral) !important;
+    color: var(--color-coral) !important;
+    border-radius: var(--radius-btn) !important;
+    font-weight: 600 !important;
+    transition: background var(--transition-base), color var(--transition-base) !important;
+}
+.btn-outline-success:hover {
+    background: var(--color-coral) !important;
+    color: #fff !important;
+}
+
+.btn-secondary {
+    background: #E5E7EB !important;
+    border-color: #E5E7EB !important;
+    color: var(--color-ink) !important;
+    border-radius: var(--radius-btn) !important;
+    font-weight: 600 !important;
+}
+.btn-secondary:hover {
+    background: #D1D5DB !important;
+    border-color: #D1D5DB !important;
+}
+
+/* Anchor offset — keeps fixed navbar from covering jump targets */
+[id] { scroll-margin-top: 100px; }
+
+/* ── Section Titles ───────────────────────────────────────── */
+.section-title {
+    font-family: var(--font-base) !important;
+    font-size: clamp(1.75rem, 4vw, 2.75rem) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.03em !important;
+    margin: 48px 24px 20px !important;
+    color: var(--color-ink) !important;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 4px;
+    background: var(--color-coral);
+    border-radius: var(--radius-pill);
+    margin-top: 10px;
+}
+
+/* ── Service Category Cards ───────────────────────────────── */
+.gift-btn, .tote-btn, .booth-btn {
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-1);
+    transition: transform var(--transition-base), box-shadow var(--transition-base) !important;
+    overflow: hidden;
+    min-height: 220px !important;
+}
+.gift-btn:hover, .tote-btn:hover, .booth-btn:hover {
+    transform: translateY(-6px) scale(1.01) !important;
+    box-shadow: var(--shadow-2) !important;
+}
+
+.menu-text-layer {
+    background: rgba(13,13,13,0.72) !important;
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius-sm) !important;
+    color: #fff !important;
+    padding: 8px 16px !important;
+    transition: background var(--transition-base);
+}
+.menu-text-layer h5 {
+    color: #fff !important;
+    font-family: var(--font-base) !important;
+    font-weight: 700 !important;
+}
+
+/* ── Product Cards ────────────────────────────────────────── */
+.product-card,
+.card {
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-1), inset 0 1px 0 rgba(255,255,255,0.70) !important;
+    background: var(--glass-white) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    transition: transform var(--transition-base), box-shadow var(--transition-base) !important;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Glass refraction on cards */
+.product-card::before,
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.22) 0%,
+        rgba(255,255,255,0.06) 40%,
+        transparent 70%
+    );
+    z-index: 0;
+}
+.product-card > *,
+.card > * { position: relative; z-index: 1; }
+
+.product-card:hover,
+.card:hover {
+    transform: translateY(-6px) !important;
+    box-shadow: var(--shadow-2) !important;
+}
+
+.product-card .card-img-top {
+    height: 200px !important;
+    object-fit: cover !important;
+    background: var(--color-cream) !important;
+}
+
+.product-card .card-title {
+    font-family: var(--font-base) !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    letter-spacing: -0.01em;
+    color: var(--color-ink) !important;
+}
+
+.product-card .card-text.fw-bold.text-success {
+    color: var(--color-coral) !important;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+}
+
+.product-card .card-footer {
+    background: transparent !important;
+    border-top: 1px solid rgba(0,0,0,0.06) !important;
+    padding: 12px 16px 16px !important;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.product-card .btn-outline-secondary {
+    border-color: rgba(0,0,0,0.15) !important;
+    color: var(--color-ink) !important;
+    border-radius: var(--radius-btn) !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+}
+.product-card .btn-outline-secondary:hover {
+    background: var(--color-ink) !important;
+    color: #fff !important;
+}
+
+/* Out-of-stock overlay */
+.oos-card {
+    opacity: 0.65 !important;
+}
+
+/* View All Products button */
+#viewMoreBtn {
+    background: var(--color-violet) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: var(--radius-btn) !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    padding: 14px 48px !important;
+    box-shadow: var(--shadow-1) !important;
+    transition: background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base) !important;
+}
+#viewMoreBtn:hover {
+    background: var(--color-coral) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: var(--shadow-2) !important;
+}
+
+/* ── Newsletter Strip ─────────────────────────────────────── */
+.newsletter-strip {
+    background: var(--color-violet) !important;
+    padding: 28px 32px !important;
+    margin-top: 24px;
+}
+.newsletter-strip p {
+    font-family: var(--font-base) !important;
+    font-size: 1.05rem !important;
+    font-weight: 600 !important;
+    color: #fff !important;
+}
+.newsletter-strip .btn-outline-success {
+    border-color: var(--color-lime) !important;
+    color: var(--color-lime) !important;
+    font-weight: 700 !important;
+}
+.newsletter-strip .btn-outline-success:hover {
+    background: var(--color-lime) !important;
+    color: var(--color-violet) !important;
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+footer .footer-bg {
+    background: var(--color-ink) !important;
+    background-image: none !important;
+    padding: 48px 8vw !important;
+}
+footer .footer-content {
+    padding: 0 !important;
+}
+footer .footer-content p {
+    font-family: var(--font-base) !important;
+    color: rgba(255,255,255,0.72) !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+}
+footer .footer-content p.mb-1 {
+    color: var(--color-lime) !important;
+    font-weight: 700 !important;
+    font-size: 0.8rem !important;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px !important;
+}
+footer .very-bottom {
+    background: #000 !important;
+    border-top: 1px solid rgba(255,255,255,0.08) !important;
+    padding: 16px 8vw !important;
+}
+footer .very-bottom p {
+    font-family: var(--font-base) !important;
+    color: rgba(255,255,255,0.45) !important;
+    font-size: 0.85rem !important;
+}
+.footer-link {
+    color: rgba(255,255,255,0.85) !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.25);
+    transition: color var(--transition-base), border-color var(--transition-base) !important;
+}
+.footer-link:hover {
+    color: var(--color-lime) !important;
+    border-bottom-color: var(--color-lime);
+}
+
+.back-to-top-btn a {
+    color: var(--color-coral) !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    transition: color var(--transition-base) !important;
+}
+.back-to-top-btn a:hover {
+    color: var(--color-lime) !important;
+    text-decoration: none !important;
+}
+
+/* ── Inputs & Forms ───────────────────────────────────────── */
+.form-control,
+.form-select {
+    font-family: var(--font-base) !important;
+    border-radius: var(--radius-sm) !important;
+    border: 1.5px solid #E5E7EB !important;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.08) !important;
+    background: #fff !important;
+    color: var(--color-ink) !important;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base) !important;
+    padding: 10px 14px !important;
+}
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--color-coral) !important;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.06), 0 0 0 3px rgba(255,87,51,0.15) !important;
+    outline: none !important;
+}
+.form-label {
+    font-family: var(--font-base) !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    color: var(--color-ink) !important;
+    margin-bottom: 6px !important;
+}
+
+/* ── Modals (Bootstrap) ───────────────────────────────────── */
+.modal-content {
+    border-radius: var(--radius-lg) !important;
+    border: 1px solid rgba(255,255,255,0.45) !important;
+    background: rgba(255,255,255,0.78) !important;
+    backdrop-filter: blur(20px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+    box-shadow: var(--shadow-3), inset 0 1px 0 rgba(255,255,255,0.55) !important;
+    box-shadow: var(--shadow-3) !important;
+    overflow: hidden;
+}
+.modal-content.bg-dark {
+    background: var(--color-violet) !important;
+}
+.modal-header {
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    padding: 24px 28px 20px !important;
+}
+.modal-header .modal-title {
+    font-family: var(--font-base) !important;
+    font-weight: 700 !important;
+    font-size: 1.2rem !important;
+    letter-spacing: -0.02em;
+}
+.modal-body {
+    padding: 24px 28px !important;
+    font-family: var(--font-base) !important;
+}
+.modal-footer {
+    padding: 16px 28px 24px !important;
+    border-top: 1px solid rgba(255,255,255,0.1) !important;
+    gap: 10px;
+}
+
+/* Dark modals: ensure light form controls */
+.modal-content.bg-dark .form-control,
+.modal-content.bg-dark .form-select {
+    background: rgba(255,255,255,0.1) !important;
+    border-color: rgba(255,255,255,0.2) !important;
+    color: #fff !important;
+    box-shadow: none !important;
+}
+.modal-content.bg-dark .form-control::placeholder {
+    color: rgba(255,255,255,0.45) !important;
+}
+.modal-content.bg-dark .form-control:focus,
+.modal-content.bg-dark .form-select:focus {
+    border-color: var(--color-lime) !important;
+    box-shadow: 0 0 0 3px rgba(200,245,82,0.2) !important;
+}
+.modal-content.bg-dark .form-label {
+    color: rgba(255,255,255,0.85) !important;
+}
+.modal-content.bg-dark .text-muted {
+    color: rgba(255,255,255,0.5) !important;
+}
+
+/* ── Account Cards ────────────────────────────────────────── */
+.account-card {
+    border: none !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-1) !important;
+    background: #fff !important;
+    padding: 28px !important;
+    transition: box-shadow var(--transition-base) !important;
+}
+.account-card:hover {
+    box-shadow: var(--shadow-2) !important;
+}
+.account-card h5 {
+    font-family: var(--font-base) !important;
+    font-weight: 700 !important;
+    border-bottom: 3px solid var(--color-coral) !important;
+    padding-bottom: 10px !important;
+    letter-spacing: -0.01em;
+}
+
+/* ── Badges ───────────────────────────────────────────────── */
+.badge {
+    font-family: var(--font-base) !important;
+    font-weight: 600 !important;
+}
+
+/* ── Spinner ──────────────────────────────────────────────── */
+.spinner-border.text-secondary {
+    color: var(--color-coral) !important;
+}
+
+/* ── Toast alerts ─────────────────────────────────────────── */
+.pk-toast {
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-3) !important;
+    font-family: var(--font-base) !important;
+}
+
+/* ── Product Detail Page ──────────────────────────────────── */
+#productName {
+    font-size: clamp(1.75rem, 4vw, 2.5rem) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.03em !important;
+    color: var(--color-ink) !important;
+    line-height: 1.1 !important;
+}
+
+#productPrice {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    color: var(--color-coral) !important;
+    letter-spacing: -0.02em !important;
+}
+
+#productCategory {
+    background: var(--color-violet-pale) !important;
+    color: var(--color-violet) !important;
+    font-weight: 600 !important;
+    font-size: 0.78rem !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    border-radius: var(--radius-btn) !important;
+    padding: 4px 12px !important;
+}
+
+#addToCartBtn {
+    font-size: 1rem !important;
+    padding: 14px 44px !important;
+}
+
+.product-photo-box {
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-1) !important;
+    background: var(--color-cream) !important;
+}
+
+.back-button {
+    font-family: var(--font-base) !important;
+    font-weight: 600 !important;
+    color: var(--color-violet-mid) !important;
+    padding: 16px 24px !important;
+    display: inline-block;
+    transition: color var(--transition-base) !important;
+}
+.back-button:hover {
+    color: var(--color-coral) !important;
+    text-decoration: none !important;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-cream); }
+::-webkit-scrollbar-thumb { background: var(--color-coral); border-radius: var(--radius-pill); }
+::-webkit-scrollbar-thumb:hover { background: var(--color-coral-dark); }
+
+/* ── AOS animation overrides ──────────────────────────────── */
+[data-aos] { will-change: transform, opacity; }
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+/* Floating pill: full-width with small margins on mobile */
+@media (max-width: 767px) {
+    .navbar {
+        margin: 6px 8px !important;
+        border-radius: 18px !important;
+    }
+    .navbar-nav {
+        padding: 8px 0 12px !important;
+        gap: 6px;
+    }
+    .navbar-nav .nav-item { width: 100%; }
+    .navbar-nav .btn,
+    .navbar-nav .btn-outline-light,
+    #cartBtn, #logoutBtn, .pk-theme-toggle {
+        width: 100% !important;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .pk-hero {
+        padding: 110px 6vw 60px !important;
+        min-height: 100svh;
+    }
+    .pk-hero__heading {
+        font-size: clamp(2.8rem, 13vw, 5rem) !important;
+    }
+    .pk-hero__sub {
+        font-size: 1rem !important;
+    }
+    .pk-hero__cta {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .pk-btn-primary,
+    .pk-btn-outline {
+        width: 100%;
+        text-align: center;
+    }
+    .section-title {
+        font-size: clamp(1.5rem, 6vw, 2rem) !important;
+        margin: 32px 16px 16px !important;
+    }
+    .newsletter-strip {
+        padding: 20px 16px !important;
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+    footer .footer-bg {
+        padding: 36px 5vw !important;
+    }
+    .product-card .card-img-top {
+        height: 160px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .pk-hero {
+        padding: 100px 5vw 48px !important;
+    }
+    .pk-btn-primary { padding: 14px 24px !important; }
+    .pk-btn-outline { padding: 12px 24px !important; }
+}
+
+/* ── Page Header (breadcrumb bar used on sub-pages) ──────── */
+.pk-page-header {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(45,27,105,0.10);
+    padding: 10px 24px;
+    margin-top: 6px;
+    font-family: var(--font-base);
+}
+.pk-page-title {
+    font-family: var(--font-base);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--color-violet);
+    letter-spacing: -0.02em;
+}
+.pk-breadcrumb-back {
+    color: var(--color-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color var(--transition-base);
+}
+.pk-breadcrumb-back:hover { color: var(--color-coral); }
+
+/* ════════════════════════════════════════════════════════════
+   DARK MODE  —  applied via html.pk-dark (set by theme.js)
+   ════════════════════════════════════════════════════════════ */
+
+html.pk-dark {
+    --color-cream:       #0F0F18;
+    --color-ink:         #F3F4F6;
+    --color-violet-pale: #1F1635;
+    --color-muted:       #9CA3AF;
+}
+
+/* Page background & base text */
+html.pk-dark body {
+    background-color: #0F0F18 !important;
+    color: #F3F4F6 !important;
+}
+
+/* Cards */
+html.pk-dark .card,
+html.pk-dark .product-card,
+html.pk-dark .account-card {
+    background: #1A1A2E !important;
+    border-color: rgba(200,245,82,0.08) !important;
+    color: #F3F4F6 !important;
+}
+html.pk-dark .card-title,
+html.pk-dark .card-text { color: #F3F4F6 !important; }
+html.pk-dark .card-footer { background: #1A1A2E !important; border-color: rgba(255,255,255,0.08) !important; }
+html.pk-dark .text-muted { color: #9CA3AF !important; }
+
+/* Navbar — gradient stays, no dark override needed */
+
+/* Section titles */
+html.pk-dark .section-title { color: #F3F4F6 !important; }
+
+/* Service buttons */
+html.pk-dark .menu-text-layer { background: rgba(0,0,0,0.8) !important; }
+
+/* Inputs */
+html.pk-dark .form-control,
+html.pk-dark .form-select {
+    background: #12121F !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    color: #F3F4F6 !important;
+}
+html.pk-dark .form-control::placeholder { color: rgba(255,255,255,0.35) !important; }
+html.pk-dark .form-label { color: #E5E7EB !important; }
+
+/* Modals */
+html.pk-dark .modal-content:not(.bg-dark) {
+    background: rgba(26,26,46,0.82) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+    color: #F3F4F6 !important;
+}
+html.pk-dark .modal-content:not(.bg-dark) .modal-header { border-color: rgba(255,255,255,0.1) !important; }
+html.pk-dark .modal-content:not(.bg-dark) .form-control,
+html.pk-dark .modal-content:not(.bg-dark) .form-select {
+    background: #12121F !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    color: #F3F4F6 !important;
+}
+/* bg-dark modals need their own override — without it they fall back to the glass-white base */
+html.pk-dark .modal-content.bg-dark {
+    background: rgba(18, 12, 48, 0.94) !important;
+    border-color: rgba(255,255,255,0.10) !important;
+}
+
+/* Navbar glass — dark mode */
+html.pk-dark .navbar { background: rgba(15,15,24,0.72) !important; }
+
+/* Logo illuminates in dark mode — white glow with lime tint */
+html.pk-dark .navbar-brand .logo {
+    filter:
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.28))
+        drop-shadow(0 0 5px rgba(200, 245, 82, 0.22));
+}
+
+/* Cards — dark glass */
+html.pk-dark .card,
+html.pk-dark .product-card,
+html.pk-dark .account-card {
+    background: rgba(26,26,46,0.75) !important;
+    border-color: rgba(255,255,255,0.10) !important;
+}
+
+/* Page header */
+html.pk-dark .pk-page-header {
+    background: rgba(15,15,24,0.70);
+    border-color: rgba(255,255,255,0.07);
+}
+html.pk-dark .pk-page-title { color: #C8F552; }
+
+/* Newsletter strip */
+html.pk-dark .newsletter-strip { background: #1A1A2E !important; }
+
+/* Admin message box (booking list + booking detail modal) */
+html.pk-dark .pk-admin-msg {
+    background: rgba(13, 110, 253, 0.12) !important;
+    border-left-color: rgba(99, 153, 255, 0.6) !important;
+    color: #93C5FD !important;
+}
+html.pk-dark .pk-admin-msg strong { color: #BFDBFE !important; }
+
+/* Footer — keep dark background regardless of theme (var --color-ink flips to light in dark mode) */
+html.pk-dark footer .footer-bg { background: #0A0A12 !important; }
+html.pk-dark footer .very-bottom { background: #000 !important; }
+html.pk-dark .very-bottom p { color: rgba(255,255,255,0.35) !important; }
+
+/* Scrollbar */
+html.pk-dark ::-webkit-scrollbar-track { background: #0F0F18; }
+
+/* Secondary button */
+html.pk-dark .btn-secondary {
+    background: #2A2A40 !important;
+    border-color: #2A2A40 !important;
+    color: #E5E7EB !important;
+}
+
+/* Spinner */
+html.pk-dark .spinner-border.text-secondary { color: var(--color-coral) !important; }
+
+/* Product detail */
+html.pk-dark #productName { color: #F3F4F6 !important; }
+html.pk-dark .product-photo-box { background: #1A1A2E !important; }
+html.pk-dark .upload-box { background: #1A1A2E !important; border-color: rgba(255,255,255,0.1) !important; }
+
+/* Body background for non-hero pages */
+html.pk-dark .container, html.pk-dark .container-fluid { color: #F3F4F6; }
+html.pk-dark .alert-danger  { background: rgba(220,38,38,0.18) !important; border: 1px solid rgba(220,38,38,0.40) !important; color: #FCA5A5 !important; }
+html.pk-dark .alert-success { background: rgba(5,150,105,0.18) !important; border: 1px solid rgba(5,150,105,0.40) !important; color: #6EE7B7 !important; }
+
+/* Toast popups — semi-transparent alerts vanish on dark page, use solid-feeling dark bg */
+html.pk-dark .pk-toast { backdrop-filter: blur(14px) saturate(140%) !important; }
+html.pk-dark .pk-toast.alert-success {
+    background: rgba(5, 40, 28, 0.96) !important;
+    border: 1px solid rgba(5, 150, 105, 0.55) !important;
+    color: #6EE7B7 !important;
+}
+html.pk-dark .pk-toast.alert-danger {
+    background: rgba(40, 8, 8, 0.96) !important;
+    border: 1px solid rgba(220, 38, 38, 0.55) !important;
+    color: #FCA5A5 !important;
+}
+html.pk-dark .pk-toast.alert-warning {
+    background: rgba(38, 28, 4, 0.96) !important;
+    border: 1px solid rgba(245, 158, 11, 0.55) !important;
+    color: #FCD34D !important;
+}
+
+/* Native <select> dropdown popup — options need their own bg, the popup is OS-rendered.
+   bg-dark modals are always dark regardless of theme, so scope both cases. */
+html.pk-dark select option,
+html.pk-dark .form-select option,
+.modal-content.bg-dark select option,
+.modal-content.bg-dark .form-select option {
+    background-color: #1A1A2E !important;
+    color: #F3F4F6 !important;
+}
+
+/* Bootstrap utility overrides — bg-light and table-light render white on dark pages */
+html.pk-dark .bg-light {
+    background-color: #1A1A2E !important;
+    color: #F3F4F6 !important;
+}
+
+/* table-light (used in order detail thead/tfoot) sets its own --bs-table-bg */
+html.pk-dark .table-light,
+html.pk-dark .table-light > :not(caption) > * > * {
+    --bs-table-bg: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #F3F4F6 !important;
+    border-color: rgba(255, 255, 255, 0.07) !important;
+}
+html.pk-dark .table {
+    color: #F3F4F6 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+html.pk-dark .table td,
+html.pk-dark .table th {
+    border-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Cancellation reason display has a hardcoded inline background */
+html.pk-dark #odCancelReasonText {
+    background: rgba(38, 28, 4, 0.90) !important;
+    border-color: rgba(245, 158, 11, 0.45) !important;
+    color: #FCD34D !important;
+}
+
+/* Tracking number alert (has inline border-left style) */
+html.pk-dark .alert-info {
+    background: rgba(13, 202, 240, 0.12) !important;
+    border: 1px solid rgba(13, 202, 240, 0.35) !important;
+    color: #67E8F9 !important;
+}
+
+/* Status badges (my_account uses same Bootstrap bg-* classes as admin) */
+html.pk-dark .badge.bg-warning,
+html.pk-dark .badge.bg-warning.text-dark {
+    background: rgba(245, 158, 11, 0.18) !important;
+    color: #FCD34D !important;
+    border: 1px solid rgba(245, 158, 11, 0.42) !important;
+}
+
+html.pk-dark .badge.bg-info,
+html.pk-dark .badge.bg-info.text-dark {
+    background: rgba(13, 202, 240, 0.18) !important;
+    color: #67E8F9 !important;
+    border: 1px solid rgba(13, 202, 240, 0.42) !important;
+}
+
+html.pk-dark .badge.bg-success {
+    background: rgba(25, 135, 84, 0.18) !important;
+    color: #6EE7B7 !important;
+    border: 1px solid rgba(25, 135, 84, 0.42) !important;
+}
+
+html.pk-dark .badge.bg-danger {
+    background: rgba(220, 53, 69, 0.18) !important;
+    color: #FCA5A5 !important;
+    border: 1px solid rgba(220, 53, 69, 0.42) !important;
+}
+
+html.pk-dark .badge.bg-primary {
+    background: rgba(13, 110, 253, 0.18) !important;
+    color: #93C5FD !important;
+    border: 1px solid rgba(13, 110, 253, 0.42) !important;
+}
+
+html.pk-dark .badge.bg-secondary {
+    background: rgba(108, 117, 125, 0.18) !important;
+    color: #D1D5DB !important;
+    border: 1px solid rgba(108, 117, 125, 0.42) !important;
+}

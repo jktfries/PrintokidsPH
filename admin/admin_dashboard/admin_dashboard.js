@@ -901,7 +901,7 @@ function displayEventBookings(bookings) {
     const tbody = document.querySelector('#eventBookingsTable tbody');
     if (!tbody) return;
     if (!bookings.length) {
-        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">No event bookings found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No event bookings found</td></tr>';
         return;
     }
     tbody.innerHTML = bookings.map(b => `
@@ -911,8 +911,7 @@ function displayEventBookings(bookings) {
             <td class="px-4">${esc(b.first_name)} ${esc(b.last_name)}</td>
             <td class="px-4">${esc(b.event_type || '—')}</td>
             <td class="px-4">${esc(b.event_location || 'N/A')}</td>
-            <td class="px-4">${esc(b.service_name || 'N/A')}</td>
-            <td class="px-4">${formatSchedule(b.start_time, b.end_time)}</td>
+            <td class="px-4">${b.event_date ? new Date(b.event_date).toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' }) : '—'}</td>
             <td class="px-4"><span class="badge ${statusBadge(b.status)}">${b.status || 'Pending'}</span></td>
             <td class="px-4 text-end">
                 <a href="javascript:void(0)" class="text-dark text-decoration-none me-2" onclick="viewEventBooking(${Number(b.booking_id)})">[VIEW]</a>

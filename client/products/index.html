@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../redesign.css">
     <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
     <title>All Products — PrintoKids PH</title>
 </head>
@@ -63,6 +66,11 @@
                         </button>
                     </li>
 
+                    <!-- Dark mode toggle -->
+                    <li class="nav-item ms-1">
+                        <button class="pk-theme-toggle btn btn-sm" id="themeToggleBtn" title="Toggle dark mode">🌙</button>
+                    </li>
+
                 </ul>
             </div>
         </div>
@@ -70,10 +78,10 @@
 </header>
 
 <!-- ── PAGE HEADER ─────────────────────────────────────────────── -->
-<div style="padding-top:80px;background:#f8f9fa;border-bottom:1px solid #dee2e6;" class="py-3 px-4 mb-2">
+<div class="pk-page-header">
     <div class="container-fluid d-flex align-items-center gap-3">
-        <a href="../index.html" class="text-decoration-none text-muted small">&larr; Back to Home</a>
-        <h4 class="mb-0 fw-bold" style="color:#4a7c59;">Our Products</h4>
+        <a href="../index.html" class="pk-breadcrumb-back">&larr; Back to Home</a>
+        <span class="pk-page-title">Our Products</span>
     </div>
 </div>
 
@@ -101,15 +109,15 @@
             <div class="row text-white">
                 <div class="col-md-4 fw-bold fst-italic">
                     <p class="mb-1">Phone / Mobile:</p>
-                    <p>+63 927 610 9655</p>
+                    <p><a href="tel:+639276109655" class="footer-link">+63 927 610 9655</a></p>
                 </div>
                 <div class="col-md-4 fw-bold fst-italic">
                     <p class="mb-1">Instagram:</p>
-                    <p>@printokidsph</p>
+                    <p><a href="https://www.instagram.com/printokidsph/" target="_blank" rel="noopener" class="footer-link">@printokidsph</a></p>
                 </div>
                 <div class="col-md-4 fw-bold fst-italic">
                     <p class="mb-1">Facebook:</p>
-                    <p>PrintoKids PH</p>
+                    <p><a href="https://www.facebook.com/printokidsph" target="_blank" rel="noopener" class="footer-link">PrintoKids PH</a></p>
                 </div>
             </div>
         </div>
@@ -124,6 +132,9 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
     crossorigin="anonymous"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>AOS.init({ duration: 700, once: true, easing: 'ease-out-cubic' });</script>
+<script src="../theme.js"></script>
 <script>
     window.API_ROOT             = '../../api';
     window.PRODUCTS_IMG_FALLBACK = '../images/Product_TEMP.png';
