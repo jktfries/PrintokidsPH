@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="EventOrders">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="EventOrder" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+
+                            <xs:element name="OrderInfo">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="ID" type="xs:integer"/>
+                                        <xs:element name="CustomerID" type="xs:integer"/>
+                                        <xs:element name="OrderDate" type="xs:string"/>
+                                        <xs:element name="Status" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <xs:element name="EventInfo">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="EventName" type="xs:string"/>
+                                        <xs:element name="EventDate" type="xs:string"/>
+                                        <xs:element name="EventType" type="xs:string"/>
+                                        <xs:element name="EventLocation" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <xs:element name="AdminInfo">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="AdminNotes" type="xs:string"/>
+                                        <xs:element name="CancellationReason" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
+

@@ -247,6 +247,22 @@
             </a>
         </div>
     </div>
+    <div class="d-flex justify-content-end align-items-center mb-3">  
+            <div class="filter-status">
+                <a href="javascript:void(0)" onclick="exportSalesHistory()" class="admin-tab">
+                    Export Sales
+                </a>
+                <a href="../../api/exportXML.php?table=product_orders" class="admin-tab">
+                    Generate Generic XML
+                </a>
+                <a href="../../api/xml_html_transform.php?table=product_orders" class="admin-tab">
+                    Generate HTML Report
+                </a>
+                <a href="../../api/xml_xml_orders.php?table=product_orders" class="admin-tab">
+                    Generate Validated & Formatted XML
+                </a>             
+            </div>
+        </div>
     <div class="table-container bg-white border border-2 border-light">
         <table class="table table-striped table-hover mb-0" id="ordersTable">
             <thead class="bg-light text-dark">
@@ -318,6 +334,23 @@
                 oninput="searchEventBookings(this.value)">
         </div>
     </div>
+
+    <div class="d-flex justify-content-end align-items-center mb-3">  
+            <div class="filter-status">
+                <a href="javascript:void(0)" onclick="exportSalesHistory()" class="admin-tab">
+                    Export Sales
+                </a>
+                <a href="../../api/exportXML.php?table=event_orders" class="admin-tab">
+                    Generate Generic XML
+                </a>
+                <a href="../../api/xml_html_transform.php?table=event_orders" class="admin-tab">
+                    Generate HTML Report
+                </a> 
+                <a href="/PrintokidsPH/api/xml_xml_event_orders.php?table=event_orders" class="admin-tab">
+                    Generate Validated & Formatted XML
+                </a>
+            </div>
+        </div>
 
     <div class="table-container bg-white border border-2 border-light">
         <table class="table table-striped table-hover mb-0" id="eventBookingsTable">

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="Orders">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Order" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+
+                            <xs:element name="OrderInfo">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="ID" type="xs:integer"/>
+                                        <xs:element name="CustomerID" type="xs:integer"/>
+                                        <xs:element name="EmployeeID" type="xs:string"/>
+                                        <xs:element name="ShippingAddressID" type="xs:string"/>
+                                        <xs:element name="OrderDate" type="xs:string"/>
+                                        <xs:element name="Status" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <xs:element name="PaymentInfo">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="TotalAmount" type="xs:decimal"/>
+                                        <xs:element name="PaymentMethod" type="xs:string"/>
+                                        <xs:element name="PaymentStatus" type="xs:string"/>
+                                        <xs:element name="ProofOfPaymentURL" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
+
+

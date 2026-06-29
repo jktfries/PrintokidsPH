@@ -5,7 +5,7 @@
     <xsl:output method="xml" indent="yes"/>
 
     <xsl:template match="/">
-        <StandardProducts>
+        <Product>
             <xsl:for-each select="ProductsData/Product">
                 <Item>
                     <ProductID><xsl:value-of select="id"/></ProductID>
@@ -14,7 +14,7 @@
                     <Cost><xsl:value-of select="base_cost"/></Cost>
                 </Item>
             </xsl:for-each>
-        </StandardProducts>
+        </Product>
     </xsl:template>
 
 </xsl:stylesheet>
