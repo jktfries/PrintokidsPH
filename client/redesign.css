@@ -1005,6 +1005,16 @@ html.pk-dark .pk-toast.alert-warning {
     color: #FCD34D !important;
 }
 
+/* Native <select> dropdown popup — options need their own bg, the popup is OS-rendered.
+   bg-dark modals are always dark regardless of theme, so scope both cases. */
+html.pk-dark select option,
+html.pk-dark .form-select option,
+.modal-content.bg-dark select option,
+.modal-content.bg-dark .form-select option {
+    background-color: #1A1A2E !important;
+    color: #F3F4F6 !important;
+}
+
 /* Bootstrap utility overrides — bg-light and table-light render white on dark pages */
 html.pk-dark .bg-light {
     background-color: #1A1A2E !important;

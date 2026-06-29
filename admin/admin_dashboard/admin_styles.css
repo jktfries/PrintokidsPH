@@ -841,6 +841,9 @@ html.pk-dark .border { border-color: rgba(255,255,255,0.1) !important; }
 html.pk-dark .pk-modal-actions { border-color: rgba(255,255,255,0.08) !important; }
 html.pk-dark .pk-form-group label { color: #E5E7EB !important; }
 
+html.pk-dark select option,
+html.pk-dark .form-select option { background-color: #12121F; color: #F3F4F6; }
+
 html.pk-dark .form-control,
 html.pk-dark .form-select {
     background: #12121F !important;
