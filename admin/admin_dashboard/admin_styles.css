@@ -47,7 +47,11 @@
 
     /* ── Glassmorphism tokens ─────────────────────────────── */
     --glass-blur:       blur(24px) saturate(180%);
+<<<<<<< Updated upstream
     --glass-violet:     rgba(45, 27, 105, 0.52);
+=======
+    --glass-violet:     rgba(20, 10, 58, 0.80);
+>>>>>>> Stashed changes
     --glass-white:      rgba(255, 255, 255, 0.62);
     --glass-border:     rgba(255, 255, 255, 0.22);
     --glass-inset-top:  rgba(255, 255, 255, 0.28);
@@ -116,7 +120,12 @@ h1, h2, h3, h4, h5, h6 {
 .admin-brand-logo {
     height: 44px;
     width: auto;
+<<<<<<< Updated upstream
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+=======
+    filter: drop-shadow(0 1px 8px rgba(0, 0, 0, 0.45));
+    transition: filter var(--transition);
+>>>>>>> Stashed changes
 }
 
 .admin-brand-label {
@@ -795,6 +804,16 @@ html.pk-dark body {
 }
 
 html.pk-dark .admin-brand-bar { background: rgba(15,15,24,0.78); border-color: rgba(255,255,255,0.08); }
+<<<<<<< Updated upstream
+=======
+
+/* Logo illuminates in dark mode — mirrors client navbar behaviour */
+html.pk-dark .admin-brand-logo {
+    filter:
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.28))
+        drop-shadow(0 0 5px rgba(200, 245, 82, 0.22));
+}
+>>>>>>> Stashed changes
 html.pk-dark .admin-tab-nav { background: rgba(15,15,24,0.55); border-color: rgba(255,255,255,0.08); }
 html.pk-dark .admin-tab { background: rgba(200,245,82,0.06); color: #C8F552; }
 html.pk-dark .admin-tab:hover { background: rgba(255,87,51,0.15); color: var(--color-coral); }

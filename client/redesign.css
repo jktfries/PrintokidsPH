@@ -36,7 +36,11 @@
 
     /* ── Glassmorphism tokens ─────────────────────────────── */
     --glass-blur:       blur(24px) saturate(180%);
+<<<<<<< Updated upstream
     --glass-violet:     rgba(45, 27, 105, 0.52);
+=======
+    --glass-violet:     rgba(20, 10, 58, 0.80);
+>>>>>>> Stashed changes
     --glass-white:      rgba(255, 255, 255, 0.62);
     --glass-border:     rgba(255, 255, 255, 0.22);
     --glass-inset-top:  rgba(255, 255, 255, 0.28);
@@ -82,6 +86,15 @@ h1, h2, h3, h4, h5, h6,
         inset 0 -1px 0 var(--glass-inset-bot) !important;
 }
 
+<<<<<<< Updated upstream
+=======
+/* Logo depth — drop-shadow follows PNG silhouette, not bounding box */
+.navbar-brand .logo {
+    filter: drop-shadow(0 1px 8px rgba(0, 0, 0, 0.45));
+    transition: filter var(--transition-base);
+}
+
+>>>>>>> Stashed changes
 /* Refraction highlight — diagonal light sweep across the glass */
 .navbar::before {
     content: '';
@@ -915,6 +928,16 @@ html.pk-dark .modal-content:not(.bg-dark) .form-select {
 /* Navbar glass — dark mode */
 html.pk-dark .navbar { background: rgba(15,15,24,0.72) !important; }
 
+<<<<<<< Updated upstream
+=======
+/* Logo illuminates in dark mode — white glow with lime tint */
+html.pk-dark .navbar-brand .logo {
+    filter:
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.28))
+        drop-shadow(0 0 5px rgba(200, 245, 82, 0.22));
+}
+
+>>>>>>> Stashed changes
 /* Cards — dark glass */
 html.pk-dark .card,
 html.pk-dark .product-card,
