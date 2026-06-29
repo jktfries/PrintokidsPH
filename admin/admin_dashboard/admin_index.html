@@ -153,9 +153,12 @@
         <input type="text" id="productCatalogSearch" class="form-control w-50"
             placeholder="Search product name or category..."
             oninput="searchProductCatalog(this.value)">
-        <a href="javascript:void(0)" onclick="exportProductCatalog()" class="text-decoration-none text-dark fw-bold">
-            [ Export Product Catalog ]
-        </a>
+        
+        <div class="filter-status">
+            <a href="javascript:void(0)" onclick="exportProductCatalog()" class="admin-tab">
+                Export Product Catalog
+            </a>
+        </div>
     </div>
     <div class="table-container bg-white border border-2 border-light">
         <table class="table table-striped table-hover mb-0" id="productsCatalogTable">
@@ -183,12 +186,23 @@
             <h4 class="fw-bold text-dark text-uppercase tracking-wide">Inventory Management</h4>
             <p class="text-muted mb-0">Manage product stock counts and reorder levels.</p>
         </div>
-        <a href="javascript:void(0)" onclick="openInventoryModal()" class="text-decoration-none text-dark fw-bold">
-            [ + Add Product ]
-		<a href="javascript:void(0)" onclick="exportRawXML('inventory')" class="btn btn-outline-primary btn-sm">
-			Export XML
-		</a>
-        </a>
+        <div class="filter-status">
+            <a href="javascript:void(0)" onclick="openInventoryModal()" class="admin-tab">
+                Add Product
+            </a>
+            <a href="../../api/exportXML.php?table=products" class="admin-tab">
+                Generate Generic XML
+            </a>
+            <a href="../../api/xml_html_transform.php?table=products" class="admin-tab">
+                Generate HTML Report
+            </a>
+            <a href="../../api/xml_xml_products.php?table=products" class="admin-tab">
+                Generate Validated & Formatted XML
+            </a>
+            
+        </div>
+        
+
     </div>
     <div class="table-container bg-white border border-2 border-light">
         <table class="table table-striped table-hover mb-0" id="inventoryTable">
@@ -225,14 +239,24 @@
                 <a href="javascript:void(0)" onclick="filterOrders('In Production')">[ In Production ]</a>
                 <a href="javascript:void(0)" onclick="filterOrders('Completed')">[ Completed ]</a>
             </div>
-            <a href="javascript:void(0)" onclick="exportSalesHistory()" class="text-decoration-none text-dark fw-bold ms-3">
-                [ Export Sales ]
-			<a href="javascript:void(0)" onclick="exportRawXML('orders')" class="btn btn-outline-primary btn-sm ms-2">
-				Export XML
-			</a>
-            </a>
         </div>
     </div>
+    <div class="d-flex justify-content-end align-items-center mb-3">  
+            <div class="filter-status">
+                <a href="javascript:void(0)" onclick="exportSalesHistory()" class="admin-tab">
+                    Export Sales
+                </a>
+                <a href="../../api/exportXML.php?table=product_orders" class="admin-tab">
+                    Generate Generic XML
+                </a>
+                <a href="../../api/xml_html_transform.php?table=product_orders" class="admin-tab">
+                    Generate HTML Report
+                </a>
+                <a href="../../api/xml_xml_orders.php?table=product_orders" class="admin-tab">
+                    Generate Validated & Formatted XML
+                </a>             
+            </div>
+        </div>
     <div class="table-container bg-white border border-2 border-light">
         <table class="table table-striped table-hover mb-0" id="ordersTable">
             <thead class="bg-light text-dark">
@@ -268,7 +292,6 @@
             <a href="javascript:void(0)" onclick="filterEventBookings('Confirmed')">[ Confirmed ]</a>
             <a href="javascript:void(0)" onclick="filterEventBookings('Completed')">[ Completed ]</a>
             <a href="javascript:void(0)" onclick="loadEventBookings()" class="ms-2">[ Refresh ]</a>
-            <a href="javascript:void(0)" onclick="exportEventBookings()" class="ms-2">[ Export ]</a>
         </div>
     </div>
 
@@ -304,6 +327,23 @@
                 oninput="searchEventBookings(this.value)">
         </div>
     </div>
+
+    <div class="d-flex justify-content-end align-items-center mb-3">  
+            <div class="filter-status">
+                <a href="javascript:void(0)" onclick="exportEventBookings()" class="admin-tab">
+                    Export
+                </a>
+                <a href="../../api/exportXML.php?table=event_orders" class="admin-tab">
+                    Generate Generic XML
+                </a>
+                <a href="../../api/xml_html_transform.php?table=event_orders" class="admin-tab">
+                    Generate HTML Report
+                </a> 
+                <a href="/PrintokidsPH/api/xml_xml_event_orders.php?table=event_orders" class="admin-tab">
+                    Generate Validated & Formatted XML
+                </a>
+            </div>
+        </div>
 
     <div class="table-container bg-white border border-2 border-light">
         <table class="table table-striped table-hover mb-0" id="eventBookingsTable">
