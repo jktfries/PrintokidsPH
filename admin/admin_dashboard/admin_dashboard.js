@@ -1569,7 +1569,9 @@ function showAlert(message, type = 'info') {
     setTimeout(() => div.remove(), 4000);
 }
 
-function exportRawXML(type) {
+//Old XML Logic
+
+/* function exportRawXML(type) {
     //point to existing data array n stuff
     const dataList = (type === 'inventory') ? allProducts : allOrders;
     
@@ -1597,7 +1599,7 @@ function exportRawXML(type) {
             xmlString += `    <${safeKey}>${val}</${safeKey}>\n`;
         }
         xmlString += `  </${entryTag}>\n`;
-    });
+    }); 
 
     xmlString += `</${rootTag}>`;
 
@@ -1613,4 +1615,4 @@ function exportRawXML(type) {
     URL.revokeObjectURL(url);
     
     showAlert(`${type.toUpperCase()} XML exported successfully.`, 'success');
-}
+} */
